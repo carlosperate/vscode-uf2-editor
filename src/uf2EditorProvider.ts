@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import TelemetryReporter from "@vscode/extension-telemetry";
 import * as vscode from "vscode";
 import {
 	CopyFormat,
@@ -44,13 +43,12 @@ const editorSettingsKeys = Object.keys(defaultEditorSettings) as readonly (keyof
 export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Document> {
 	public static register(
 		context: vscode.ExtensionContext,
-		telemetryReporter: TelemetryReporter,
 		dataInspectorView: DataInspectorView,
 		registry: Uf2EditorRegistry,
 	): vscode.Disposable {
 		return vscode.window.registerCustomEditorProvider(
 			Uf2EditorProvider.viewType,
-			new Uf2EditorProvider(context, telemetryReporter, dataInspectorView, registry),
+			new Uf2EditorProvider(context, dataInspectorView, registry),
 			{
 				supportsMultipleEditorsPerDocument: false,
 			},
@@ -61,7 +59,6 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 
 	constructor(
 		private readonly _context: vscode.ExtensionContext,
-		private readonly _telemetryReporter: TelemetryReporter,
 		private readonly _dataInspectorView: DataInspectorView,
 		private readonly _registry: Uf2EditorRegistry,
 	) {}
@@ -73,12 +70,7 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 	): Promise<Uf2Document> {
 		const diff = this._registry.getDiff(uri);
 
-		const { document, accessor } = await Uf2Document.create(
-			uri,
-			openContext,
-			this._telemetryReporter,
-			diff.builder,
-		);
+		const { document, accessor } = await Uf2Document.create(uri, openContext, diff.builder);
 		const disposables: vscode.Disposable[] = [];
 		disposables.push(diff);
 		disposables.push(

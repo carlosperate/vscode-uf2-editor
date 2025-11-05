@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import TelemetryReporter from "@vscode/extension-telemetry";
 import * as vscode from "vscode";
 import { Uf2DocumentEditOp } from "../shared/uf2DocumentModel";
 import { openCompareSelected } from "./compareSelected";
@@ -16,19 +15,6 @@ import StatusHoverAndSelection from "./statusHoverAndSelection";
 import { Uf2DiffFSProvider } from "./uf2DiffFS";
 import { Uf2EditorProvider } from "./uf2EditorProvider";
 import { Uf2EditorRegistry } from "./uf2EditorRegistry";
-
-function readConfigFromPackageJson(extension: vscode.Extension<any>): {
-	extId: string;
-	version: string;
-	aiKey: string;
-} {
-	const packageJSON = extension.packageJSON;
-	return {
-		extId: `${packageJSON.publisher}.${packageJSON.name}`,
-		version: packageJSON.version,
-		aiKey: packageJSON.aiKey,
-	};
-}
 
 function reopenWithUf2Editor() {
 	const activeTabInput = vscode.window.tabGroups.activeTabGroup.activeTab?.input as {
@@ -48,19 +34,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const registry = new Uf2EditorRegistry(initWorker);
 	// Register the data inspector as a separate view on the side
 	const dataInspectorProvider = new DataInspectorView(context.extensionUri, registry);
-	const configValues = readConfigFromPackageJson(context.extension);
 	context.subscriptions.push(
 		registry,
 		dataInspectorProvider,
 		vscode.window.registerWebviewViewProvider(DataInspectorView.viewType, dataInspectorProvider),
 	);
 
-	const telemetryReporter = new TelemetryReporter(
-		configValues.extId,
-		configValues.version,
-		configValues.aiKey,
-	);
-	context.subscriptions.push(telemetryReporter);
 	const openWithCommand = vscode.commands.registerCommand(
 		"uf2Editor.openFile",
 		reopenWithUf2Editor,
@@ -137,7 +116,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(copyAsCommand);
 	context.subscriptions.push(switchEditModeCommand);
 	context.subscriptions.push(openWithCommand);
-	context.subscriptions.push(telemetryReporter);
 	context.subscriptions.push(copyOffsetAsDec, copyOffsetAsHex);
 	context.subscriptions.push(compareSelectedCommand);
 	context.subscriptions.push(
@@ -148,9 +126,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				process.platform !== "darwin",
 		}),
 	);
-	context.subscriptions.push(
-		Uf2EditorProvider.register(context, telemetryReporter, dataInspectorProvider, registry),
-	);
+	context.subscriptions.push(Uf2EditorProvider.register(context, dataInspectorProvider, registry));
 }
 
 export function deactivate(): void {
