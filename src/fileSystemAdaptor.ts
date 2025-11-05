@@ -24,7 +24,7 @@ export const accessFile = async (
 
 	// try to use native file access for local files to allow large files to be handled efficiently
 	// todo@connor4312/lramos: push forward extension host API for this.
-	if (uri.scheme === "file" || uri.scheme === "hexdiff") {
+	if (uri.scheme === "file" || uri.scheme === "uf2diff") {
 		try {
 			// eslint-disable @typescript-eslint/no-var-requires
 			const fs = require("fs");
@@ -43,7 +43,7 @@ export const accessFile = async (
 
 			if (fileStats.isFile()) {
 				// Diff is readonly since the diff is only computed at the beginning once
-				return new NativeFileAccessor(uri, uri.scheme === "hexdiff" ? true : isReadonly, fs);
+				return new NativeFileAccessor(uri, uri.scheme === "uf2diff" ? true : isReadonly, fs);
 			}
 		} catch {
 			// probably not node.js, or file does not exist

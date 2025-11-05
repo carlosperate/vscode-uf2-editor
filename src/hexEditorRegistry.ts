@@ -3,7 +3,7 @@
 
 import * as vscode from "vscode";
 import { DiffExtensionHostMessageHandler } from "../shared/diffWorkerProtocol";
-import { HexDiffModel, HexDiffModelBuilder } from "../shared/hexDiffModel";
+import { Uf2DiffModel, Uf2DiffModelBuilder } from "../shared/hexDiffModel";
 import { ExtensionHostMessageHandler } from "../shared/protocol";
 import { parseQuery } from "../shared/util/uri";
 import { Disposable } from "./dispose";
@@ -15,7 +15,7 @@ export class HexEditorRegistry extends Disposable {
 	private readonly docs = new Map<HexDocument, Set<ExtensionHostMessageHandler>>();
 	private readonly diffsBuilder = new Map<
 		string,
-		{ refCount: number; value: HexDiffModelBuilder }
+		{ refCount: number; value: Uf2DiffModelBuilder }
 	>();
 	private onChangeEmitter = new vscode.EventEmitter<HexDocument | undefined>();
 	private _activeDocument?: HexDocument;
@@ -77,7 +77,7 @@ export class HexEditorRegistry extends Disposable {
 
 	/** returns a diff model using the file uri */
 	public getDiff(uri: vscode.Uri): {
-		builder: HexDiffModelBuilder | undefined;
+		builder: Uf2DiffModelBuilder | undefined;
 		dispose: () => void;
 	} {
 		const { token } = parseQuery(uri.query);
@@ -92,7 +92,7 @@ export class HexEditorRegistry extends Disposable {
 		if (!this.diffsBuilder.has(token)) {
 			this.diffsBuilder.set(token, {
 				refCount: 0,
-				value: new HexDiffModel.Builder(messageHandler),
+				value: new Uf2DiffModel.Builder(messageHandler),
 			});
 		}
 		const builder = this.diffsBuilder.get(token)!;
@@ -127,7 +127,7 @@ export class HexEditorRegistry extends Disposable {
 		}
 
 		this._activeDocument = next;
-		vscode.commands.executeCommand("setContext", "hexEditor:isActive", !!next);
+		vscode.commands.executeCommand("setContext", "uf2Editor:isActive", !!next);
 		this.onChangeEmitter.fire(next);
 	}
 }

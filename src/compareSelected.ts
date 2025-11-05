@@ -13,7 +13,7 @@ const uuid = uuidGenerator();
 export const openCompareSelected = (originalFile: vscode.Uri, modifiedFile: vscode.Uri) => {
 	const token = uuid();
 	const diffOriginalUri = originalFile.with({
-		scheme: "hexdiff",
+		scheme: "uf2diff",
 		query: formQuery({
 			...parseQuery(originalFile.query),
 			side: "original",
@@ -22,7 +22,7 @@ export const openCompareSelected = (originalFile: vscode.Uri, modifiedFile: vsco
 	});
 
 	const diffModifiedUri = modifiedFile.with({
-		scheme: "hexdiff",
+		scheme: "uf2diff",
 		query: formQuery({
 			...parseQuery(originalFile.query),
 			side: "modified",

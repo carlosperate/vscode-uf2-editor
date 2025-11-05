@@ -8,7 +8,7 @@ import { HexEditorRegistry } from "./hexEditorRegistry";
 import { randomString } from "./util";
 
 export class DataInspectorView extends Disposable implements vscode.WebviewViewProvider {
-	public static readonly viewType = "hexEditor.dataInspectorView";
+	public static readonly viewType = "uf2Editor.dataInspectorView";
 	private _view?: vscode.WebviewView;
 	private _lastMessage: unknown;
 
@@ -19,10 +19,10 @@ export class DataInspectorView extends Disposable implements vscode.WebviewViewP
 		super();
 		this._register(
 			registry.onDidChangeActiveDocument(doc => {
-				const inspectorType = vscode.workspace.getConfiguration("hexeditor").get("inspectorType");
+				const inspectorType = vscode.workspace.getConfiguration("uf2editor").get("inspectorType");
 				const shouldShow = inspectorType === InspectorLocation.Sidebar && !!doc;
 
-				vscode.commands.executeCommand("setContext", "hexEditor:showSidebarInspector", shouldShow);
+				vscode.commands.executeCommand("setContext", "uf2Editor:showSidebarInspector", shouldShow);
 				if (shouldShow) {
 					this.show({ autoReveal: true });
 				}
@@ -81,7 +81,7 @@ export class DataInspectorView extends Disposable implements vscode.WebviewViewP
 		// Don't reveal the panel if configured not to
 		if (
 			options?.autoReveal &&
-			!vscode.workspace.getConfiguration("hexeditor.dataInspector").get("autoReveal", false)
+			!vscode.workspace.getConfiguration("uf2editor.dataInspector").get("autoReveal", false)
 		) {
 			return;
 		}
@@ -107,7 +107,7 @@ export class DataInspectorView extends Disposable implements vscode.WebviewViewP
 		);
 		const endianness = vscode.workspace
 			.getConfiguration()
-			.get("hexeditor.defaultEndianness") as string;
+			.get("uf2editor.defaultEndianness") as string;
 		const nonce = randomString();
 		return `<!DOCTYPE html>
             <html lang="en">

@@ -5,7 +5,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import * as vscode from "vscode";
 import { HexDecorator } from "../shared/decorators";
 import { FileAccessor } from "../shared/fileAccessor";
-import { HexDiffModel, HexDiffModelBuilder } from "../shared/hexDiffModel";
+import { Uf2DiffModel, Uf2DiffModelBuilder } from "../shared/hexDiffModel";
 import {
 	HexDocumentEdit,
 	HexDocumentEditOp,
@@ -30,7 +30,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 		uri: vscode.Uri,
 		{ backupId, untitledDocumentData }: vscode.CustomDocumentOpenContext,
 		telemetryReporter: TelemetryReporter,
-		diffModelBuilder: HexDiffModelBuilder | undefined,
+		diffModelBuilder: Uf2DiffModelBuilder | undefined,
 	): Promise<{ document: HexDocument; accessor: FileAccessor }> {
 		const accessor = await accessFile(uri, untitledDocumentData);
 		const model = new HexDocumentModel({
@@ -56,7 +56,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 		telemetryReporter.sendTelemetryEvent("fileOpen", {}, { fileSize: fileSize ?? 0 });
 
 		const maxFileSize =
-			(vscode.workspace.getConfiguration().get("hexeditor.maxFileSize") as number) * 1000000;
+			(vscode.workspace.getConfiguration().get("uf2editor.maxFileSize") as number) * 1000000;
 		const isLargeFile =
 			!backupId && !accessor.supportsIncremetalAccess && (fileSize ?? 0) > maxFileSize;
 
@@ -83,7 +83,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 		private model: HexDocumentModel,
 		public readonly isLargeFile: boolean,
 		public readonly baseAddress: number,
-		private diffModel?: HexDiffModel,
+		private diffModel?: Uf2DiffModel,
 	) {
 		super();
 	}
@@ -117,7 +117,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 				return await this.diffModel.computeDecorators(this.uri);
 			} catch (e: unknown) {
 				vscode.window.showErrorMessage(
-					e instanceof Error ? e.message : vscode.l10n.t("Unknown Error in HexEditor Diff"),
+					e instanceof Error ? e.message : vscode.l10n.t("Unknown Error in UF2 Editor Diff"),
 				);
 			}
 		}

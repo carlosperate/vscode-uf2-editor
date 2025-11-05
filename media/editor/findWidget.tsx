@@ -13,11 +13,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { HexDocumentEditOp, HexDocumentReplaceEdit } from "../../shared/hexDocumentModel";
 import {
-    LiteralSearchQuery,
-    MessageType,
-    SearchRequestMessage,
-    SearchResult,
-    SearchResultsWithProgress,
+	LiteralSearchQuery,
+	MessageType,
+	SearchRequestMessage,
+	SearchResult,
+	SearchResultsWithProgress,
 } from "../../shared/protocol";
 import { placeholder1 } from "../../shared/strings";
 import { Range } from "../../shared/util/range";

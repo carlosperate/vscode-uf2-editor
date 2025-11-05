@@ -8,7 +8,7 @@ import { openCompareSelected } from "./compareSelected";
 import { copyAs } from "./copyAs";
 import { DataInspectorView } from "./dataInspectorView";
 import { showGoToOffset } from "./goToOffset";
-import { HexDiffFSProvider } from "./hexDiffFS";
+import { Uf2DiffFSProvider } from "./hexDiffFS";
 import { HexEditorProvider } from "./hexEditorProvider";
 import { HexEditorRegistry } from "./hexEditorRegistry";
 import { prepareLazyInitDiffWorker } from "./initWorker";
@@ -30,13 +30,13 @@ function readConfigFromPackageJson(extension: vscode.Extension<any>): {
 	};
 }
 
-function reopenWithHexEditor() {
+function reopenWithUf2Editor() {
 	const activeTabInput = vscode.window.tabGroups.activeTabGroup.activeTab?.input as {
 		[key: string]: any;
 		uri: vscode.Uri | undefined;
 	};
 	if (activeTabInput.uri) {
-		vscode.commands.executeCommand("vscode.openWith", activeTabInput.uri, "hexEditor.hexedit");
+		vscode.commands.executeCommand("vscode.openWith", activeTabInput.uri, "uf2Editor.uf2edit");
 	}
 }
 
@@ -62,17 +62,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(telemetryReporter);
 	const openWithCommand = vscode.commands.registerCommand(
-		"hexEditor.openFile",
-		reopenWithHexEditor,
+		"uf2Editor.openFile",
+		reopenWithUf2Editor,
 	);
-	const goToOffsetCommand = vscode.commands.registerCommand("hexEditor.goToOffset", () => {
+	const goToOffsetCommand = vscode.commands.registerCommand("uf2Editor.goToOffset", () => {
 		const first = registry.activeMessaging[Symbol.iterator]().next();
 		if (first.value) {
 			showGoToOffset(first.value);
 		}
 	});
 	const selectBetweenOffsetsCommand = vscode.commands.registerCommand(
-		"hexEditor.selectBetweenOffsets",
+		"uf2Editor.selectBetweenOffsets",
 		() => {
 			const first = registry.activeMessaging[Symbol.iterator]().next();
 			if (first.value) {
@@ -81,14 +81,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		},
 	);
 
-	const copyAsCommand = vscode.commands.registerCommand("hexEditor.copyAs", () => {
+	const copyAsCommand = vscode.commands.registerCommand("uf2Editor.copyAs", () => {
 		const first = registry.activeMessaging[Symbol.iterator]().next();
 		if (first.value) {
 			copyAs(first.value);
 		}
 	});
 
-	const switchEditModeCommand = vscode.commands.registerCommand("hexEditor.switchEditMode", () => {
+	const switchEditModeCommand = vscode.commands.registerCommand("uf2Editor.switchEditMode", () => {
 		if (registry.activeDocument) {
 			registry.activeDocument.editMode =
 				registry.activeDocument.editMode === HexDocumentEditOp.Insert
@@ -97,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	const copyOffsetAsHex = vscode.commands.registerCommand("hexEditor.copyOffsetAsHex", () => {
+	const copyOffsetAsHex = vscode.commands.registerCommand("uf2Editor.copyOffsetAsHex", () => {
 		if (registry.activeDocument) {
 			const focused = registry.activeDocument.selectionState.focused;
 			if (focused !== undefined) {
@@ -106,7 +106,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	const copyOffsetAsDec = vscode.commands.registerCommand("hexEditor.copyOffsetAsDec", () => {
+	const copyOffsetAsDec = vscode.commands.registerCommand("uf2Editor.copyOffsetAsDec", () => {
 		if (registry.activeDocument) {
 			const focused = registry.activeDocument.selectionState.focused;
 			if (focused !== undefined) {
@@ -116,7 +116,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	const compareSelectedCommand = vscode.commands.registerCommand(
-		"hexEditor.compareSelected",
+		"uf2Editor.compareSelected",
 		async (...args) => {
 			if (args.length !== 2 && !(args[1] instanceof Array)) {
 				return;
@@ -141,8 +141,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(copyOffsetAsDec, copyOffsetAsHex);
 	context.subscriptions.push(compareSelectedCommand);
 	context.subscriptions.push(
-		vscode.workspace.registerFileSystemProvider("hexdiff", new HexDiffFSProvider(), {
-			isCaseSensitive: typeof process !== 'undefined' && process.platform !== 'win32' && process.platform !== 'darwin',
+		vscode.workspace.registerFileSystemProvider("uf2diff", new Uf2DiffFSProvider(), {
+			isCaseSensitive:
+				typeof process !== "undefined" &&
+				process.platform !== "win32" &&
+				process.platform !== "darwin",
 		}),
 	);
 	context.subscriptions.push(

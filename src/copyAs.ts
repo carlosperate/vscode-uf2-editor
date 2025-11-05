@@ -30,14 +30,15 @@ export const copyAs = async (messaging: ExtensionHostMessageHandler): Promise<vo
 		{ label: CopyFormat.Java },
 		{ label: CopyFormat.JSON },
 		{ label: CopyFormat.Base64 },
-		{ label: "Configure HexEditor: Copy Type" as CopyFormat }
+		{ label: "Configure UF2 Editor: Copy Type" as CopyFormat },
 	];
 
 	vscode.window.showQuickPick(formats).then(format => {
 		if (format?.label == formats.at(-1)?.label) {
-			vscode.commands.executeCommand('workbench.action.openSettings2', { query: '@id:hexeditor.copyType' });
-		}
-		else if (format) {
+			vscode.commands.executeCommand("workbench.action.openSettings2", {
+				query: "@id:uf2editor.copyType",
+			});
+		} else if (format) {
 			messaging.sendEvent({ type: MessageType.TriggerCopyAs, format: format["label"] });
 		}
 	});
@@ -48,8 +49,10 @@ export function copyAsText(buffer: Uint8Array) {
 }
 
 export function copyAsHexOctets(buffer: Uint8Array) {
-	const hexString = Array.from(buffer, (b) => b.toString(16).toUpperCase().padStart(2, "0")).join(" ")
-	vscode.env.clipboard.writeText(hexString)
+	const hexString = Array.from(buffer, b => b.toString(16).toUpperCase().padStart(2, "0")).join(
+		" ",
+	);
+	vscode.env.clipboard.writeText(hexString);
 }
 
 export function copyAsHex(buffer: Uint8Array) {

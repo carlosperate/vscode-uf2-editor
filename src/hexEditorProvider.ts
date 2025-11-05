@@ -57,7 +57,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 		);
 	}
 
-	private static readonly viewType = "hexEditor.hexedit";
+	private static readonly viewType = "uf2Editor.uf2edit";
 
 	constructor(
 		private readonly _context: vscode.ExtensionContext,
@@ -279,7 +279,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 				<script nonce="${nonce}">globalThis.LOC_STRINGS=${JSON.stringify(strings)}</script>
 				<script nonce="${nonce}" src="${scriptUri}" defer></script>
 
-				<title>Hex Editor</title>
+				<title>UF2 Editor</title>
 			</head>
 			<body>
 			</body>
@@ -294,7 +294,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 	}
 
 	private readEditorSettings(): IEditorSettings {
-		const config = vscode.workspace.getConfiguration("hexeditor");
+		const config = vscode.workspace.getConfiguration("uf2editor");
 		const settings: IEditorSettings = { ...defaultEditorSettings };
 		for (const key of editorSettingsKeys) {
 			if (config.has(key)) {
@@ -305,7 +305,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 	}
 
 	private writeEditorSettings(settings: IEditorSettings) {
-		const config = vscode.workspace.getConfiguration("hexeditor");
+		const config = vscode.workspace.getConfiguration("uf2editor");
 		for (const key of editorSettingsKeys) {
 			const existing = config.inspect(key);
 			const target = !existing

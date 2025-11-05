@@ -329,7 +329,11 @@ const DataRows: React.FC = () => {
 
 	const rows: React.ReactChild[] = [];
 	// i === startPageStartsAt so that we always show at least 1 page, allowing users to append to empty files (#534)
-	for (let i = startPageStartsAt; i <= endPageStartsAt && (i === startPageStartsAt || i < fileSize); i += dataPageSize) {
+	for (
+		let i = startPageStartsAt;
+		i <= endPageStartsAt && (i === startPageStartsAt || i < fileSize);
+		i += dataPageSize
+	) {
 		rows.push(
 			<DataPage
 				key={i}

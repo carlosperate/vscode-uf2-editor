@@ -9,7 +9,7 @@ function toFileUri(uri: vscode.Uri) {
 // Workaround to open our files in diff mode. Used by both web and node
 // to create a diff model, but the methods are only used in web whereas
 // in node we use node's fs.
-export class HexDiffFSProvider implements vscode.FileSystemProvider {
+export class Uf2DiffFSProvider implements vscode.FileSystemProvider {
 	readDirectory(
 		uri: vscode.Uri,
 	): [string, vscode.FileType][] | Thenable<[string, vscode.FileType][]> {

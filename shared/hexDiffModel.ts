@@ -7,9 +7,9 @@ import {
 	DiffMessageType,
 } from "./diffWorkerProtocol";
 import { HexDocumentModel } from "./hexDocumentModel";
-export type HexDiffModelBuilder = typeof HexDiffModel.Builder.prototype;
+export type Uf2DiffModelBuilder = typeof Uf2DiffModel.Builder.prototype;
 
-export class HexDiffModel {
+export class Uf2DiffModel {
 	/** Guard to make sure only one computation operation happens */
 	private readonly saveGuard = bulkhead(1, Infinity);
 	private decorators?: { original: HexDecorator[]; modified: HexDecorator[] };
@@ -27,7 +27,7 @@ export class HexDiffModel {
 				const oSize = await this.originalModel.sizeWithEdits();
 				const mSize = await this.modifiedModel.sizeWithEdits();
 				if (oSize === undefined || mSize === undefined) {
-					throw new Error(vscode.l10n.t("HexEditor Diff: Failed to get file sizes."));
+					throw new Error(vscode.l10n.t("UF2 Editor Diff: Failed to get file sizes."));
 				}
 
 				const oArray = new Uint8Array(oSize);
@@ -51,7 +51,7 @@ export class HexDiffModel {
 	}
 
 	/**
-	 * Class to coordinate the creation of HexDiffModel
+	 * Class to coordinate the creation of Uf2DiffModel
 	 * with both HexDocumentModels
 	 */
 	static Builder = class {
@@ -64,7 +64,7 @@ export class HexDiffModel {
 			resolve: (model: HexDocumentModel) => void;
 		};
 
-		private built?: HexDiffModel;
+		private built?: Uf2DiffModel;
 
 		constructor(private readonly messageHandler: DiffExtensionHostMessageHandler) {
 			let promise: Promise<HexDocumentModel>;
@@ -91,7 +91,7 @@ export class HexDiffModel {
 				this.modified.promise,
 			]);
 			if (this.built === undefined) {
-				this.built = new HexDiffModel(original, modified, this.messageHandler);
+				this.built = new Uf2DiffModel(original, modified, this.messageHandler);
 			}
 			return this.built;
 		}
