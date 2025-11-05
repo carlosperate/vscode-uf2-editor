@@ -96,7 +96,7 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 			}),
 		);
 
-		const overwrite = vscode.l10n.t("Overwrite");
+		const overwrite = "Overwrite";
 		const onDidChange = async () => {
 			if (document.isSynced) {
 				// If we executed a save recently the change was probably caused by us
@@ -108,10 +108,9 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 				return;
 			}
 
-			const message = vscode.l10n.t(
-				"This file has changed on disk, but you have unsaved changes. Saving now will overwrite the file on disk with your changes.",
-			);
-			const revert = vscode.l10n.t("Revert");
+			const message =
+				"This file has changed on disk, but you have unsaved changes. Saving now will overwrite the file on disk with your changes.";
+			const revert = "Revert";
 			const selected = await vscode.window.showWarningMessage(message, overwrite, revert);
 			if (selected === overwrite) {
 				vscode.commands.executeCommand("workbench.action.files.save");
@@ -214,43 +213,42 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 		// Use a nonce to allow certain scripts to be run
 		const nonce = randomString();
 		const strings: ILocalizedStrings = {
-			pasteAs: vscode.l10n.t("Paste as"),
-			pasteMode: vscode.l10n.t("Paste mode"),
-			replace: vscode.l10n.t("Replace"),
-			insert: vscode.l10n.t("Insert"),
-			bytes: vscode.l10n.t("bytes"),
-			encodingError: vscode.l10n.t("Encoding Error"),
-			decodedText: vscode.l10n.t("Decoded Text"),
-			loadingUpper: vscode.l10n.t("LOADING"),
-			loadingDotDotDot: vscode.l10n.t("Loading..."),
-			littleEndian: vscode.l10n.t("Little Endian"),
-			onlyHexChars: vscode.l10n.t("Only hexadecimal characters (0-9 and a-f) are allowed"),
-			onlyHexCharsAndPlaceholders: vscode.l10n.t(
+			pasteAs: "Paste as",
+			pasteMode: "Paste mode",
+			replace: "Replace",
+			insert: "Insert",
+			bytes: "bytes",
+			encodingError: "Encoding Error",
+			decodedText: "Decoded Text",
+			loadingUpper: "LOADING",
+			loadingDotDotDot: "Loading...",
+			littleEndian: "Little Endian",
+			onlyHexChars: "Only hexadecimal characters (0-9 and a-f) are allowed",
+			onlyHexCharsAndPlaceholders:
 				"Only hexadecimal characters (0-9, a-f, and ?? placeholders) are allowed",
-			),
-			toggleReplace: vscode.l10n.t("Toggle Replace"),
-			findBytes: vscode.l10n.t("Find Bytes (hex)"),
-			findText: vscode.l10n.t("Find Text"),
-			regexSearch: vscode.l10n.t("Regular Expression Search"),
-			searchInBinaryMode: vscode.l10n.t("Search in Binary Mode"),
-			caseSensitive: vscode.l10n.t("Case Sensitive"),
-			cancelSearch: vscode.l10n.t("Cancel Search"),
-			previousMatch: vscode.l10n.t("Previous Match"),
-			nextMatch: vscode.l10n.t("Next Match"),
-			closeWidget: vscode.l10n.t("Close Widget (Esc)"),
-			replaceAllMatches: vscode.l10n.t("Replace All Matches"),
-			replaceSelectedMatch: vscode.l10n.t("Replace Selected Match"),
-			resultOverflow: vscode.l10n.t("More than {0} results, click to find all", placeholder1),
-			resultCount: vscode.l10n.t("{0} results", placeholder1),
-			foundNResults: vscode.l10n.t("Found {0}...", placeholder1),
-			noResults: vscode.l10n.t("No results"),
-			openLargeFileWarning: vscode.l10n.t("Opening this large file may cause instability."),
-			openAnyways: vscode.l10n.t("Open Anyways"),
-			readonlyWarning: vscode.l10n.t("Cannot edit in read-only editor."),
-			openSettings: vscode.l10n.t("Open Settings"),
-			showDecodedText: vscode.l10n.t("Show Decoded Text"),
-			bytesPerRow: vscode.l10n.t("Bytes per row"),
-			close: vscode.l10n.t("Close"),
+			toggleReplace: "Toggle Replace",
+			findBytes: "Find Bytes (hex)",
+			findText: "Find Text",
+			regexSearch: "Regular Expression Search",
+			searchInBinaryMode: "Search in Binary Mode",
+			caseSensitive: "Case Sensitive",
+			cancelSearch: "Cancel Search",
+			previousMatch: "Previous Match",
+			nextMatch: "Next Match",
+			closeWidget: "Close Widget (Esc)",
+			replaceAllMatches: "Replace All Matches",
+			replaceSelectedMatch: "Replace Selected Match",
+			resultOverflow: `More than ${placeholder1} results, click to find all`,
+			resultCount: `${placeholder1} results`,
+			foundNResults: `Found ${placeholder1}...`,
+			noResults: "No results",
+			openLargeFileWarning: "Opening this large file may cause instability.",
+			openAnyways: "Open Anyways",
+			readonlyWarning: "Cannot edit in read-only editor.",
+			openSettings: "Open Settings",
+			showDecodedText: "Show Decoded Text",
+			bytesPerRow: "Bytes per row",
+			close: "Close",
 		};
 
 		return /* html */ `

@@ -27,9 +27,9 @@ export const showSelectBetweenOffsets = async (
 		focusedOffset = `0x${selectionState.focused.toString(16)}`;
 	}
 
-	const offset1 = await getOffset(vscode.l10n.t("Enter offset to select from"), focusedOffset);
+	const offset1 = await getOffset("Enter offset to select from", focusedOffset);
 	if (offset1 !== undefined) {
-		const offset2 = await getOffset(vscode.l10n.t("Enter offset to select until"));
+		const offset2 = await getOffset("Enter offset to select until");
 		if (offset2 !== undefined) {
 			messaging.sendEvent({
 				type: MessageType.SetFocusedByteRange,

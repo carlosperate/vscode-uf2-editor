@@ -1,7 +1,7 @@
 {
   "name": "uf2editor",
-  "displayName": "%name%",
-  "description": "%description%",
+  "displayName": "UF2 Editor",
+  "description": "Allows viewing and editing files in a UF2 editor",
   "version": "1.11.1",
   "publisher": "ms-vscode",
   "repository": {
@@ -22,7 +22,6 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "browser": "./dist/web/extension.js",
-  "l10n": "./l10n",
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": true
@@ -32,7 +31,7 @@
   "contributes": {
     "configuration": [
       {
-        "title": "%name%",
+        "title": "UF2 Editor",
         "properties": {
           "uf2editor.inspectorType": {
             "type": "string",
@@ -42,18 +41,18 @@
               "sidebar"
             ],
             "default": "aside",
-            "description": "%uf2editor.inspectorType%"
+            "description": "Where the data inspector should be shown in the UF2 editor."
           },
           "uf2editor.maxFileSize": {
             "type": "number",
             "minimum": 0,
             "default": 10,
-            "description": "%uf2editor.maxFileSize%"
+            "description": "The max file size (in MB) that the editor will try to open before warning you."
           },
           "uf2editor.dataInspector.autoReveal": {
             "type": "boolean",
             "default": true,
-            "description": "%uf2editor.dataInspector.autoReveal%"
+            "description": "Whether to auto reveal the data inspector when the UF2 editor is opened."
           },
           "uf2editor.defaultEndianness": {
             "type": "string",
@@ -62,14 +61,14 @@
               "little",
               "big"
             ],
-            "description": "%uf2editor.defaultEndianness%"
+            "description": "The endianness selected when loading the editor."
           },
           "uf2editor.columnWidth": {
             "type": "integer",
             "default": 16,
             "minimum": 1,
             "maximum": 512,
-            "description": "%uf2editor.columnWidth%"
+            "description": "The number of bytes per row to show in the editor."
           },
           "uf2editor.copyType": {
             "type": "string",
@@ -85,17 +84,17 @@
               "Base64"
             ],
             "default": "Hex Octets",
-            "description": "%uf2editor.copyType%"
+            "description": "Sets the default format in which bytes are copied"
           },
           "uf2editor.showDecodedText": {
             "type": "boolean",
             "default": true,
-            "description": "%uf2editor.showDecodedText%"
+            "description": "Whether decoded text should be shown in the editor."
           },
           "uf2editor.showOpenFileButton": {
             "type": "boolean",
             "default": false,
-            "description": "%uf2editor.showOpenFileButton%"
+            "description": "Show UF2 Editor button in editor menu."
           }
         }
       }
@@ -108,7 +107,7 @@
     "customEditors": [
       {
         "viewType": "uf2Editor.uf2edit",
-        "displayName": "%name%",
+        "displayName": "UF2 Editor",
         "selector": [
           {
             "filenamePattern": "*"
@@ -120,51 +119,51 @@
     "commands": [
       {
         "command": "uf2Editor.openFile",
-        "category": "%name%",
-        "title": "%uf2Editor.openFile%",
+        "category": "UF2 Editor",
+        "title": "Open Active File in UF2 Editor",
         "icon": "$(file-binary)"
       },
       {
         "command": "uf2Editor.goToOffset",
-        "category": "%name%",
-        "title": "%uf2Editor.goToOffset%"
+        "category": "UF2 Editor",
+        "title": "Go To Offset"
       },
       {
         "command": "uf2Editor.selectBetweenOffsets",
-        "category": "%name%",
-        "title": "%uf2Editor.selectBetweenOffsets%"
+        "category": "UF2 Editor",
+        "title": "Select Between Offsets"
       },
       {
         "command": "uf2Editor.copyAs",
-        "category": "%name%",
-        "title": "%uf2Editor.copyAs%"
+        "category": "UF2 Editor",
+        "title": "Copy As..."
       },
       {
         "command": "uf2Editor.switchEditMode",
-        "category": "%name%",
-        "title": "%uf2Editor.switchEditMode%"
+        "category": "UF2 Editor",
+        "title": "Switch Edit Mode"
       },
       {
         "command": "uf2Editor.copyOffsetAsHex",
-        "category": "%name%",
-        "title": "%uf2Editor.copyOffsetAsHex%"
+        "category": "UF2 Editor",
+        "title": "Copy Offset as Hex"
       },
       {
         "command": "uf2Editor.copyOffsetAsDec",
-        "category": "%name%",
-        "title": "%uf2Editor.copyOffsetAsDec%"
+        "category": "UF2 Editor",
+        "title": "Copy Offset as Decimal"
       },
       {
         "command": "uf2Editor.compareSelected",
-        "category": "%name%",
-        "title": "%uf2Editor.compareSelected%"
+        "category": "UF2 Editor",
+        "title": "Compare Selected in UF2 Editor (Experimental)"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "uf2Explorer",
-          "title": "%name%",
+          "title": "UF2 Editor",
           "icon": "panel-icon.svg",
           "when": "uf2Editor:showSidebarInspector"
         }
@@ -175,7 +174,7 @@
         {
           "type": "webview",
           "id": "uf2Editor.dataInspectorView",
-          "name": "%dataInspectorView%",
+          "name": "Data Inspector",
           "when": "uf2Editor:showSidebarInspector"
         }
       ]

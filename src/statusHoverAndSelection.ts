@@ -45,21 +45,11 @@ export default class StatusHoverAndSelection extends Disposable {
 		const nHovered = hoverState !== undefined ? numberFormat.format(hoverState) : undefined;
 		const nSelected = selected > 1 ? numberFormat.format(selected) : undefined;
 		if (nHovered && nSelected) {
-			this.item.text = vscode.l10n.t(
-				"{0}/0x{1} ({2}/0x{3} selected)",
-				nHovered,
-				hoverState!.toString(16).toUpperCase(),
-				nSelected,
-				selected!.toString(16).toUpperCase(),
-			);
+			this.item.text = `${nHovered}/0x${hoverState!.toString(16).toUpperCase()} (${nSelected}/0x${selected!.toString(16).toUpperCase()} selected)`;
 		} else if (nHovered) {
-			this.item.text = vscode.l10n.t("{0}/0x{1}", nHovered, hoverState!.toString(16).toUpperCase());
+			this.item.text = `${nHovered}/0x${hoverState!.toString(16).toUpperCase()}`;
 		} else if (nSelected) {
-			this.item.text = vscode.l10n.t(
-				"{0}/0x{1} selected",
-				nSelected,
-				selected!.toString(16).toUpperCase(),
-			);
+			this.item.text = `${nSelected}/0x${selected!.toString(16).toUpperCase()} selected`;
 		} else {
 			// Hiding the element creates a flashing effect so instead set it
 			// to an empty string

@@ -109,7 +109,7 @@ export class Uf2Document extends Disposable implements vscode.CustomDocument {
 				return await this.diffModel.computeDecorators(this.uri);
 			} catch (e: unknown) {
 				vscode.window.showErrorMessage(
-					e instanceof Error ? e.message : vscode.l10n.t("Unknown Error in UF2 Editor Diff"),
+					e instanceof Error ? e.message : "Unknown Error in UF2 Editor Diff",
 				);
 			}
 		}

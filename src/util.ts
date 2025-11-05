@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { l10n, window } from "vscode";
+import { window } from "vscode";
 
 export function randomString(len = 32): string {
 	let text = "";
@@ -21,7 +21,7 @@ export async function openOffsetInput(): Promise<string | undefined> {
 		validateInput: text => {
 			return text.length > 8 || new RegExp("^[a-fA-F0-9]+$").test(text)
 				? null
-				: l10n.t("Invalid offset string");
+				: "Invalid offset string";
 		},
 	});
 }

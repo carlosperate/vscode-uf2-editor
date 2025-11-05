@@ -23,7 +23,7 @@ export default class StatusEditMode extends Disposable {
 		this.item = this._register(
 			vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99),
 		);
-		this.item.tooltip = vscode.l10n.t("Switch Edit Mode");
+		this.item.tooltip = "Switch Edit Mode";
 		this.item.command = "uf2Editor.switchEditMode";
 
 		const trackDocument = (doc: Uf2Document | undefined) => {
@@ -42,9 +42,9 @@ export default class StatusEditMode extends Disposable {
 
 	update(mode: Uf2DocumentEditOp.Insert | Uf2DocumentEditOp.Replace): void {
 		if (mode === Uf2DocumentEditOp.Insert) {
-			this.item.text = vscode.l10n.t("Insert");
+			this.item.text = "Insert";
 		} else if (mode === Uf2DocumentEditOp.Replace) {
-			this.item.text = vscode.l10n.t("Replace");
+			this.item.text = "Replace";
 		} else {
 			this.item.hide();
 			return;

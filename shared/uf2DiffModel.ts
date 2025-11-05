@@ -27,9 +27,8 @@ export class Uf2DiffModel {
 				const oSize = await this.originalModel.sizeWithEdits();
 				const mSize = await this.modifiedModel.sizeWithEdits();
 				if (oSize === undefined || mSize === undefined) {
-					throw new Error(vscode.l10n.t("UF2 Editor Diff: Failed to get file sizes."));
+					throw new Error("UF2 Editor Diff: Failed to get file sizes.");
 				}
-
 				const oArray = new Uint8Array(oSize);
 				const mArray = new Uint8Array(mSize);
 				await this.originalModel.readInto(0, oArray);

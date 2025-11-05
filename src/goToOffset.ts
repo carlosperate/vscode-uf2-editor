@@ -21,9 +21,8 @@ export const showGoToOffset = (messaging: ExtensionHostMessageHandler): void => 
 		} else if (decimalRe.test(value)) {
 			lastValue = parseInt(value, 10);
 		} else {
-			input.validationMessage = vscode.l10n.t(
-				"Offset must be provided as a decimal (12345) or hex (0x12345) address",
-			);
+			input.validationMessage =
+				"Offset must be provided as a decimal (12345) or hex (0x12345) address";
 			return;
 		}
 
