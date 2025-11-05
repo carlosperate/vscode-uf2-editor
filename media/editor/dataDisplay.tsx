@@ -4,13 +4,13 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { HexDecorator } from "../../shared/decorators";
-import { EditRangeOp, HexDocumentEditOp } from "../../shared/hexDocumentModel";
 import {
 	CopyFormat,
 	DeleteAcceptedMessage,
 	InspectorLocation,
 	MessageType,
 } from "../../shared/protocol";
+import { EditRangeOp, Uf2DocumentEditOp } from "../../shared/uf2DocumentModel";
 import { binarySearch } from "../../shared/util/binarySearch";
 import { Range } from "../../shared/util/range";
 import { PastePopup } from "./copyPaste";
@@ -589,7 +589,7 @@ const DataCell: React.FC<{
 					return setFirstOctetOfEdit(newValue << 4);
 				}
 				ctx.edit({
-					op: HexDocumentEditOp.Insert,
+					op: Uf2DocumentEditOp.Insert,
 					value: new Uint8Array([newValue]),
 					offset: offset,
 				});
@@ -597,13 +597,13 @@ const DataCell: React.FC<{
 				return setFirstOctetOfEdit(undefined);
 
 				// Inserting in the middle or at the beginning
-			} else if (editMode === HexDocumentEditOp.Insert) {
+			} else if (editMode === Uf2DocumentEditOp.Insert) {
 				if (isChar) {
 					ctx.focusedElement = ctx.focusedElement?.shift(1);
 					// Finishes byte insertion
 				} else if (firstOctetOfEdit !== undefined) {
 					ctx.edit({
-						op: HexDocumentEditOp.Replace,
+						op: Uf2DocumentEditOp.Replace,
 						previous: new Uint8Array([firstOctetOfEdit]),
 						value: new Uint8Array([firstOctetOfEdit | newValue]),
 						offset: offset,
@@ -616,13 +616,13 @@ const DataCell: React.FC<{
 				}
 
 				ctx.edit({
-					op: HexDocumentEditOp.Insert,
+					op: Uf2DocumentEditOp.Insert,
 					value: new Uint8Array([newValue]),
 					offset: offset,
 				});
 
 				// Replaces bytes
-			} else if (editMode === HexDocumentEditOp.Replace) {
+			} else if (editMode === Uf2DocumentEditOp.Replace) {
 				if (isChar) {
 					// b is final
 				} else if (firstOctetOfEdit !== undefined) {
@@ -634,7 +634,7 @@ const DataCell: React.FC<{
 				ctx.focusedElement = ctx.focusedElement?.shift(1);
 				setFirstOctetOfEdit(undefined);
 				ctx.edit({
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					previous: new Uint8Array([value]),
 					value: new Uint8Array([newValue]),
 					offset: offset,
@@ -660,9 +660,9 @@ const DataCell: React.FC<{
 	const isSelected = useIsSelected(offset);
 
 	const editStyle =
-		editMode === HexDocumentEditOp.Replace
+		editMode === Uf2DocumentEditOp.Replace
 			? style.dataCellReplace
-			: firstOctetOfEdit === undefined // Assumes HexDocumentEditOp.Insert
+			: firstOctetOfEdit === undefined // Assumes Uf2DocumentEditOp.Insert
 				? style.dataCellInsertBefore
 				: style.dataCellInsertMiddle;
 	return (

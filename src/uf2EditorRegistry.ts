@@ -3,22 +3,22 @@
 
 import * as vscode from "vscode";
 import { DiffExtensionHostMessageHandler } from "../shared/diffWorkerProtocol";
-import { Uf2DiffModel, Uf2DiffModelBuilder } from "../shared/hexDiffModel";
 import { ExtensionHostMessageHandler } from "../shared/protocol";
+import { Uf2DiffModel, Uf2DiffModelBuilder } from "../shared/uf2DiffModel";
 import { parseQuery } from "../shared/util/uri";
 import { Disposable } from "./dispose";
-import { HexDocument } from "./hexDocument";
+import { Uf2Document } from "./uf2Document";
 
 const EMPTY: never[] = [];
 
-export class HexEditorRegistry extends Disposable {
-	private readonly docs = new Map<HexDocument, Set<ExtensionHostMessageHandler>>();
+export class Uf2EditorRegistry extends Disposable {
+	private readonly docs = new Map<Uf2Document, Set<ExtensionHostMessageHandler>>();
 	private readonly diffsBuilder = new Map<
 		string,
 		{ refCount: number; value: Uf2DiffModelBuilder }
 	>();
-	private onChangeEmitter = new vscode.EventEmitter<HexDocument | undefined>();
-	private _activeDocument?: HexDocument;
+	private onChangeEmitter = new vscode.EventEmitter<Uf2Document | undefined>();
+	private _activeDocument?: Uf2Document;
 
 	/**
 	 * Event emitter that fires when the focused hex editor changes.
@@ -47,12 +47,12 @@ export class HexEditorRegistry extends Disposable {
 	}
 
 	/** Gets messaging info for a document */
-	public getMessaging(document: HexDocument): Iterable<ExtensionHostMessageHandler> {
+	public getMessaging(document: Uf2Document): Iterable<ExtensionHostMessageHandler> {
 		return this.docs.get(document) || EMPTY;
 	}
 
 	/** Registers an opened hex document. */
-	public add(document: HexDocument, messaging: ExtensionHostMessageHandler) {
+	public add(document: Uf2Document, messaging: ExtensionHostMessageHandler) {
 		let collection = this.docs.get(document);
 		if (collection) {
 			collection.add(messaging);
@@ -62,7 +62,7 @@ export class HexEditorRegistry extends Disposable {
 		}
 
 		// re-evaluate, since if a hex editor was just opened it won't have created
-		// a HexDocument by the time the tab change event is delivered.
+		// a Uf2Document by the time the tab change event is delivered.
 		this.onChangedTabs();
 
 		return {
@@ -112,7 +112,7 @@ export class HexEditorRegistry extends Disposable {
 	private onChangedTabs() {
 		const input = vscode.window.tabGroups.activeTabGroup.activeTab?.input;
 		const uri = input instanceof vscode.TabInputCustom ? input.uri : undefined;
-		let next: HexDocument | undefined = undefined;
+		let next: Uf2Document | undefined = undefined;
 		if (uri) {
 			for (const doc of this.docs.keys()) {
 				if (doc.uri.toString() === uri.toString()) {

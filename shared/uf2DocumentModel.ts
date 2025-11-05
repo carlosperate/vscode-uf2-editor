@@ -7,77 +7,76 @@ import { FileAccessor } from "./fileAccessor";
 import { binarySearch } from "./util/binarySearch";
 import { once } from "./util/once";
 
-export const enum HexDocumentEditOp {
+export const enum Uf2DocumentEditOp {
 	Insert,
 	Delete,
 	Replace,
 	EmptyInsert,
 }
 
-export interface GenericHexDocumentEdit {
-	op: HexDocumentEditOp;
+export interface GenericUf2DocumentEdit {
+	op: Uf2DocumentEditOp;
 	offset: number;
 }
 
 /** note: value.length === previous.length in replace operations */
-export interface HexDocumentReplaceEdit extends GenericHexDocumentEdit {
-	op: HexDocumentEditOp.Replace;
+export interface Uf2DocumentReplaceEdit extends GenericUf2DocumentEdit {
+	op: Uf2DocumentEditOp.Replace;
 	value: Uint8Array;
 	previous: Uint8Array;
 }
 
-export interface HexDocumentDeleteEdit extends GenericHexDocumentEdit {
-	op: HexDocumentEditOp.Delete;
+export interface Uf2DocumentDeleteEdit extends GenericUf2DocumentEdit {
+	op: Uf2DocumentEditOp.Delete;
 	previous: Uint8Array;
 }
 
-export interface HexDocumentInsertEdit extends GenericHexDocumentEdit {
-	op: HexDocumentEditOp.Insert;
+export interface Uf2DocumentInsertEdit extends GenericUf2DocumentEdit {
+	op: Uf2DocumentEditOp.Insert;
 	value: Uint8Array;
 }
-
 /**
- * Similar to {@link HexDocumentInsertEdit} but only intended to be used
- * when comparing files. Unlike {@link HexDocumentInsertEdit}, this allows us
+ * Similar to {@link Uf2DocumentInsertEdit} but only intended to be used
+ * when comparing files. Unlike {@link Uf2DocumentInsertEdit}, this allows us
  * to align files without creating unnecessary Uint8Arrays.
  *
  * note: this is only a visual edit, so shouldn't be treated as a normal
- * 		 edit (that's why HexDocumentEdit does not include it)
+ *       edit (that's why Uf2DocumentEdit does not include it)
  */
-export interface HexDocumentEmptyInsertEdit extends GenericHexDocumentEdit {
-	op: HexDocumentEditOp.EmptyInsert;
+export interface Uf2DocumentEmptyInsertEdit extends GenericUf2DocumentEdit {
+	op: Uf2DocumentEditOp.EmptyInsert;
 	length: number;
 }
 
-export type HexDocumentEdit =
-	| HexDocumentInsertEdit
-	| HexDocumentDeleteEdit
-	| HexDocumentReplaceEdit;
+export type Uf2DocumentEdit =
+	| Uf2DocumentInsertEdit
+	| Uf2DocumentDeleteEdit
+	| Uf2DocumentReplaceEdit;
 
 /**
- * Reference returned from a hexdocument edit. Undo and redo return the
+ * Reference returned from a uf2document edit. Undo and redo return the
  * edit(s) that were applied as part of the undo/redo operation.
  */
-export interface HexDocumentEditReference {
-	undo(): readonly HexDocumentEdit[];
-	redo(): readonly HexDocumentEdit[];
+export interface Uf2DocumentEditReference {
+	undo(): readonly Uf2DocumentEdit[];
+	redo(): readonly Uf2DocumentEdit[];
 }
 
-const reverseEdit = (edit: HexDocumentEdit): HexDocumentEdit => {
-	if (edit.op === HexDocumentEditOp.Insert) {
-		return { ...edit, op: HexDocumentEditOp.Delete, previous: edit.value };
-	} else if (edit.op === HexDocumentEditOp.Delete) {
-		return { ...edit, op: HexDocumentEditOp.Insert, value: edit.previous };
+const reverseEdit = (edit: Uf2DocumentEdit): Uf2DocumentEdit => {
+	if (edit.op === Uf2DocumentEditOp.Insert) {
+		return { ...edit, op: Uf2DocumentEditOp.Delete, previous: edit.value };
+	} else if (edit.op === Uf2DocumentEditOp.Delete) {
+		return { ...edit, op: Uf2DocumentEditOp.Insert, value: edit.previous };
 	} else {
 		return { ...edit, value: edit.previous, previous: edit.value };
 	}
 };
 
-export interface HexDocumentModelOptions {
+export interface Uf2DocumentModelOptions {
 	/** Acessor for the underlying file */
 	accessor: FileAccessor;
 	/** Initial hex document edits. */
-	edits?: { unsaved: HexDocumentEdit[]; saved: HexDocumentEdit[] };
+	edits?: { unsaved: Uf2DocumentEdit[]; saved: Uf2DocumentEdit[] };
 	/** Whether the file length is allowed to be changed. */
 	supportsLengthChanges: boolean;
 	/** Whether the read file is of a finite length. */
@@ -107,7 +106,7 @@ export interface IEditTimeline {
 	sizeDelta: number;
 }
 
-export class HexDocumentModel {
+export class Uf2DocumentModel {
 	public readonly supportsLengthChanges: boolean;
 	public readonly isFiniteSize: boolean;
 	public readonly pageSize: number;
@@ -116,9 +115,9 @@ export class HexDocumentModel {
 	private readonly saveGuard = bulkhead(1, Infinity);
 	/** First index in the _edits array that's unsaved */
 	private _unsavedEditIndex = 0;
-	private _edits: HexDocumentEdit[];
+	private _edits: Uf2DocumentEdit[];
 
-	constructor(options: HexDocumentModelOptions) {
+	constructor(options: Uf2DocumentModelOptions) {
 		this._edits = options.edits ? options.edits.saved.concat(options.edits.unsaved) : [];
 		this._unsavedEditIndex = options.edits?.saved.length ?? 0;
 		this.supportsLengthChanges = options.supportsLengthChanges;
@@ -178,14 +177,14 @@ export class HexDocumentModel {
 	/**
 	 * Gets current document edits.
 	 */
-	public get edits(): readonly HexDocumentEdit[] {
+	public get edits(): readonly Uf2DocumentEdit[] {
 		return this._edits;
 	}
 
 	/**
 	 * Gets unsaved document edits.
 	 */
-	public get unsavedEdits(): readonly HexDocumentEdit[] {
+	public get unsavedEdits(): readonly Uf2DocumentEdit[] {
 		return this._edits.slice(this.unsavedEditIndex);
 	}
 
@@ -251,11 +250,16 @@ export class HexDocumentModel {
 			// the offset of the first edit. For replacements we can selectively write.
 			if (
 				!toSave.some(
-					e => e.op !== HexDocumentEditOp.Replace || e.previous.length !== e.value.length,
+					e =>
+						e.op !== Uf2DocumentEditOp.Replace ||
+						("previous" in e &&
+							"value" in e &&
+							(e as Uf2DocumentReplaceEdit).previous.length !==
+								(e as Uf2DocumentReplaceEdit).value.length),
 				)
 			) {
 				await this.accessor.writeBulk(
-					toSave.map(e => ({ offset: e.offset, data: (e as HexDocumentReplaceEdit).value })),
+					toSave.map(e => ({ offset: e.offset, data: (e as Uf2DocumentReplaceEdit).value })),
 				);
 			} else {
 				// todo: technically only need to rewrite starting from the first edit
@@ -285,7 +289,7 @@ export class HexDocumentModel {
 	 * called once all subsequently made edits have also been undone, and
 	 * vise versa for `redo`.
 	 */
-	public makeEdits(edits: readonly HexDocumentEdit[]): HexDocumentEditReference {
+	public makeEdits(edits: readonly Uf2DocumentEdit[]): Uf2DocumentEditReference {
 		const index = this._edits.length;
 		this._edits.push(...edits);
 		this.getAllEditTimeline.forget();
@@ -395,7 +399,7 @@ export async function* readUsingRanges(
 }
 
 export const buildEditTimeline = (
-	edits: readonly (HexDocumentEdit | HexDocumentEmptyInsertEdit)[],
+	edits: readonly (Uf2DocumentEdit | Uf2DocumentEmptyInsertEdit)[],
 ): IEditTimeline => {
 	// Serialize all edits to a single, continuous "timeline", which we'll
 	// iterate through in order to read data and yield bytes.
@@ -474,21 +478,39 @@ export const buildEditTimeline = (
 		}
 		const split = ranges[i];
 
-		if (edit.op === HexDocumentEditOp.Insert || edit.op === HexDocumentEditOp.EmptyInsert) {
+		if (edit.op === Uf2DocumentEditOp.Insert || edit.op === Uf2DocumentEditOp.EmptyInsert) {
 			const { before, after } = getSplit(editIndex, split, edit.offset - split.offset);
 			ranges.splice(
 				i,
 				1,
 				before,
-				edit.op === HexDocumentEditOp.Insert
-					? { op: EditRangeOp.Insert, editIndex, offset: edit.offset, value: edit.value }
-					: { op: EditRangeOp.EmptyInsert, editIndex, offset: edit.offset, length: edit.length },
+				edit.op === Uf2DocumentEditOp.Insert
+					? {
+							op: EditRangeOp.Insert,
+							editIndex,
+							offset: edit.offset,
+							value: (edit as Uf2DocumentInsertEdit).value,
+						}
+					: {
+							op: EditRangeOp.EmptyInsert,
+							editIndex,
+							offset: edit.offset,
+							length: (edit as Uf2DocumentEmptyInsertEdit).length,
+						},
 				after,
 			);
-			shiftAfter(i + 2, edit.op === HexDocumentEditOp.Insert ? edit.value.length : edit.length);
-		} else if (edit.op === HexDocumentEditOp.Delete || edit.op === HexDocumentEditOp.Replace) {
+			shiftAfter(
+				i + 2,
+				edit.op === Uf2DocumentEditOp.Insert
+					? (edit as Uf2DocumentInsertEdit).value.length
+					: (edit as Uf2DocumentEmptyInsertEdit).length,
+			);
+		} else if (edit.op === Uf2DocumentEditOp.Delete || edit.op === Uf2DocumentEditOp.Replace) {
 			const { before } = getSplit(editIndex, split, edit.offset - split.offset);
-			let until = searcher(edit.offset + edit.previous.length, ranges);
+			let until = searcher(
+				edit.offset + (edit as Uf2DocumentDeleteEdit | Uf2DocumentReplaceEdit).previous.length,
+				ranges,
+			);
 			if (until === ranges.length || ranges[until].offset > edit.offset) {
 				until--;
 			}
@@ -496,21 +518,30 @@ export const buildEditTimeline = (
 			const { after } = getSplit(
 				editIndex,
 				ranges[until],
-				edit.offset + edit.previous.length - ranges[until].offset,
+				edit.offset +
+					(edit as Uf2DocumentDeleteEdit | Uf2DocumentReplaceEdit).previous.length -
+					ranges[until].offset,
 			);
 			ranges.splice(
 				i,
 				until - i + 1,
 				before,
-				edit.op === HexDocumentEditOp.Replace
-					? { op: EditRangeOp.Insert, editIndex, offset: edit.offset, value: edit.value }
+				edit.op === Uf2DocumentEditOp.Replace
+					? {
+							op: EditRangeOp.Insert,
+							editIndex,
+							offset: edit.offset,
+							value: (edit as Uf2DocumentReplaceEdit).value,
+						}
 					: { op: EditRangeOp.Skip, editIndex, offset: edit.offset },
 				after,
 			);
 
 			shiftAfter(
 				i + 2,
-				(edit.op === HexDocumentEditOp.Replace ? edit.value.length : 0) - edit.previous.length,
+				(edit.op === Uf2DocumentEditOp.Replace
+					? (edit as Uf2DocumentReplaceEdit).value.length
+					: 0) - (edit as Uf2DocumentDeleteEdit | Uf2DocumentReplaceEdit).previous.length,
 			);
 		}
 	}

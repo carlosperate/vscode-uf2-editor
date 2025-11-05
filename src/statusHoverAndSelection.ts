@@ -3,8 +3,8 @@
 
 import * as vscode from "vscode";
 import { Disposable, DisposableValue } from "./dispose";
-import { HexDocument } from "./hexDocument";
-import { HexEditorRegistry } from "./hexEditorRegistry";
+import { Uf2Document } from "./uf2Document";
+import { Uf2EditorRegistry } from "./uf2EditorRegistry";
 
 const numberFormat = new Intl.NumberFormat();
 
@@ -17,7 +17,7 @@ export default class StatusHoverAndSelection extends Disposable {
 	private readonly item: vscode.StatusBarItem;
 	private readonly docChangeListener = this._register(new DisposableValue());
 
-	constructor(registry: HexEditorRegistry) {
+	constructor(registry: Uf2EditorRegistry) {
 		super();
 
 		this.item = this._register(
@@ -25,7 +25,7 @@ export default class StatusHoverAndSelection extends Disposable {
 			vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101),
 		);
 
-		const trackDocument = (doc: HexDocument | undefined) => {
+		const trackDocument = (doc: Uf2Document | undefined) => {
 			if (doc) {
 				this._register(doc.onDidChangeHoverState(() => this.update(doc)));
 				this._register(doc.onDidChangeSelectionState(() => this.update(doc)));
@@ -40,7 +40,7 @@ export default class StatusHoverAndSelection extends Disposable {
 		trackDocument(registry.activeDocument);
 	}
 
-	update({ hoverState, selectionState }: HexDocument): void {
+	update({ hoverState, selectionState }: Uf2Document): void {
 		const { selected } = selectionState;
 		const nHovered = hoverState !== undefined ? numberFormat.format(hoverState) : undefined;
 		const nSelected = selected > 1 ? numberFormat.format(selected) : undefined;

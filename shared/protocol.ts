@@ -3,8 +3,8 @@
  *--------------------------------------------------------*/
 
 import { HexDecorator } from "./decorators";
-import { HexDocumentEditOp } from "./hexDocumentModel";
 import { ISerializedEdits } from "./serialization";
+import { Uf2DocumentEditOp } from "./uf2DocumentModel";
 
 export const enum MessageType {
 	//#region to webview
@@ -81,13 +81,13 @@ export interface ReadyResponseMessage {
 	fileSize: number | undefined;
 	isReadonly: boolean;
 	isLargeFile: boolean;
-	editMode: HexDocumentEditOp.Insert | HexDocumentEditOp.Replace;
+	editMode: Uf2DocumentEditOp.Insert | Uf2DocumentEditOp.Replace;
 	decorators: HexDecorator[];
 }
 
 export interface SetEditModeMessage {
 	type: MessageType.SetEditMode;
-	mode: HexDocumentEditOp.Insert | HexDocumentEditOp.Replace;
+	mode: Uf2DocumentEditOp.Insert | Uf2DocumentEditOp.Replace;
 }
 
 export interface ReadRangeResponseMessage {

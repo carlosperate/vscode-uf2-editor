@@ -3,10 +3,10 @@
  *--------------------------------------------------------*/
 
 import { expect } from "chai";
-import { HexDocumentEditOp, HexDocumentModel } from "../../shared/hexDocumentModel";
 import { SearchResult } from "../../shared/protocol";
-import { HexDocument } from "../hexDocument";
+import { Uf2DocumentEditOp, Uf2DocumentModel } from "../../shared/uf2DocumentModel";
 import { ISearchRequest, LiteralSearchRequest, RegexSearchRequest } from "../searchRequest";
+import { Uf2Document } from "../uf2Document";
 import { getTestFileAccessor } from "./util";
 
 describe("searchRequest", async () => {
@@ -44,8 +44,8 @@ Lorem ad ullamco ad deserunt voluptate ullamco et in commodo et exercitation dui
 	];
 
 	const makeDocument = async (content = testContent) =>
-		new HexDocument(
-			new HexDocumentModel({
+		new Uf2Document(
+			new Uf2DocumentModel({
 				accessor: await getTestFileAccessor(new TextEncoder().encode(content)),
 				supportsLengthChanges: false,
 				isFiniteSize: true,
@@ -73,7 +73,7 @@ Lorem ad ullamco ad deserunt voluptate ullamco et in commodo et exercitation dui
 		];
 		doc.makeEdits(
 			new Array(3).fill({
-				op: HexDocumentEditOp.Insert,
+				op: Uf2DocumentEditOp.Insert,
 				offset: testContent.length,
 				value: new TextEncoder().encode("Laboris"),
 			}),

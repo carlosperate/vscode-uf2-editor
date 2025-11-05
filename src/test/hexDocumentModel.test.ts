@@ -3,22 +3,22 @@
  *--------------------------------------------------------*/
 
 import { expect } from "chai";
+import { deserializeEdits, serializeEdits } from "../../shared/serialization";
 import {
 	EditRangeOp,
-	HexDocumentEdit,
-	HexDocumentEditOp,
-	HexDocumentModel,
 	IEditTimeline,
-} from "../../shared/hexDocumentModel";
-import { deserializeEdits, serializeEdits } from "../../shared/serialization";
+	Uf2DocumentEdit,
+	Uf2DocumentEditOp,
+	Uf2DocumentModel,
+} from "../../shared/uf2DocumentModel";
 import { getTestFileAccessor, pseudoRandom } from "./util";
 
-describe("HexDocumentModel", () => {
+describe("Uf2DocumentModel", () => {
 	const original: ReadonlyArray<number> = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-	let model: HexDocumentModel;
+	let model: Uf2DocumentModel;
 	beforeEach(async () => {
-		model = new HexDocumentModel({
+		model = new Uf2DocumentModel({
 			accessor: await getTestFileAccessor(new Uint8Array(original)),
 			supportsLengthChanges: false,
 			isFiniteSize: true,
@@ -29,13 +29,13 @@ describe("HexDocumentModel", () => {
 		it("keeps offsets in replacements", () => {
 			model.makeEdits([
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 6,
 					value: new Uint8Array([16]),
 					previous: new Uint8Array([6, 7, 8]),
 				},
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 1,
 					value: new Uint8Array([11]),
 					previous: new Uint8Array([1, 2, 3]),
@@ -59,15 +59,15 @@ describe("HexDocumentModel", () => {
 
 	describe("serialization", () => {
 		it("round trips", () => {
-			const edits: HexDocumentEdit[] = [
-				{ op: HexDocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
+			const edits: Uf2DocumentEdit[] = [
+				{ op: Uf2DocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 2,
 					value: new Uint8Array([10, 11, 12]),
 					previous: new Uint8Array([1, 2, 3]),
 				},
-				{ op: HexDocumentEditOp.Delete, offset: 3, previous: new Uint8Array([3, 4, 5]) },
+				{ op: Uf2DocumentEditOp.Delete, offset: 3, previous: new Uint8Array([3, 4, 5]) },
 			];
 
 			const s = serializeEdits(edits);
@@ -105,7 +105,7 @@ describe("HexDocumentModel", () => {
 
 		it("reads with a simple insert", async () => {
 			model.makeEdits([
-				{ op: HexDocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
+				{ op: Uf2DocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
 			]);
 			await assertContents(new Uint8Array([0, 1, 10, 11, 12, 2, 3, 4, 5, 6, 7, 8, 9]));
 			await model.save();
@@ -114,7 +114,7 @@ describe("HexDocumentModel", () => {
 
 		it("reads with a simple delete", async () => {
 			model.makeEdits([
-				{ op: HexDocumentEditOp.Delete, offset: 2, previous: new Uint8Array([2, 3, 4]) },
+				{ op: Uf2DocumentEditOp.Delete, offset: 2, previous: new Uint8Array([2, 3, 4]) },
 			]);
 			await assertContents(new Uint8Array([0, 1, 5, 6, 7, 8, 9]));
 			await model.save();
@@ -124,7 +124,7 @@ describe("HexDocumentModel", () => {
 		it("reads with a simple replace", async () => {
 			model.makeEdits([
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 2,
 					value: new Uint8Array([10, 11, 12]),
 					previous: new Uint8Array([1, 2, 3]),
@@ -138,7 +138,7 @@ describe("HexDocumentModel", () => {
 		it("replaces at beginning", async () => {
 			model.makeEdits([
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 0,
 					value: new Uint8Array([10, 11, 12]),
 					previous: new Uint8Array([0, 1, 2]),
@@ -168,7 +168,7 @@ describe("HexDocumentModel", () => {
 				}
 
 				str += `- arr.set(${start}, [${value.join(", ")}]) -> [${expected.join(", ")}]\n`;
-				model.makeEdits([{ op: HexDocumentEditOp.Replace, offset: start, value, previous }]);
+				model.makeEdits([{ op: Uf2DocumentEditOp.Replace, offset: start, value, previous }]);
 
 				try {
 					await assertContents(expected);
@@ -185,13 +185,13 @@ describe("HexDocumentModel", () => {
 		it("works with multiple replacements", async () => {
 			model.makeEdits([
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 6,
 					value: new Uint8Array([16]),
 					previous: new Uint8Array([6, 7, 8]),
 				},
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 1,
 					value: new Uint8Array([11]),
 					previous: new Uint8Array([1, 2, 3]),
@@ -204,9 +204,9 @@ describe("HexDocumentModel", () => {
 
 		it("overlaps replace on delete", async () => {
 			model.makeEdits([
-				{ op: HexDocumentEditOp.Delete, offset: 3, previous: new Uint8Array([3, 4, 5]) },
+				{ op: Uf2DocumentEditOp.Delete, offset: 3, previous: new Uint8Array([3, 4, 5]) },
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 1,
 					value: new Uint8Array([10, 11, 12]),
 					previous: new Uint8Array([1, 2, 6]),
@@ -219,9 +219,9 @@ describe("HexDocumentModel", () => {
 
 		it("overlaps replace on insert", async () => {
 			model.makeEdits([
-				{ op: HexDocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
+				{ op: Uf2DocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: 1,
 					value: new Uint8Array([20, 21, 22]),
 					previous: new Uint8Array([1, 10, 11]),
@@ -234,9 +234,9 @@ describe("HexDocumentModel", () => {
 
 		it("delete overlaps multiple", async () => {
 			model.makeEdits([
-				{ op: HexDocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
+				{ op: Uf2DocumentEditOp.Insert, offset: 2, value: new Uint8Array([10, 11, 12]) },
 				{
-					op: HexDocumentEditOp.Delete,
+					op: Uf2DocumentEditOp.Delete,
 					offset: 1,
 					previous: new Uint8Array([1, 10, 11, 12, 2, 3]),
 				},

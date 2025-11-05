@@ -9,8 +9,8 @@ import {
 	SearchResultsWithProgress,
 } from "../shared/protocol";
 import { Uint8ArrayMap } from "../shared/util/uint8ArrayMap";
-import { HexDocument } from "./hexDocument";
 import { LiteralSearch, Wildcard, caseInsensitiveEquivalency } from "./literalSearch";
+import { Uf2Document } from "./uf2Document";
 
 /** Type that defines a search request created from the {@link SearchProvider} */
 export interface ISearchRequest extends Disposable {
@@ -72,7 +72,7 @@ export class LiteralSearchRequest implements ISearchRequest {
 	private cancelled = false;
 
 	constructor(
-		private readonly document: HexDocument,
+		private readonly document: Uf2Document,
 		private readonly query: LiteralSearchQuery,
 		private readonly isCaseSensitive: boolean,
 		private readonly cap: number | undefined,
@@ -132,7 +132,7 @@ export class RegexSearchRequest implements ISearchRequest {
 	private re: RegExp;
 
 	constructor(
-		private readonly document: HexDocument,
+		private readonly document: Uf2Document,
 		re: RegExpSearchQuery,
 		caseSensitive: boolean,
 		private readonly cap: number | undefined,

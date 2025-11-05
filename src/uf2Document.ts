@@ -5,13 +5,13 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import * as vscode from "vscode";
 import { HexDecorator } from "../shared/decorators";
 import { FileAccessor } from "../shared/fileAccessor";
-import { Uf2DiffModel, Uf2DiffModelBuilder } from "../shared/hexDiffModel";
+import { Uf2DiffModel, Uf2DiffModelBuilder } from "../shared/uf2DiffModel";
 import {
-	HexDocumentEdit,
-	HexDocumentEditOp,
-	HexDocumentEditReference,
-	HexDocumentModel,
-} from "../shared/hexDocumentModel";
+	Uf2DocumentEdit,
+	Uf2DocumentEditOp,
+	Uf2DocumentEditReference,
+	Uf2DocumentModel,
+} from "../shared/uf2DocumentModel";
 import { parseQuery } from "../shared/util/uri";
 import { Backup } from "./backup";
 import { Disposable } from "./dispose";
@@ -25,15 +25,15 @@ export interface ISelectionState {
 	focused?: number;
 }
 
-export class HexDocument extends Disposable implements vscode.CustomDocument {
+export class Uf2Document extends Disposable implements vscode.CustomDocument {
 	static async create(
 		uri: vscode.Uri,
 		{ backupId, untitledDocumentData }: vscode.CustomDocumentOpenContext,
 		telemetryReporter: TelemetryReporter,
 		diffModelBuilder: Uf2DiffModelBuilder | undefined,
-	): Promise<{ document: HexDocument; accessor: FileAccessor }> {
+	): Promise<{ document: Uf2Document; accessor: FileAccessor }> {
 		const accessor = await accessFile(uri, untitledDocumentData);
-		const model = new HexDocumentModel({
+		const model = new Uf2DocumentModel({
 			accessor,
 			isFiniteSize: true,
 			supportsLengthChanges: true,
@@ -44,7 +44,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 
 		const queries = parseQuery(uri.query);
 		const baseAddress: number = queries.baseAddress
-			? HexDocument.parseHexOrDecInt(queries.baseAddress)
+			? Uf2Document.parseHexOrDecInt(queries.baseAddress)
 			: 0;
 
 		const fileSize = await accessor.getSize();
@@ -65,7 +65,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 				? await diffModelBuilder.setModel(queries.side, model).build()
 				: undefined;
 
-		return { document: new HexDocument(model, isLargeFile, baseAddress, diffModel), accessor };
+		return { document: new Uf2Document(model, isLargeFile, baseAddress, diffModel), accessor };
 	}
 
 	// Last save time
@@ -73,14 +73,14 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 
 	private _selectionState: ISelectionState = { selected: 0 };
 
-	private _editMode: HexDocumentEditOp.Insert | HexDocumentEditOp.Replace =
-		HexDocumentEditOp.Insert;
+	private _editMode: Uf2DocumentEditOp.Insert | Uf2DocumentEditOp.Replace =
+		Uf2DocumentEditOp.Insert;
 	private _hoverState: number | undefined = undefined;
 	/** Search provider for the document. */
 	public readonly searchProvider = new SearchProvider();
 
 	constructor(
-		private model: HexDocumentModel,
+		private model: Uf2DocumentModel,
 		public readonly isLargeFile: boolean,
 		public readonly baseAddress: number,
 		private diffModel?: Uf2DiffModel,
@@ -193,7 +193,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 	}
 
 	private readonly _onDidChangeEditMode = this._register(
-		new vscode.EventEmitter<HexDocumentEditOp.Insert | HexDocumentEditOp.Replace>(),
+		new vscode.EventEmitter<Uf2DocumentEditOp.Insert | Uf2DocumentEditOp.Replace>(),
 	);
 
 	/**
@@ -205,7 +205,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 		return this._editMode;
 	}
 
-	public set editMode(mode: HexDocumentEditOp.Insert | HexDocumentEditOp.Replace) {
+	public set editMode(mode: Uf2DocumentEditOp.Insert | Uf2DocumentEditOp.Replace) {
 		this._editMode = mode;
 		this._onDidChangeEditMode.fire(mode);
 	}
@@ -242,7 +242,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 	/**
 	 * Edits made in the document.
 	 */
-	public get edits(): readonly HexDocumentEdit[] {
+	public get edits(): readonly Uf2DocumentEdit[] {
 		return this.model.edits;
 	}
 
@@ -256,35 +256,35 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 	/**
 	 * @see HexDocumentModel.makeEdits
 	 */
-	public makeEdits(edits: readonly HexDocumentEdit[]): HexDocumentEditReference {
+	public makeEdits(edits: readonly Uf2DocumentEdit[]): Uf2DocumentEditReference {
 		return this.model.makeEdits(edits);
 	}
 
 	/**
 	 * Inserts data into the document.
 	 */
-	public insert(offset: number, data: Uint8Array): HexDocumentEditReference {
-		return this.model.makeEdits([{ op: HexDocumentEditOp.Insert, offset, value: data }]);
+	public insert(offset: number, data: Uint8Array): Uf2DocumentEditReference {
+		return this.model.makeEdits([{ op: Uf2DocumentEditOp.Insert, offset, value: data }]);
 	}
 
 	/**
 	 * Replaces data into the document. If the data is larger than the document,
 	 * then this results in the necessary additional insertion operation.
 	 */
-	public async replace(offset: number, data: Uint8Array): Promise<HexDocumentEditReference> {
+	public async replace(offset: number, data: Uint8Array): Promise<Uf2DocumentEditReference> {
 		const previous = await this.readBufferWithEdits(offset, data.length);
 		if (previous.length === data.length) {
-			return this.makeEdits([{ op: HexDocumentEditOp.Replace, offset, value: data, previous }]);
+			return this.makeEdits([{ op: Uf2DocumentEditOp.Replace, offset, value: data, previous }]);
 		} else {
 			return this.makeEdits([
 				{
-					op: HexDocumentEditOp.Replace,
+					op: Uf2DocumentEditOp.Replace,
 					offset: offset,
 					value: data.subarray(0, previous.length),
 					previous,
 				},
 				{
-					op: HexDocumentEditOp.Insert,
+					op: Uf2DocumentEditOp.Insert,
 					offset: offset + previous.length,
 					value: data.subarray(previous.length),
 				},
@@ -293,7 +293,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 	}
 
 	/**
-	 * See {@link HexDocumentModel.size}
+	 * See {@link Uf2DocumentModel.size}
 	 */
 	public size(): Promise<number | undefined> {
 		return this.model.size();
@@ -328,7 +328,7 @@ export class HexDocument extends Disposable implements vscode.CustomDocument {
 		await newFile.writeStream(this.model.readWithUnsavedEdits());
 		this.lastSave = Date.now();
 		this.model.dispose();
-		this.model = new HexDocumentModel({
+		this.model = new Uf2DocumentModel({
 			accessor: newFile,
 			isFiniteSize: true,
 			supportsLengthChanges: true,

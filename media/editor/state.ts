@@ -5,13 +5,6 @@
 import { atom, DefaultValue, selector, selectorFamily } from "recoil";
 import { HexDecorator, HexDecoratorType } from "../../shared/decorators";
 import {
-	buildEditTimeline,
-	HexDocumentEdit,
-	HexDocumentEditOp,
-	HexDocumentEmptyInsertEdit,
-	readUsingRanges,
-} from "../../shared/hexDocumentModel";
-import {
 	FromWebviewMessage,
 	InspectorLocation,
 	MessageHandler,
@@ -22,6 +15,13 @@ import {
 	ToWebviewMessage,
 } from "../../shared/protocol";
 import { deserializeEdits, serializeEdits } from "../../shared/serialization";
+import {
+	buildEditTimeline,
+	readUsingRanges,
+	Uf2DocumentEdit,
+	Uf2DocumentEditOp,
+	Uf2DocumentEmptyInsertEdit,
+} from "../../shared/uf2DocumentModel";
 import { binarySearch } from "../../shared/util/binarySearch";
 import { Range } from "../../shared/util/range";
 import { clamp } from "./util";
@@ -337,7 +337,7 @@ const initialEdits = selector({
 /**
  * List of edits made locally and not synced with the extension host.
  */
-export const edits = atom<readonly HexDocumentEdit[]>({
+export const edits = atom<readonly Uf2DocumentEdit[]>({
 	key: "edits",
 	default: initialEdits,
 
@@ -406,10 +406,10 @@ const emptyDecoratorEdits = selector({
 			.filter(record => record.type === HexDecoratorType.Empty)
 			.map(value => {
 				return {
-					op: HexDocumentEditOp.EmptyInsert,
+					op: Uf2DocumentEditOp.EmptyInsert,
 					offset: value.range.start,
 					length: value.range.end - value.range.start,
-				} as HexDocumentEmptyInsertEdit;
+				} as Uf2DocumentEmptyInsertEdit;
 			});
 	},
 });

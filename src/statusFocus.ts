@@ -3,8 +3,8 @@
 
 import * as vscode from "vscode";
 import { Disposable, DisposableValue } from "./dispose";
-import { HexDocument, ISelectionState } from "./hexDocument";
-import { HexEditorRegistry } from "./hexEditorRegistry";
+import { ISelectionState, Uf2Document } from "./uf2Document";
+import { Uf2EditorRegistry } from "./uf2EditorRegistry";
 
 const numberFormat = new Intl.NumberFormat();
 
@@ -17,14 +17,14 @@ export default class StatusFocus extends Disposable {
 	private readonly item: vscode.StatusBarItem;
 	private readonly docChangeListener = this._register(new DisposableValue());
 
-	constructor(registry: HexEditorRegistry) {
+	constructor(registry: Uf2EditorRegistry) {
 		super();
 
 		this.item = this._register(
 			vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100),
 		);
 
-		const trackDocument = (doc: HexDocument | undefined) => {
+		const trackDocument = (doc: Uf2Document | undefined) => {
 			if (doc) {
 				this.docChangeListener.value = doc.onDidChangeSelectionState(e => this.update(e));
 				this.update(doc.selectionState);

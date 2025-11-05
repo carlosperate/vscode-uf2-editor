@@ -4,11 +4,6 @@
 import TelemetryReporter from "@vscode/extension-telemetry";
 import * as vscode from "vscode";
 import {
-	HexDocumentEdit,
-	HexDocumentEditOp,
-	HexDocumentEditReference,
-} from "../shared/hexDocumentModel";
-import {
 	CopyFormat,
 	Endianness,
 	ExtensionHostMessageHandler,
@@ -23,12 +18,17 @@ import {
 } from "../shared/protocol";
 import { deserializeEdits, serializeEdits } from "../shared/serialization";
 import { ILocalizedStrings, placeholder1 } from "../shared/strings";
+import {
+	Uf2DocumentEdit,
+	Uf2DocumentEditOp,
+	Uf2DocumentEditReference,
+} from "../shared/uf2DocumentModel";
 import { copyAsFormats } from "./copyAs";
 import { DataInspectorView } from "./dataInspectorView";
 import { disposeAll } from "./dispose";
-import { HexDocument } from "./hexDocument";
-import { HexEditorRegistry } from "./hexEditorRegistry";
 import { ISearchRequest, LiteralSearchRequest, RegexSearchRequest } from "./searchRequest";
+import { Uf2Document } from "./uf2Document";
+import { Uf2EditorRegistry } from "./uf2EditorRegistry";
 import { flattenBuffers, getBaseName, getCorrectArrayBuffer, randomString } from "./util";
 
 const defaultEditorSettings: Readonly<IEditorSettings> = {
@@ -41,16 +41,16 @@ const defaultEditorSettings: Readonly<IEditorSettings> = {
 
 const editorSettingsKeys = Object.keys(defaultEditorSettings) as readonly (keyof IEditorSettings)[];
 
-export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocument> {
+export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Document> {
 	public static register(
 		context: vscode.ExtensionContext,
 		telemetryReporter: TelemetryReporter,
 		dataInspectorView: DataInspectorView,
-		registry: HexEditorRegistry,
+		registry: Uf2EditorRegistry,
 	): vscode.Disposable {
 		return vscode.window.registerCustomEditorProvider(
-			HexEditorProvider.viewType,
-			new HexEditorProvider(context, telemetryReporter, dataInspectorView, registry),
+			Uf2EditorProvider.viewType,
+			new Uf2EditorProvider(context, telemetryReporter, dataInspectorView, registry),
 			{
 				supportsMultipleEditorsPerDocument: false,
 			},
@@ -63,17 +63,17 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 		private readonly _context: vscode.ExtensionContext,
 		private readonly _telemetryReporter: TelemetryReporter,
 		private readonly _dataInspectorView: DataInspectorView,
-		private readonly _registry: HexEditorRegistry,
+		private readonly _registry: Uf2EditorRegistry,
 	) {}
 
 	async openCustomDocument(
 		uri: vscode.Uri,
 		openContext: vscode.CustomDocumentOpenContext,
 		_token: vscode.CancellationToken,
-	): Promise<HexDocument> {
+	): Promise<Uf2Document> {
 		const diff = this._registry.getDiff(uri);
 
-		const { document, accessor } = await HexDocument.create(
+		const { document, accessor } = await Uf2Document.create(
 			uri,
 			openContext,
 			this._telemetryReporter,
@@ -146,7 +146,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 	}
 
 	async resolveCustomEditor(
-		document: HexDocument,
+		document: Uf2Document,
 		webviewPanel: vscode.WebviewPanel,
 		_token: vscode.CancellationToken,
 	): Promise<void> {
@@ -168,12 +168,12 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 	}
 
 	private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<
-		vscode.CustomDocumentEditEvent<HexDocument>
+		vscode.CustomDocumentEditEvent<Uf2Document>
 	>();
 	public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
 	public async saveCustomDocument(
-		document: HexDocument,
+		document: Uf2Document,
 		cancellation: vscode.CancellationToken,
 	): Promise<void> {
 		await document.save(cancellation);
@@ -185,7 +185,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 	}
 
 	public saveCustomDocumentAs(
-		document: HexDocument,
+		document: Uf2Document,
 		destination: vscode.Uri,
 		cancellation: vscode.CancellationToken,
 	): Thenable<void> {
@@ -193,14 +193,14 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 	}
 
 	public revertCustomDocument(
-		document: HexDocument,
+		document: Uf2Document,
 		cancellation: vscode.CancellationToken,
 	): Thenable<void> {
 		return document.revert(cancellation);
 	}
 
 	public backupCustomDocument(
-		document: HexDocument,
+		document: Uf2Document,
 		context: vscode.CustomDocumentBackupContext,
 		_cancellation: vscode.CancellationToken,
 	): Thenable<vscode.CustomDocumentBackup> {
@@ -321,7 +321,7 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 
 	private async onMessage(
 		messaging: ExtensionHostMessageHandler,
-		document: HexDocument,
+		document: Uf2Document,
 		message: FromWebviewMessage,
 	): Promise<undefined | ToWebviewMessage> {
 		switch (message.type) {
@@ -382,8 +382,8 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 					message.deletes.map(d => document.readBufferWithEdits(d.start, d.end - d.start)),
 				);
 				const edits = bytes.map(
-					(e, i): HexDocumentEdit => ({
-						op: HexDocumentEditOp.Delete,
+					(e, i): Uf2DocumentEdit => ({
+						op: Uf2DocumentEditOp.Delete,
 						previous: e,
 						offset: message.deletes[i].start,
 					}),
@@ -435,8 +435,8 @@ export class HexEditorProvider implements vscode.CustomEditorProvider<HexDocumen
 
 	private publishEdit(
 		messaging: ExtensionHostMessageHandler,
-		document: HexDocument,
-		ref: HexDocumentEditReference,
+		document: Uf2Document,
+		ref: Uf2DocumentEditReference,
 	) {
 		this._onDidChangeCustomDocument.fire({
 			document,

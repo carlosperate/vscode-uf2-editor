@@ -3,19 +3,19 @@
 
 import TelemetryReporter from "@vscode/extension-telemetry";
 import * as vscode from "vscode";
-import { HexDocumentEditOp } from "../shared/hexDocumentModel";
+import { Uf2DocumentEditOp } from "../shared/uf2DocumentModel";
 import { openCompareSelected } from "./compareSelected";
 import { copyAs } from "./copyAs";
 import { DataInspectorView } from "./dataInspectorView";
 import { showGoToOffset } from "./goToOffset";
-import { Uf2DiffFSProvider } from "./hexDiffFS";
-import { HexEditorProvider } from "./hexEditorProvider";
-import { HexEditorRegistry } from "./hexEditorRegistry";
 import { prepareLazyInitDiffWorker } from "./initWorker";
 import { showSelectBetweenOffsets } from "./selectBetweenOffsets";
 import StatusEditMode from "./statusEditMode";
 import StatusFocus from "./statusFocus";
 import StatusHoverAndSelection from "./statusHoverAndSelection";
+import { Uf2DiffFSProvider } from "./uf2DiffFS";
+import { Uf2EditorProvider } from "./uf2EditorProvider";
+import { Uf2EditorRegistry } from "./uf2EditorRegistry";
 
 function readConfigFromPackageJson(extension: vscode.Extension<any>): {
 	extId: string;
@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const initWorker = prepareLazyInitDiffWorker(context.extensionUri, workerDispose =>
 		context.subscriptions.push(workerDispose),
 	);
-	const registry = new HexEditorRegistry(initWorker);
+	const registry = new Uf2EditorRegistry(initWorker);
 	// Register the data inspector as a separate view on the side
 	const dataInspectorProvider = new DataInspectorView(context.extensionUri, registry);
 	const configValues = readConfigFromPackageJson(context.extension);
@@ -91,9 +91,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	const switchEditModeCommand = vscode.commands.registerCommand("uf2Editor.switchEditMode", () => {
 		if (registry.activeDocument) {
 			registry.activeDocument.editMode =
-				registry.activeDocument.editMode === HexDocumentEditOp.Insert
-					? HexDocumentEditOp.Replace
-					: HexDocumentEditOp.Insert;
+				registry.activeDocument.editMode === Uf2DocumentEditOp.Insert
+					? Uf2DocumentEditOp.Replace
+					: Uf2DocumentEditOp.Insert;
 		}
 	});
 
@@ -149,7 +149,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}),
 	);
 	context.subscriptions.push(
-		HexEditorProvider.register(context, telemetryReporter, dataInspectorProvider, registry),
+		Uf2EditorProvider.register(context, telemetryReporter, dataInspectorProvider, registry),
 	);
 }
 

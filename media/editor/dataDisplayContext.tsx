@@ -1,8 +1,8 @@
 import { EventEmitter, IDisposable } from "cockatiel";
 import { createContext, useContext, useEffect, useState } from "react";
 import { SetterOrUpdater } from "recoil";
-import { HexDocumentEdit } from "../../shared/hexDocumentModel";
 import { MessageType } from "../../shared/protocol";
+import { Uf2DocumentEdit } from "../../shared/uf2DocumentModel";
 import { Range, RangeDirection, getRangeSelectionsFromStack } from "../../shared/util/range";
 import _style from "./dataDisplayContext.css";
 import { getWebviewState, messageHandler, registerHandler, setWebviewState } from "./state";
@@ -228,7 +228,7 @@ export class DisplayContext {
 	}
 
 	constructor(
-		private readonly setEdits: SetterOrUpdater<readonly HexDocumentEdit[]>,
+		private readonly setEdits: SetterOrUpdater<readonly Uf2DocumentEdit[]>,
 		public readonly isReadonly: boolean,
 	) {
 		registerHandler(MessageType.SetFocusedByte, msg => {
@@ -270,7 +270,7 @@ export class DisplayContext {
 	/**
 	 * Appends a new edit to the document.
 	 */
-	public edit(edits: HexDocumentEdit | readonly HexDocumentEdit[]): void {
+	public edit(edits: Uf2DocumentEdit | readonly Uf2DocumentEdit[]): void {
 		this.setEdits(prev => prev.concat(edits));
 	}
 

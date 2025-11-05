@@ -11,7 +11,6 @@ import Replace from "@vscode/codicons/src/icons/replace.svg";
 import SearchStop from "@vscode/codicons/src/icons/search-stop.svg";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { HexDocumentEditOp, HexDocumentReplaceEdit } from "../../shared/hexDocumentModel";
 import {
 	LiteralSearchQuery,
 	MessageType,
@@ -20,6 +19,7 @@ import {
 	SearchResultsWithProgress,
 } from "../../shared/protocol";
 import { placeholder1 } from "../../shared/strings";
+import { Uf2DocumentEditOp, Uf2DocumentReplaceEdit } from "../../shared/uf2DocumentModel";
 import { Range } from "../../shared/util/range";
 import { FocusedElement, dataCellCls, useDisplayContext } from "./dataDisplayContext";
 import _style from "./findWidget.css";
@@ -111,8 +111,8 @@ const getSearchQueryOrError = (
 
 const searchResultToEdit =
 	(value: Uint8Array) =>
-	(r: SearchResult): HexDocumentReplaceEdit => ({
-		op: HexDocumentEditOp.Replace,
+	(r: SearchResult): Uf2DocumentReplaceEdit => ({
+		op: Uf2DocumentEditOp.Replace,
 		offset: r.from,
 		value,
 		previous: r.previous,

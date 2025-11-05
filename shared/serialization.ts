@@ -1,4 +1,4 @@
-import { HexDocumentEdit, HexDocumentEditOp } from "./hexDocumentModel";
+import { Uf2DocumentEdit, Uf2DocumentEditOp } from "./uf2DocumentModel";
 import { Uint8ArrayMap } from "./util/uint8ArrayMap";
 
 export interface ISerializedEdits {
@@ -13,7 +13,7 @@ export interface ISerializedEdits {
  * problematic. This modifies it so that there's a single Uint8Array and each
  * edit points to a region in that array for transportation.
  */
-export const serializeEdits = (edits: readonly HexDocumentEdit[]): ISerializedEdits => {
+export const serializeEdits = (edits: readonly Uf2DocumentEdit[]): ISerializedEdits => {
 	let allocOffset = 0;
 	const allocTable = new Uint8ArrayMap<number>();
 	const allocOrReuse = (buf: Uint8Array) => {
@@ -28,9 +28,9 @@ export const serializeEdits = (edits: readonly HexDocumentEdit[]): ISerializedEd
 
 	const newEdits: unknown[] = [];
 	for (const edit of edits) {
-		if (edit.op === HexDocumentEditOp.Insert) {
+		if (edit.op === Uf2DocumentEditOp.Insert) {
 			newEdits.push({ ...edit, value: allocOrReuse(edit.value) });
-		} else if (edit.op === HexDocumentEditOp.Delete) {
+		} else if (edit.op === Uf2DocumentEditOp.Delete) {
 			newEdits.push({ ...edit, previous: allocOrReuse(edit.previous) });
 		} else {
 			newEdits.push({
@@ -50,14 +50,14 @@ export const serializeEdits = (edits: readonly HexDocumentEdit[]): ISerializedEd
 };
 
 /** Reverses {@link serializeEdits} */
-export const deserializeEdits = ({ edits, data }: ISerializedEdits): HexDocumentEdit[] => {
+export const deserializeEdits = ({ edits, data }: ISerializedEdits): Uf2DocumentEdit[] => {
 	const unref = ({ offset, len }: { offset: number; len: number }) =>
 		data.slice(offset, offset + len);
 
 	return edits.map((edit: any) => {
-		if (edit.op === HexDocumentEditOp.Insert) {
+		if (edit.op === Uf2DocumentEditOp.Insert) {
 			return { ...edit, value: unref(edit.value) };
-		} else if (edit.op === HexDocumentEditOp.Delete) {
+		} else if (edit.op === Uf2DocumentEditOp.Delete) {
 			return { ...edit, previous: unref(edit.previous) };
 		} else {
 			return { ...edit, previous: unref(edit.previous), value: unref(edit.value) };

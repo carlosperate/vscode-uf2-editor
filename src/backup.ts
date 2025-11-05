@@ -4,7 +4,7 @@
 
 import * as base64 from "js-base64";
 import * as vscode from "vscode";
-import { HexDocumentEdit } from "../shared/hexDocumentModel";
+import { Uf2DocumentEdit } from "../shared/uf2DocumentModel";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -13,7 +13,7 @@ export class Backup {
 	constructor(private readonly uri: vscode.Uri) {}
 
 	/** Writes the edits to the backup file. */
-	public async write(edits: readonly HexDocumentEdit[]): Promise<void> {
+	public async write(edits: readonly Uf2DocumentEdit[]): Promise<void> {
 		const serialized = JSON.stringify(edits, (_key, value) =>
 			value instanceof Uint8Array ? { $u8: base64.fromUint8Array(value) } : value,
 		);
@@ -22,7 +22,7 @@ export class Backup {
 	}
 
 	/** Reads the edits from the backup file. */
-	public async read(): Promise<HexDocumentEdit[]> {
+	public async read(): Promise<Uf2DocumentEdit[]> {
 		let serialized: string;
 		try {
 			serialized = decoder.decode(await vscode.workspace.fs.readFile(this.uri));

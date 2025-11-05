@@ -4,7 +4,7 @@
 import * as vscode from "vscode";
 import { InspectorLocation } from "../shared/protocol";
 import { Disposable } from "./dispose";
-import { HexEditorRegistry } from "./hexEditorRegistry";
+import { Uf2EditorRegistry } from "./uf2EditorRegistry";
 import { randomString } from "./util";
 
 export class DataInspectorView extends Disposable implements vscode.WebviewViewProvider {
@@ -14,7 +14,7 @@ export class DataInspectorView extends Disposable implements vscode.WebviewViewP
 
 	constructor(
 		private readonly _extensionURI: vscode.Uri,
-		registry: HexEditorRegistry,
+		registry: Uf2EditorRegistry,
 	) {
 		super();
 		this._register(

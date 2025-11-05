@@ -1,20 +1,20 @@
 import * as vscode from "vscode";
 import { ExtensionHostMessageHandler, MessageType } from "../shared/protocol";
-import { ISelectionState } from "./hexDocument";
-import { HexEditorRegistry } from "./hexEditorRegistry";
+import { ISelectionState } from "./uf2Document";
+import { Uf2EditorRegistry } from "./uf2EditorRegistry";
 
 const addressRe = /^0x[a-f0-9]+$/i;
 const decimalRe = /^[0-9]+$/i;
 
 export const showSelectBetweenOffsets = async (
 	messaging: ExtensionHostMessageHandler,
-	registry: HexEditorRegistry,
+	registry: Uf2EditorRegistry,
 ): Promise<void> => {
 	messaging.sendEvent({ type: MessageType.StashDisplayedOffset });
 
 	let focusedOffset: string | undefined = undefined;
 
-	// acquire selection state from active HexDocument
+	// acquire selection state from active Uf2Document
 	const selectionState: ISelectionState | undefined = registry.activeDocument?.selectionState;
 
 	// if there is a selection, use the focused offset as the starting offset

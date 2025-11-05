@@ -1,4 +1,4 @@
-export interface HexEditorUriQuery {
+export interface Uf2EditorUriQuery {
 	baseAddress?: string;
 	token?: string;
 	side?: "modified" | "original";
@@ -7,13 +7,13 @@ export interface HexEditorUriQuery {
 /**
  * Utility function to convert a Uri query string into a map
  */
-export function parseQuery(queryString: string): HexEditorUriQuery {
-	const queries: HexEditorUriQuery = {};
+export function parseQuery(queryString: string): Uf2EditorUriQuery {
+	const queries: Uf2EditorUriQuery = {};
 	if (queryString) {
 		const pairs = (queryString[0] === "?" ? queryString.substr(1) : queryString).split("&");
 		for (const q of pairs) {
 			const pair = q.split("=");
-			const name = pair.shift() as keyof HexEditorUriQuery;
+			const name = pair.shift() as keyof Uf2EditorUriQuery;
 			if (name) {
 				const value = pair.join("=");
 				if (name === "side") {
@@ -32,10 +32,10 @@ export function parseQuery(queryString: string): HexEditorUriQuery {
 /**
  * Forms a valid HexEditor Query to be used in vscode.Uri
  */
-export function formQuery(queries: HexEditorUriQuery): string {
+export function formQuery(queries: Uf2EditorUriQuery): string {
 	const query: string[] = [];
 	for (const q in queries) {
-		const queryValue = queries[q as keyof HexEditorUriQuery];
+		const queryValue = queries[q as keyof Uf2EditorUriQuery];
 		if (queryValue !== undefined && queryValue !== "") {
 			query.push(`${q}=${queryValue}`);
 		}

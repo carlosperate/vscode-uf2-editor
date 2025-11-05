@@ -6,7 +6,7 @@ import {
 	DiffExtensionHostMessageHandler,
 	DiffMessageType,
 } from "./diffWorkerProtocol";
-import { HexDocumentModel } from "./hexDocumentModel";
+import { Uf2DocumentModel } from "./uf2DocumentModel";
 export type Uf2DiffModelBuilder = typeof Uf2DiffModel.Builder.prototype;
 
 export class Uf2DiffModel {
@@ -15,8 +15,8 @@ export class Uf2DiffModel {
 	private decorators?: { original: HexDecorator[]; modified: HexDecorator[] };
 
 	constructor(
-		private readonly originalModel: HexDocumentModel,
-		private readonly modifiedModel: HexDocumentModel,
+		private readonly originalModel: Uf2DocumentModel,
+		private readonly modifiedModel: Uf2DocumentModel,
 		private readonly messageHandler: DiffExtensionHostMessageHandler,
 	) {}
 
@@ -56,27 +56,27 @@ export class Uf2DiffModel {
 	 */
 	static Builder = class {
 		private original: {
-			promise: Promise<HexDocumentModel>;
-			resolve: (model: HexDocumentModel) => void;
+			promise: Promise<Uf2DocumentModel>;
+			resolve: (model: Uf2DocumentModel) => void;
 		};
 		private modified: {
-			promise: Promise<HexDocumentModel>;
-			resolve: (model: HexDocumentModel) => void;
+			promise: Promise<Uf2DocumentModel>;
+			resolve: (model: Uf2DocumentModel) => void;
 		};
 
 		private built?: Uf2DiffModel;
 
 		constructor(private readonly messageHandler: DiffExtensionHostMessageHandler) {
-			let promise: Promise<HexDocumentModel>;
-			let res: (model: HexDocumentModel) => void;
+			let promise: Promise<Uf2DocumentModel>;
+			let res: (model: Uf2DocumentModel) => void;
 
-			promise = new Promise<HexDocumentModel>(resolve => (res = resolve));
+			promise = new Promise<Uf2DocumentModel>(resolve => (res = resolve));
 			this.original = { promise: promise, resolve: res! };
-			promise = new Promise<HexDocumentModel>(resolve => (res = resolve));
+			promise = new Promise<Uf2DocumentModel>(resolve => (res = resolve));
 			this.modified = { promise: promise, resolve: res! };
 		}
 
-		public setModel(side: "original" | "modified", document: HexDocumentModel) {
+		public setModel(side: "original" | "modified", document: Uf2DocumentModel) {
 			if (side === "original") {
 				this.original.resolve(document);
 			} else {
