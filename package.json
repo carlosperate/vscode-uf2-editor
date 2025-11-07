@@ -33,26 +33,11 @@
       {
         "title": "UF2 Editor",
         "properties": {
-          "uf2editor.inspectorType": {
-            "type": "string",
-            "enum": [
-              "aside",
-              "hover",
-              "sidebar"
-            ],
-            "default": "aside",
-            "description": "Where the data inspector should be shown in the UF2 editor."
-          },
           "uf2editor.maxFileSize": {
             "type": "number",
             "minimum": 0,
             "default": 10,
             "description": "The max file size (in MB) that the editor will try to open before warning you."
-          },
-          "uf2editor.dataInspector.autoReveal": {
-            "type": "boolean",
-            "default": true,
-            "description": "Whether to auto reveal the data inspector when the UF2 editor is opened."
           },
           "uf2editor.defaultEndianness": {
             "type": "string",
@@ -159,26 +144,6 @@
         "title": "Compare Selected in UF2 Editor (Experimental)"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "uf2Explorer",
-          "title": "UF2 Editor",
-          "icon": "panel-icon.svg",
-          "when": "uf2Editor:showSidebarInspector"
-        }
-      ]
-    },
-    "views": {
-      "uf2Explorer": [
-        {
-          "type": "webview",
-          "id": "uf2Editor.dataInspectorView",
-          "name": "Data Inspector",
-          "when": "uf2Editor:showSidebarInspector"
-        }
-      ]
-    },
     "menus": {
       "commandPalette": [
         {

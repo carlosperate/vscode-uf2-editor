@@ -6,7 +6,6 @@ import { atom, DefaultValue, selector, selectorFamily } from "recoil";
 import { HexDecorator, HexDecoratorType } from "../../shared/decorators";
 import {
 	FromWebviewMessage,
-	InspectorLocation,
 	MessageHandler,
 	MessageType,
 	ReadRangeResponseMessage,
@@ -82,31 +81,6 @@ window.addEventListener("message", ev => messageHandler.handleMessage(ev.data));
 const readyQuery = selector({
 	key: "ready",
 	get: () => messageHandler.sendRequest<ReadyResponseMessage>({ type: MessageType.ReadyRequest }),
-});
-
-/**
- * Selector for where the Data Inspector should be shown, if anywhere.
- * This is partially user configured, but may also change based off the
- * available editor width.
- */
-export const dataInspectorLocation = selector({
-	key: "dataInspectorSide",
-	get: ({ get }) => {
-		const settings = get(editorSettings);
-		const d = get(dimensions);
-		if (settings.inspectorType === InspectorLocation.Sidebar) {
-			return InspectorLocation.Sidebar;
-		}
-
-		// rough approximation, if there's no enough horizontal width then use a hover instead
-		// rowPxHeight * columnWidth is the width of the 'bytes' display. Double it
-		// for the Decoded Text, if any, plus some sensible padding.
-		if (d.rowPxHeight * settings.columnWidth * (settings.showDecodedText ? 2 : 1) + 100 > d.width) {
-			return InspectorLocation.Hover;
-		}
-
-		return settings.inspectorType;
-	},
 });
 
 export const isReadonly = selector({

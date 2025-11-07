@@ -1,52 +1,18 @@
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { Endianness } from "../../shared/protocol";
-import { FocusedElement, getDataCellElement, useDisplayContext } from "./dataDisplayContext";
+import { FocusedElement, useDisplayContext } from "./dataDisplayContext";
 import _style from "./dataInspector.css";
 import { inspectableTypes } from "./dataInspectorProperties";
 import { useFileBytes, usePersistedState } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
 import { throwOnUndefinedAccessInDev } from "./util";
-import { VsTooltipPopover } from "./vscodeUi";
+// Tooltip popover import removed with hover inspector deletion
 
 const style = throwOnUndefinedAccessInDev(_style);
 
-/** Component that shows a data inspector when bytes are hovered. */
-export const DataInspectorHover: React.FC = () => {
-	const ctx = useDisplayContext();
-	const [inspected, setInspected] = useState<FocusedElement>();
-	const anchor = useMemo(() => inspected && getDataCellElement(inspected), [inspected]);
-
-	useEffect(() => {
-		let hoverTimeout: NodeJS.Timeout | undefined;
-
-		const disposable = ctx.onDidHover(target => {
-			if (hoverTimeout) {
-				clearTimeout(hoverTimeout);
-				hoverTimeout = undefined;
-			}
-			if (target && ctx.isSelecting === undefined) {
-				setInspected(undefined);
-				hoverTimeout = setTimeout(() => setInspected(target), 500);
-			}
-		});
-
-		return () => disposable.dispose();
-	}, []);
-
-	if (!inspected || !anchor) {
-		return null;
-	}
-
-	return (
-		<VsTooltipPopover anchor={anchor} hide={() => setInspected(undefined)} visible={true}>
-			<Suspense fallback={strings.loadingDotDotDot}>
-				<InspectorContents columns={4} offset={inspected.byte} />
-			</Suspense>
-		</VsTooltipPopover>
-	);
-};
+// Hover inspector removed; always showing Aside variant.
 
 /** Data inspector view shown to the right hand side of the hex editor. */
 export const DataInspectorAside: React.FC<{ onInspecting?(isInspecting: boolean): void }> = ({
@@ -80,7 +46,7 @@ export const DataInspectorAside: React.FC<{ onInspecting?(isInspecting: boolean)
 
 const lookahead = 8;
 
-/** Inner contents of the data inspector, reused between the hover and aside inspector views. */
+/** Inner contents of the data inspector. */
 const InspectorContents: React.FC<{
 	offset: number;
 	columns: number;

@@ -4,12 +4,7 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { HexDecorator } from "../../shared/decorators";
-import {
-	CopyFormat,
-	DeleteAcceptedMessage,
-	InspectorLocation,
-	MessageType,
-} from "../../shared/protocol";
+import { CopyFormat, DeleteAcceptedMessage, MessageType } from "../../shared/protocol";
 import { EditRangeOp, Uf2DocumentEditOp } from "../../shared/uf2DocumentModel";
 import { binarySearch } from "../../shared/util/binarySearch";
 import { Range } from "../../shared/util/range";
@@ -68,7 +63,6 @@ const Address: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, ...
 
 export const DataHeader: React.FC = () => {
 	const editorSettings = useRecoilValue(select.editorSettings);
-	const inspectorLocation = useRecoilValue(select.dataInspectorLocation);
 
 	return (
 		<div className={style.header}>
@@ -92,7 +86,7 @@ export const DataHeader: React.FC = () => {
 					{strings.decodedText}
 				</DataCellGroup>
 			)}
-			{inspectorLocation === InspectorLocation.Aside && <DataInspector />}
+			<DataInspector />
 		</div>
 	);
 };

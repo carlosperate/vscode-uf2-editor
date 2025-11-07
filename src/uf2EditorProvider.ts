@@ -9,7 +9,6 @@ import {
 	FromWebviewMessage,
 	ICodeSettings,
 	IEditorSettings,
-	InspectorLocation,
 	MessageHandler,
 	MessageType,
 	PasteMode,
@@ -23,7 +22,6 @@ import {
 	Uf2DocumentEditReference,
 } from "../shared/uf2DocumentModel";
 import { copyAsFormats } from "./copyAs";
-import { DataInspectorView } from "./dataInspectorView";
 import { disposeAll } from "./dispose";
 import { ISearchRequest, LiteralSearchRequest, RegexSearchRequest } from "./searchRequest";
 import { Uf2Document } from "./uf2Document";
@@ -35,7 +33,6 @@ const defaultEditorSettings: Readonly<IEditorSettings> = {
 	copyType: CopyFormat.HexOctets,
 	showDecodedText: true,
 	defaultEndianness: Endianness.Little,
-	inspectorType: InspectorLocation.Aside,
 };
 
 const editorSettingsKeys = Object.keys(defaultEditorSettings) as readonly (keyof IEditorSettings)[];
@@ -43,12 +40,11 @@ const editorSettingsKeys = Object.keys(defaultEditorSettings) as readonly (keyof
 export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Document> {
 	public static register(
 		context: vscode.ExtensionContext,
-		dataInspectorView: DataInspectorView,
 		registry: Uf2EditorRegistry,
 	): vscode.Disposable {
 		return vscode.window.registerCustomEditorProvider(
 			Uf2EditorProvider.viewType,
-			new Uf2EditorProvider(context, dataInspectorView, registry),
+			new Uf2EditorProvider(context, registry),
 			{
 				supportsMultipleEditorsPerDocument: false,
 			},
@@ -59,7 +55,6 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 
 	constructor(
 		private readonly _context: vscode.ExtensionContext,
-		private readonly _dataInspectorView: DataInspectorView,
 		private readonly _registry: Uf2EditorRegistry,
 	) {}
 
@@ -408,15 +403,7 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 				}
 				document.searchProvider.start(messaging, request);
 				return;
-			case MessageType.ClearDataInspector:
-				this._dataInspectorView.handleEditorMessage({ method: "reset" });
-				break;
-			case MessageType.SetInspectByte:
-				this._dataInspectorView.handleEditorMessage({
-					method: "update",
-					data: getCorrectArrayBuffer(await document.readBufferWithEdits(message.offset, 8)),
-				});
-				break;
+
 			case MessageType.UpdateEditorSettings:
 				this.writeEditorSettings(message.editorSettings);
 				break;

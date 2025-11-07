@@ -167,10 +167,6 @@ export class DisplayContext {
 		if (this._focusedByte !== undefined) {
 			this.focusChangeHandlers.get(this._focusedByte.key)?.(true);
 			this.focusChangeGenericHandler.emit(element?.byte);
-			messageHandler.sendEvent({
-				type: MessageType.SetInspectByte,
-				offset: this._focusedByte.byte,
-			});
 		}
 	}
 

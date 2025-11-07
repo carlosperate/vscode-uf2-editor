@@ -33,8 +33,6 @@ export const enum MessageType {
 	RequestDeletes,
 	SearchRequest,
 	CancelSearch,
-	ClearDataInspector,
-	SetInspectByte,
 	UpdateEditorSettings,
 	DoPaste,
 	DoCopy,
@@ -52,17 +50,10 @@ export const enum Endianness {
 	Little = "little",
 }
 
-export const enum InspectorLocation {
-	Hover = "hover",
-	Aside = "aside",
-	Sidebar = "sidebar",
-}
-
 export interface IEditorSettings {
 	copyType: CopyFormat;
 	showDecodedText: boolean;
 	columnWidth: number;
-	inspectorType: InspectorLocation;
 	defaultEndianness: Endianness;
 }
 
@@ -242,15 +233,6 @@ export interface CancelSearchMessage {
 	type: MessageType.CancelSearch;
 }
 
-export interface ClearDataInspectorMessage {
-	type: MessageType.ClearDataInspector;
-}
-
-export interface SetInspectByteMessage {
-	type: MessageType.SetInspectByte;
-	offset: number;
-}
-
 export interface ReadyRequestMessage {
 	type: MessageType.ReadyRequest;
 }
@@ -289,8 +271,6 @@ export type FromWebviewMessage =
 	| MakeEditsMessage
 	| SearchRequestMessage
 	| CancelSearchMessage
-	| ClearDataInspectorMessage
-	| SetInspectByteMessage
 	| SetSelectedCountMessage
 	| SetHoveredByteMessage
 	| ReadyRequestMessage

@@ -63,18 +63,6 @@ build({
 	outfile: "dist/diffWorker.js",
 });
 
-// Build the data inspector
-build({
-	entryPoints: ["media/data_inspector/inspector.ts"],
-	tsconfig: "./tsconfig.json",
-	bundle: true,
-	external: ["vscode"],
-	sourcemap: watch ? "inline" : false,
-	minify,
-	platform: "browser",
-	outfile: "dist/inspector.js",
-});
-
 // Build the webview editors
 build({
 	entryPoints: ["media/editor/hexEdit.tsx"],

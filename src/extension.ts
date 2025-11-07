@@ -5,7 +5,6 @@ import * as vscode from "vscode";
 import { Uf2DocumentEditOp } from "../shared/uf2DocumentModel";
 import { openCompareSelected } from "./compareSelected";
 import { copyAs } from "./copyAs";
-import { DataInspectorView } from "./dataInspectorView";
 import { showGoToOffset } from "./goToOffset";
 import { prepareLazyInitDiffWorker } from "./initWorker";
 import { showSelectBetweenOffsets } from "./selectBetweenOffsets";
@@ -32,13 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(workerDispose),
 	);
 	const registry = new Uf2EditorRegistry(initWorker);
-	// Register the data inspector as a separate view on the side
-	const dataInspectorProvider = new DataInspectorView(context.extensionUri, registry);
-	context.subscriptions.push(
-		registry,
-		dataInspectorProvider,
-		vscode.window.registerWebviewViewProvider(DataInspectorView.viewType, dataInspectorProvider),
-	);
+	context.subscriptions.push(registry);
 
 	const openWithCommand = vscode.commands.registerCommand(
 		"uf2Editor.openFile",
@@ -126,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				process.platform !== "darwin",
 		}),
 	);
-	context.subscriptions.push(Uf2EditorProvider.register(context, dataInspectorProvider, registry));
+	context.subscriptions.push(Uf2EditorProvider.register(context, registry));
 }
 
 export function deactivate(): void {

@@ -4,10 +4,8 @@
 import React, { Suspense, useLayoutEffect, useMemo } from "react";
 import { render } from "react-dom";
 import { RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { InspectorLocation } from "../../shared/protocol";
 import { DataHeader } from "./dataDisplay";
 import { DataDisplayContext, DisplayContext } from "./dataDisplayContext";
-import { DataInspectorHover } from "./dataInspector";
 import { FindWidget } from "./findWidget";
 import _style from "./hexEdit.css";
 import { useTheme } from "./hooks";
@@ -49,7 +47,6 @@ const Editor: React.FC = () => {
 	const dimensions = useRecoilValue(select.dimensions);
 	const setEdit = useSetRecoilState(select.edits);
 	const isReadonly = useRecoilValue(select.isReadonly);
-	const inspectorLocation = useRecoilValue(select.dataInspectorLocation);
 	const ctx = useMemo(() => new DisplayContext(setEdit, isReadonly), []);
 
 	const isLargeFile = useRecoilValue(select.isLargeFile);
@@ -79,7 +76,6 @@ const Editor: React.FC = () => {
 				<DataHeader />
 				<ScrollContainer />
 				<ReadonlyWarning />
-				{inspectorLocation === InspectorLocation.Hover && <DataInspectorHover />}
 			</div>
 		</DataDisplayContext.Provider>
 	);

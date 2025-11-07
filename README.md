@@ -26,11 +26,9 @@ The UF2 editor can be set as the default editor for certain file types by using 
 },
 ```
 
-## Configuring the Data Inspector
+## Data Inspector
 
-By default, the data inspector is shown just to the right of the data grid (or decoded text if enabled), but it can be configured (via the `uf2editor.inspectorType` setting) to instead show up while hovering over a data cell.
-
-Another option is to give the data inspector a dedicated activity bar entry on the left (by setting `uf2editor.inspectorType` to `sidebar`) that appears when the UF2 editor is opened, causing the explorer or whatever sidebar you had opened to be hidden. If preferred, the UF2 editor view can be dragged into another view by dragging the ⬡ icon onto one of the other views. This can be used in combination with the `uf2editor.dataInspector.autoReveal` setting to avoid revealing the sidebar containing the data inspector altogether.
+The data inspector is always shown inline (aside) to the right of the hex view (and decoded text column if enabled). Hover and sidebar modes have been removed to simplify the experience.
 
 ## Known Issues
 
