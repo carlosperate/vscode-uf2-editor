@@ -1,9 +1,9 @@
 {
   "name": "uf2editor",
   "displayName": "UF2 Editor",
-  "description": "Allows viewing and editing files in a UF2 editor",
-  "version": "1.11.1",
-  "publisher": "ms-vscode",
+  "description": "Allows viewing and editing UF2 files",
+  "version": "0.1.0",
+  "publisher": "carlosperate",
   "repository": {
     "type": "git",
     "url": "https://github.com/carlosperate/vscode-uf2-editor"

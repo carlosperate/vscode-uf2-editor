@@ -1,4 +1,4 @@
-# Contributing to Visual Studio Code UF2 Editor
+# Contributing to VS Code UF2 Editor
 
 There are many ways to contribute to the Visual Studio Code UF2 Editor project: logging bugs, submitting pull requests, reporting issues, and creating suggestions.
 
@@ -9,13 +9,13 @@ After cloning and building the repo, check out the [issues list](https://github.
 First, fork the VS Code UF2 Editor repository so that you can make a pull request. Then, clone your fork locally:
 
 ```
-git clone https://github.com/<<<your-github-account>>>/vscode-hexeditor.git
+git clone https://github.com/<<<your-github-account>>>/vscode-uf2-editor.git
 ```
 
 Occasionally you will want to merge changes in the upstream repository (the official code repo) with your fork.
 
 ```
-cd vscode-hexeditor
+cd vscode-uf2-editor
 git checkout main
 git pull https://github.com/carlosperate/vscode-uf2-editor.git main
 ```
@@ -32,7 +32,7 @@ You'll need the following tools:
 - [Node.JS](https://nodejs.org/en/), **x64**, version `>= 12.x`
 
 ```
-cd vscode-hexeditor
+cd vscode-uf2-editor
 npm install
 ```
 
@@ -44,16 +44,6 @@ After cloning the extension and running `npm install` execute `npm run watch` to
 
 We use [eslint](https://eslint.org/) for linting our sources. You can run eslint across the sources by calling `npm run lint` from a terminal or command prompt.
 To lint the source as you make changes you can install the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
-
-## Work Branches
-
-Even if you have push rights on the carlosperate/vscode-uf2-editor repository, you should create a personal fork and create feature branches there when you need them. This keeps the main repository clean and your personal workflow cruft out of sight.
-
-## Pull Requests
-
-Before we can accept a pull request from you, you'll need to sign a [Contributor License Agreement (CLA)](https://cla.opensource.microsoft.com/carlosperate/vscode-uf2-editor). It is an automated process and you only need to do it once.
-
-To enable us to quickly review and accept your pull requests, always create one pull request per issue and [link the issue in the pull request](https://github.com/blog/957-introducing-issue-mentions). Never merge multiple requests in one unless they have the same root cause. Be sure to keep code changes as small as possible. Avoid pure formatting changes to code that has not been modified otherwise. Pull requests should contain tests whenever possible.
 
 ## Suggestions
 
