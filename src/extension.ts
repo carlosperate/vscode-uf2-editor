@@ -21,7 +21,7 @@ function reopenWithUf2Editor() {
 		uri: vscode.Uri | undefined;
 	};
 	if (activeTabInput.uri) {
-		vscode.commands.executeCommand("vscode.openWith", activeTabInput.uri, "uf2Editor.uf2edit");
+		vscode.commands.executeCommand("vscode.openWith", activeTabInput.uri, "uf2Editor.view");
 	}
 }
 
@@ -119,7 +119,9 @@ export async function activate(context: vscode.ExtensionContext) {
 				process.platform !== "darwin",
 		}),
 	);
-	context.subscriptions.push(Uf2EditorProvider.register(context, registry));
+	// Register the provider under two view types: a default and an option-only
+	context.subscriptions.push(Uf2EditorProvider.register(context, registry, "uf2Editor.view"));
+	context.subscriptions.push(Uf2EditorProvider.register(context, registry, "uf2Editor.option"));
 }
 
 export function deactivate(): void {

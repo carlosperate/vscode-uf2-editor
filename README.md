@@ -18,12 +18,11 @@ There are three ways to open a file in the UF2 editor:
 2. Trigger the command palette (<kbd>F1</kbd>) -> Open File using UF2 Editor
 3. Trigger the command palette (<kbd>F1</kbd>) -> Reopen With -> UF2 Editor
 
-The UF2 editor can be set as the default editor for certain file types by using the `workbench.editorAssociations` setting. For example, this would associate all files with extensions `.hex` and `.ini` to use the UF2 editor by default:
+The UF2 editor can be set as the default editor for certain file types by using the `workbench.editorAssociations` setting. For example, this would associate all files with extensions `.bin` to use the UF2 editor by default:
 
 ```json
 "workbench.editorAssociations": {
-    "*.hex": "uf2Editor.uf2edit",
-    "*.ini": "uf2Editor.uf2edit"
+    "*.bin": "uf2Editor.uf2edit"
 },
 ```
 

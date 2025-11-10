@@ -41,21 +41,21 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 	public static register(
 		context: vscode.ExtensionContext,
 		registry: Uf2EditorRegistry,
+		viewType: string,
 	): vscode.Disposable {
 		return vscode.window.registerCustomEditorProvider(
-			Uf2EditorProvider.viewType,
-			new Uf2EditorProvider(context, registry),
+			viewType,
+			new Uf2EditorProvider(context, registry, viewType),
 			{
 				supportsMultipleEditorsPerDocument: false,
 			},
 		);
 	}
 
-	private static readonly viewType = "uf2Editor.uf2edit";
-
 	constructor(
 		private readonly _context: vscode.ExtensionContext,
 		private readonly _registry: Uf2EditorRegistry,
+		private readonly _viewType: string,
 	) {}
 
 	async openCustomDocument(

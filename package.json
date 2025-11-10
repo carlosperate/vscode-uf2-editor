@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "engines": {
-    "vscode": "^1.89.0-insider"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
@@ -84,19 +84,22 @@
         }
       }
     ],
-    "configurationDefaults": {
-      "workbench.editorAssociations": {
-        "{uf2diff}:/**/*.*": "uf2Editor.uf2edit"
-      }
-    },
+    "configurationDefaults": {},
     "customEditors": [
       {
-        "viewType": "uf2Editor.uf2edit",
+        "viewType": "uf2Editor.view",
         "displayName": "UF2 Editor",
         "selector": [
-          {
-            "filenamePattern": "*"
-          }
+          { "filenamePattern": "*.uf2" },
+          { "filenamePattern": "*.UF2" }
+        ],
+        "priority": "default"
+      },
+      {
+        "viewType": "uf2Editor.option",
+        "displayName": "UF2 Editor",
+        "selector": [
+          { "filenamePattern": "*" }
         ],
         "priority": "option"
       }
@@ -178,7 +181,12 @@
           "when": "uf2Editor:isActive"
         },
         {
-          "when": "webviewId == 'uf2Editor.uf2edit'",
+          "when": "webviewId == 'uf2Editor.view'",
+          "command": "uf2Editor.copyAs",
+          "group": "9_cutcopypaste"
+        },
+        {
+          "when": "webviewId == 'uf2Editor.option'",
           "command": "uf2Editor.copyAs",
           "group": "9_cutcopypaste"
         }
@@ -195,12 +203,22 @@
       {
         "command": "uf2Editor.goToOffset",
         "key": "ctrl+g",
-        "when": "activeCustomEditorId == uf2Editor.uf2edit"
+        "when": "activeCustomEditorId == uf2Editor.view"
+      },
+      {
+        "command": "uf2Editor.goToOffset",
+        "key": "ctrl+g",
+        "when": "activeCustomEditorId == uf2Editor.option"
       },
       {
         "command": "uf2Editor.copyAs",
         "key": "alt+ctrl+c",
-        "when": "activeCustomEditorId == uf2Editor.uf2edit"
+        "when": "activeCustomEditorId == uf2Editor.view"
+      },
+      {
+        "command": "uf2Editor.copyAs",
+        "key": "alt+ctrl+c",
+        "when": "activeCustomEditorId == uf2Editor.option"
       },
       {
         "command": "uf2Editor.switchEditMode",
