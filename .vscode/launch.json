@@ -18,7 +18,7 @@
 				}
 			},
 			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
+			"outFiles": ["${workspaceFolder}/dist-extension/**/*.js"]
 		},
 		{
 			"name": "Run Web Extension",
@@ -31,7 +31,7 @@
 				"--extensionDevelopmentKind=web",
 				"--crash-reporter-directory=${workspaceFolder}"
 			],
-			"outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
+			"outFiles": ["${workspaceFolder}/dist-extension/web/**/*.js"],
 			"preLaunchTask": "npm: compile"
 		},
 		{
@@ -41,9 +41,9 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/dist/test.js"
+				"--extensionTestsPath=${workspaceFolder}/dist-extension/test.js"
 			],
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
+			"outFiles": ["${workspaceFolder}/dist-extension/**/*.js"]
 		}
 	]
 }

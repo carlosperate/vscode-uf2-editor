@@ -2,8 +2,6 @@ out
 node_modules
 .vscode-test/
 *.vsix
-dist
-!dist/inspector.css
+dist-extension
 .DS_Store
-dist/web
 .github/copilot-instructions.md

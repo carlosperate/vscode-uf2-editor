@@ -1,10 +1,37 @@
 const esbuild = require("esbuild");
 const svgr = require("esbuild-plugin-svgr");
 const css = require("esbuild-css-modules-plugin");
+const fs = require("fs");
+const path = require("path");
 
 const watch = process.argv.includes("--watch");
 const minify = !watch || process.argv.includes("--minify");
 const defineProd = process.argv.includes("--defineProd");
+
+// Copy assets (manually maintained files) to dist-extension after build
+function copyAssets() {
+	const assetsDir = path.join(__dirname, "assets");
+	const distDir = path.join(__dirname, "dist-extension");
+
+	if (!fs.existsSync(distDir)) {
+		fs.mkdirSync(distDir, { recursive: true });
+	}
+
+	if (!fs.existsSync(assetsDir)) {
+		return;
+	}
+
+	const files = fs.readdirSync(assetsDir);
+	for (const file of files) {
+		const src = path.join(assetsDir, file);
+		const dest = path.join(distDir, file);
+		fs.copyFileSync(src, dest);
+	}
+
+	if (files.length > 0) {
+		console.log(`Copied ${files.length} asset(s) to dist-extension/`);
+	}
+}
 
 function build(options) {
 	(async () => {
@@ -26,7 +53,7 @@ build({
 	sourcemap: watch,
 	minify,
 	platform: "node",
-	outfile: "dist/extension.js",
+	outfile: "dist-extension/extension.js",
 });
 
 // Build the test cases
@@ -38,7 +65,7 @@ build({
 	sourcemap: watch,
 	minify,
 	platform: "node",
-	outfile: "dist/test.js",
+	outfile: "dist-extension/test.js",
 });
 
 build({
@@ -49,7 +76,7 @@ build({
 	external: ["vscode", "fs", "worker_threads"],
 	minify,
 	platform: "browser",
-	outfile: "dist/web/extension.js",
+	outfile: "dist-extension/web/extension.js",
 });
 
 build({
@@ -60,7 +87,7 @@ build({
 	external: ["vscode", "worker_threads"],
 	minify,
 	platform: "browser",
-	outfile: "dist/diffWorker.js",
+	outfile: "dist-extension/diffWorker.js",
 });
 
 // Build the webview editors
@@ -72,7 +99,7 @@ build({
 	sourcemap: watch,
 	minify,
 	platform: "browser",
-	outfile: "dist/editor.js",
+	outfile: "dist-extension/editor.js",
 	define: defineProd
 		? {
 				"process.env.NODE_ENV": defineProd ? '"production"' : '"development"',
@@ -80,3 +107,6 @@ build({
 		: undefined,
 	plugins: [svgr(), css({ v2: true, filter: /\.css$/i })],
 });
+
+// Copy assets after build completes
+setTimeout(() => copyAssets(), 100);

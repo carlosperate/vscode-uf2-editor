@@ -20,8 +20,8 @@
   ],
   "icon": "icon.png",
   "activationEvents": [],
-  "main": "./dist/extension.js",
-  "browser": "./dist/web/extension.js",
+  "main": "./dist-extension/extension.js",
+  "browser": "./dist-extension/web/extension.js",
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": true
@@ -90,8 +90,12 @@
         "viewType": "uf2Editor.view",
         "displayName": "UF2 Editor",
         "selector": [
-          { "filenamePattern": "*.uf2" },
-          { "filenamePattern": "*.UF2" }
+          {
+            "filenamePattern": "*.uf2"
+          },
+          {
+            "filenamePattern": "*.UF2"
+          }
         ],
         "priority": "default"
       },
@@ -99,7 +103,9 @@
         "viewType": "uf2Editor.option",
         "displayName": "UF2 Editor",
         "selector": [
-          { "filenamePattern": "*" }
+          {
+            "filenamePattern": "*"
+          }
         ],
         "priority": "option"
       }

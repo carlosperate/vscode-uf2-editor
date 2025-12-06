@@ -28,7 +28,11 @@ function initDiffWorker(extensionUri: vscode.Uri): {
 	dispose: () => void;
 } {
 	let worker: Worker;
-	const workerFilePath = vscode.Uri.joinPath(extensionUri, "dist", "diffWorker.js").toString();
+	const workerFilePath = vscode.Uri.joinPath(
+		extensionUri,
+		"dist-extension",
+		"diffWorker.js",
+	).toString();
 
 	try {
 		worker = new Worker(workerFilePath);

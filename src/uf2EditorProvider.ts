@@ -199,10 +199,10 @@ export class Uf2EditorProvider implements vscode.CustomEditorProvider<Uf2Documen
 	private getHtmlForWebview(webview: vscode.Webview): string {
 		// Convert the styles and scripts for the webview into webview URIs
 		const scriptUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._context.extensionUri, "dist", "editor.js"),
+			vscode.Uri.joinPath(this._context.extensionUri, "dist-extension", "editor.js"),
 		);
 		const styleUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this._context.extensionUri, "dist", "editor.css"),
+			vscode.Uri.joinPath(this._context.extensionUri, "dist-extension", "editor.css"),
 		);
 
 		// Use a nonce to allow certain scripts to be run
