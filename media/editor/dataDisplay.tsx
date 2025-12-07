@@ -460,6 +460,7 @@ const DataCell: React.FC<{
 	isChar: boolean;
 	isAppend: boolean;
 	className?: string;
+	children?: React.ReactNode;
 }> = ({ offset, value, className, children, isChar, isAppend }) => {
 	const elRef = useRef<HTMLSpanElement | null>(null);
 	const focusedElement = new FocusedElement(isChar, offset);

@@ -1,14 +1,3 @@
-import ArrowDown from "@vscode/codicons/src/icons/arrow-down.svg";
-import ArrowUp from "@vscode/codicons/src/icons/arrow-up.svg";
-import CaseSensitive from "@vscode/codicons/src/icons/case-sensitive.svg";
-import ChevronDown from "@vscode/codicons/src/icons/chevron-down.svg";
-import ChevronRight from "@vscode/codicons/src/icons/chevron-right.svg";
-import Close from "@vscode/codicons/src/icons/close.svg";
-import BinaryFile from "@vscode/codicons/src/icons/file-binary.svg";
-import RegexIcon from "@vscode/codicons/src/icons/regex.svg";
-import ReplaceAll from "@vscode/codicons/src/icons/replace-all.svg";
-import Replace from "@vscode/codicons/src/icons/replace.svg";
-import SearchStop from "@vscode/codicons/src/icons/search-stop.svg";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -21,13 +10,32 @@ import {
 import { placeholder1 } from "../../shared/strings";
 import { Uf2DocumentEditOp, Uf2DocumentReplaceEdit } from "../../shared/uf2DocumentModel";
 import { Range } from "../../shared/util/range";
+import {
+	arrowDownSvg,
+	arrowUpSvg,
+	caseSensitiveSvg,
+	chevronDownSvg,
+	chevronRightSvg,
+	closeSvg,
+	fileBinarySvg,
+	regexSvg,
+	replaceAllSvg,
+	replaceSvg,
+	searchStopSvg,
+} from "./codiconSvgs";
 import { FocusedElement, dataCellCls, useDisplayContext } from "./dataDisplayContext";
 import _style from "./findWidget.css";
 import { usePersistedState } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
 import { clsx, hexDecode, isHexString, parseHexDigit, throwOnUndefinedAccessInDev } from "./util";
-import { VsIconButton, VsIconCheckbox, VsProgressIndicator, VsTextFieldGroup } from "./vscodeUi";
+import {
+	SvgIcon,
+	VsIconButton,
+	VsIconCheckbox,
+	VsProgressIndicator,
+	VsTextFieldGroup,
+} from "./vscodeUi";
 
 const style = throwOnUndefinedAccessInDev(_style);
 
@@ -353,7 +361,7 @@ export const FindWidget: React.FC = () => {
 					onClick={toggleFindReplace}
 					className={style.replaceToggle}
 				>
-					{replaceVisible ? <ChevronDown /> : <ChevronRight />}
+					{replaceVisible ? <SvgIcon svg={chevronDownSvg} /> : <SvgIcon svg={chevronRightSvg} />}
 				</VsIconButton>
 			)}
 			<div className={style.controlsContainer}>
@@ -370,7 +378,7 @@ export const FindWidget: React.FC = () => {
 					>
 						{!isBinaryMode && (
 							<VsIconCheckbox checked={isRegexp} onToggle={setIsRegexp} title={strings.regexSearch}>
-								<RegexIcon />
+								<SvgIcon svg={regexSvg} />
 							</VsIconCheckbox>
 						)}
 						<VsIconCheckbox
@@ -378,14 +386,14 @@ export const FindWidget: React.FC = () => {
 							onToggle={setIsBinaryMode}
 							title={strings.searchInBinaryMode}
 						>
-							<BinaryFile />
+							<SvgIcon svg={fileBinarySvg} />
 						</VsIconCheckbox>
 						<VsIconCheckbox
 							checked={isCaseSensitive}
 							onToggle={setIsCaseSensitive}
 							title={strings.caseSensitive}
 						>
-							<CaseSensitive />
+							<SvgIcon svg={caseSensitiveSvg} />
 						</VsIconCheckbox>
 					</VsTextFieldGroup>
 					<ResultBadge
@@ -398,24 +406,24 @@ export const FindWidget: React.FC = () => {
 						disabled={results.progress === 1}
 						onClick={stopSearch}
 					>
-						<SearchStop />
+						<SvgIcon svg={searchStopSvg} />
 					</VsIconButton>
 					<VsIconButton
 						disabled={results.results.length === 0}
 						onClick={() => navigateResults(-1)}
 						title={strings.previousMatch}
 					>
-						<ArrowUp />
+						<SvgIcon svg={arrowUpSvg} />
 					</VsIconButton>
 					<VsIconButton
 						disabled={results.results.length === 0}
 						onClick={() => navigateResults(1)}
 						title={strings.nextMatch}
 					>
-						<ArrowDown />
+						<SvgIcon svg={arrowDownSvg} />
 					</VsIconButton>
 					<VsIconButton title={strings.closeWidget} onClick={closeWidget}>
-						<Close />
+						<SvgIcon svg={closeSvg} />
 					</VsIconButton>
 				</div>
 				{replaceVisible && (
@@ -434,7 +442,7 @@ export const FindWidget: React.FC = () => {
 							onClick={replaceSelected}
 							title={strings.replaceSelectedMatch}
 						>
-							<Replace />
+							<SvgIcon svg={replaceSvg} />
 						</VsIconButton>
 						<VsIconButton
 							disabled={
@@ -445,7 +453,7 @@ export const FindWidget: React.FC = () => {
 							onClick={replaceAll}
 							title={strings.replaceAllMatches}
 						>
-							<ReplaceAll />
+							<SvgIcon svg={replaceAllSvg} />
 						</VsIconButton>
 					</div>
 				)}

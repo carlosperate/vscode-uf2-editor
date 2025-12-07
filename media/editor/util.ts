@@ -28,8 +28,6 @@ export const throwOnUndefinedAccessInDev = <T extends object>(value: T): T => {
 
 const style = throwOnUndefinedAccessInDev(_style);
 
-export const isMac = navigator.userAgent.indexOf("Mac OS X") >= 0;
-
 /**
  * Returns truthy classes passed in as parameters joined into a class string.
  */

@@ -1,13 +1,26 @@
 import { VirtualElement } from "@popperjs/core";
-import Close from "@vscode/codicons/src/icons/close.svg";
 import React, { KeyboardEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { usePopper } from "react-popper";
+import { closeSvg } from "./codiconSvgs";
 import { useGlobalHandler } from "./hooks";
 import { clsx, throwOnUndefinedAccessInDev } from "./util";
 import _style from "./vscodeUi.css";
 
 const style = throwOnUndefinedAccessInDev(_style);
+
+type SvgIconProps = {
+	svg: string;
+	className?: string;
+};
+
+export const SvgIcon: React.FC<SvgIconProps> = ({ svg, className }) => (
+	<span
+		className={clsx(style.svgIcon, className)}
+		aria-hidden="true"
+		dangerouslySetInnerHTML={{ __html: svg }}
+	/>
+);
 
 export const VsTextFieldGroup = React.forwardRef<
 	HTMLInputElement,
@@ -75,6 +88,7 @@ export const VsIconCheckbox: React.FC<{
 	checked: boolean;
 	title: string;
 	onToggle: (checked: boolean) => void;
+	children?: React.ReactNode;
 }> = ({ checked, title, onToggle, children }) => (
 	<VsIconButton
 		role="checkbox"
@@ -95,6 +109,7 @@ export interface IPopoverProps {
 	onClickOutside?: () => void;
 	role?: string;
 	arrow?: { className: string; size: number };
+	children?: React.ReactNode;
 }
 
 const PopoverArrow: React.FC<{ size: number } & React.SVGProps<SVGSVGElement>> = ({
@@ -210,7 +225,7 @@ export const VsTooltipPopover: React.FC<IPopoverProps> = props => {
 export const VsWidgetPopover: React.FC<IPopoverProps> = props => (
 	<Popover {...props} className={clsx(props.className, style.tooltipPopover, style.widgetPopover)}>
 		<VsIconButton title="Close" onClick={props.hide} className={style.widgetPopoverCloser}>
-			<Close />
+			<SvgIcon svg={closeSvg} />
 		</VsIconButton>
 		{props.children}
 	</Popover>

@@ -16,6 +16,7 @@ const style = throwOnUndefinedAccessInDev(_style);
  */
 export const VirtualScrollContainer: React.FC<{
 	className?: string;
+	children?: React.ReactNode;
 	scrollStart: number;
 	scrollEnd: number;
 	scrollTop: number;

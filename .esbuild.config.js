@@ -1,12 +1,16 @@
 const esbuild = require("esbuild");
-const svgr = require("esbuild-plugin-svgr");
 const css = require("esbuild-css-modules-plugin");
 const fs = require("fs");
 const path = require("path");
 
 const watch = process.argv.includes("--watch");
 const minify = !watch || process.argv.includes("--minify");
-const defineProd = process.argv.includes("--defineProd");
+const envDefine = {
+	"process.env.NODE_ENV": watch ? '"development"' : '"production"',
+};
+const testDefine = {
+	"process.env.NODE_ENV": '"test"',
+};
 
 // Copy assets (manually maintained files) to dist-extension after build
 function copyAssets() {
@@ -53,6 +57,7 @@ build({
 	sourcemap: watch,
 	minify,
 	platform: "node",
+	define: envDefine,
 	outfile: "dist-extension/extension.js",
 });
 
@@ -61,11 +66,13 @@ build({
 	entryPoints: ["src/test/index.ts"],
 	tsconfig: "./tsconfig.json",
 	bundle: true,
-	external: ["vscode", "mocha", "chai"],
+	external: ["vscode", "mocha", "chai", "jsdom"],
 	sourcemap: watch,
-	minify,
+	minify: false,
 	platform: "node",
+	define: testDefine,
 	outfile: "dist-extension/test.js",
+	plugins: [css({ v2: true, filter: /\.css$/i })],
 });
 
 build({
@@ -76,6 +83,7 @@ build({
 	external: ["vscode", "fs", "worker_threads"],
 	minify,
 	platform: "browser",
+	define: envDefine,
 	outfile: "dist-extension/web/extension.js",
 });
 
@@ -87,11 +95,13 @@ build({
 	external: ["vscode", "worker_threads"],
 	minify,
 	platform: "browser",
+	define: envDefine,
 	outfile: "dist-extension/diffWorker.js",
 });
 
 // Build the webview editors
-build({
+
+const editorBuildOptions = {
 	entryPoints: ["media/editor/hexEdit.tsx"],
 	tsconfig: "./tsconfig.json",
 	bundle: true,
@@ -100,13 +110,11 @@ build({
 	minify,
 	platform: "browser",
 	outfile: "dist-extension/editor.js",
-	define: defineProd
-		? {
-				"process.env.NODE_ENV": defineProd ? '"production"' : '"development"',
-			}
-		: undefined,
-	plugins: [svgr(), css({ v2: true, filter: /\.css$/i })],
-});
+	define: envDefine,
+	plugins: [css({ v2: true, filter: /\.css$/i })],
+};
+
+build(editorBuildOptions);
 
 // Copy assets after build completes
 setTimeout(() => copyAssets(), 100);
