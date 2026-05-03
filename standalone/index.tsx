@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { defaultStrings } from "../shared/defaultStrings";
 import { ILocalizedStrings } from "../shared/strings";
 import { StandaloneApp } from "./StandaloneApp";
+import "./styles/theme.css";
 
 declare global {
 	// eslint-disable-next-line no-var
