@@ -8,6 +8,7 @@ const fileImports = [
 	() => import("../../standalone/test/StandaloneApp.test"),
 	() => import("../../standalone/test/StandaloneDataFlow.test"),
 	() => import("../../standalone/test/vscodeApiMock.test"),
+	() => import("../../standalone/test/integration.test"),
 	() => import("./backup.test"),
 	() => import("./hexDocumentModel.test"),
 	() => import("./searchRequest.test"),
