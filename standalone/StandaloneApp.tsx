@@ -81,7 +81,11 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 					Choose another file
 				</button>
 			</header>
-			<div data-testid="standalone-viewer-root" style={{ flex: 1, minHeight: 400 }}>
+			<div
+				data-testid="standalone-viewer-root"
+				key={`${file.name}-${file.size}-${file.lastModified}`}
+				style={{ flex: 1, minHeight: 400 }}
+			>
 				{viewer()}
 			</div>
 		</div>

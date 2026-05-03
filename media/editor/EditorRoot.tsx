@@ -48,7 +48,7 @@ const Editor: React.FC = () => {
 	const dimensions = useRecoilValue(select.dimensions);
 	const setEdit = useSetRecoilState(select.edits);
 	const isReadonly = useRecoilValue(select.isReadonly);
-	const ctx = useMemo(() => new DisplayContext(setEdit, isReadonly), []);
+	const ctx = useMemo(() => new DisplayContext(setEdit, isReadonly), [setEdit, isReadonly]);
 
 	const isLargeFile = useRecoilValue(select.isLargeFile);
 	const [bypassLargeFilePrompt, setBypassLargeFile] = useRecoilState(select.bypassLargeFilePrompt);
