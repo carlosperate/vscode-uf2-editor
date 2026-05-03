@@ -1,11 +1,3 @@
-.scrollbar {
-	position: absolute;
-	visibility: hidden;
-	overflow: scroll;
-	width: 100px;
-	height: 100px;
-}
-
 /* Decorators */
 
 .diff-insert {

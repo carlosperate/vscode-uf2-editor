@@ -161,25 +161,6 @@ export const parseHexDigit = (s: string): number | undefined => {
 	}
 };
 
-/** Calculates the dimensions of the browser scrollbar */
-export const getScrollDimensions = (() => {
-	let value: { width: number; height: number } | undefined;
-	return () => {
-		if (value !== undefined) {
-			return value;
-		}
-
-		const el = document.createElement("div");
-		el.classList.add(style.scrollbar);
-		document.body.appendChild(el);
-		const width = el.offsetWidth - el.clientWidth;
-		const height = el.offsetHeight - el.clientHeight;
-		document.body.removeChild(el);
-		value = { width, height };
-		return value;
-	};
-})();
-
 export const HexDecoratorStyles: { [key in HexDecoratorType]: string } = {
 	[HexDecoratorType.Insert]: style.diffInsert,
 	[HexDecoratorType.Delete]: style.diffDelete,
