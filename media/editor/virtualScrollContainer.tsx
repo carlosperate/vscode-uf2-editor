@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSize } from "./hooks";
-import { clamp, clsx, getScrollDimensions, throwOnUndefinedAccessInDev } from "./util";
+import { clamp, clsx, throwOnUndefinedAccessInDev } from "./util";
 import _style from "./virtualScrollContainer.css";
 
 const style = throwOnUndefinedAccessInDev(_style);
@@ -16,6 +16,7 @@ const style = throwOnUndefinedAccessInDev(_style);
  */
 export const VirtualScrollContainer: React.FC<{
 	className?: string;
+	children?: React.ReactNode;
 	scrollStart: number;
 	scrollEnd: number;
 	scrollTop: number;
@@ -140,7 +141,6 @@ export const VirtualScrollContainer: React.FC<{
 				style={{
 					opacity: visible ? 1 : 0,
 					pointerEvents: visible ? "auto" : "none",
-					width: getScrollDimensions().width,
 				}}
 				className={clsx(style.scrollbarContainer, drag && style.dragging)}
 				ref={wrapperRef}

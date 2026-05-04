@@ -1,0 +1,20 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../dist-standalone",
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"jsx": "react",
+		"module": "esnext",
+		"target": "es2020",
+		"moduleResolution": "node",
+		"rootDir": "../",
+	},
+	"include": ["./**/*", "../media/**/*", "../shared/**/*"],
+	"exclude": [
+		"../src/**/*",
+		"test/**/*",
+		"../dist-extension/**/*",
+		"../dist-standalone/**/*",
+		"../node_modules/**/*",
+	],
+}

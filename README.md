@@ -26,6 +26,26 @@ The UF2 editor can be set as the default editor for certain file types by using 
 },
 ```
 
+## Standalone Web Viewer
+
+A browser-based version of the viewer is available on the `standalone` folder. It reuses the same editor UI without requiring VS Code.
+
+```bash
+npm run build:standalone   # production build → dist-standalone/
+npm run watch:standalone   # rebuild on file changes
+npx serve dist-standalone  # serve locally
+```
+
+The `dist-standalone/` output can be deployed to any static host (GitHub Pages, Netlify, etc.).
+
+## Development
+
+1. Install dependencies: `npm install`
+2. Start the watch build: `npm run watch`
+3. Press <kbd>F5</kbd> in VS Code to launch the **Run Extension** debug configuration — this opens a new Extension Development Host window with the extension loaded.
+
+To run the tests: `npm test`
+
 ## Known Issues
 
 To track existing issues or report a new one, please visit the GitHub Issues page at https://github.com/carlosperate/vscode-uf2-editor/issues

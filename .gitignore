@@ -3,5 +3,6 @@ node_modules
 .vscode-test/
 *.vsix
 dist-extension
+dist-standalone
 .DS_Store
 .github/copilot-instructions.md

@@ -1,6 +1,14 @@
 import Mocha from "mocha";
+import "./setupDomEnvironment";
 
 const fileImports = [
+	() => import("../../standalone/test/BrowserFileAccessor.test"),
+	() => import("../../standalone/test/FileDropZone.test"),
+	() => import("../../standalone/test/MockMessageHandler.test"),
+	() => import("../../standalone/test/StandaloneApp.test"),
+	() => import("../../standalone/test/StandaloneDataFlow.test"),
+	() => import("../../standalone/test/vscodeApiMock.test"),
+	() => import("../../standalone/test/integration.test"),
 	() => import("./backup.test"),
 	() => import("./hexDocumentModel.test"),
 	() => import("./searchRequest.test"),

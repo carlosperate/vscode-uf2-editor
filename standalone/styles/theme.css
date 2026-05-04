@@ -1,0 +1,112 @@
+/* Dark theme (default) */
+:root {
+	/* Editor */
+	--vscode-editor-background: #1e1e1e;
+	--vscode-editor-foreground: #d4d4d4;
+	--vscode-editor-font-family: "Droid Sans Mono", "monospace", monospace;
+	--vscode-editor-font-size: 14px;
+	--vscode-editorCursor-foreground: #aeafad;
+	--vscode-editor-selectionBackground: #264f78;
+	--vscode-editor-selectionForeground: #d4d4d4;
+	--vscode-editor-inactiveSelectionBackground: #3a3d41;
+	--vscode-editor-hoverHighlightBackground: rgba(38, 79, 120, 0.25);
+	--vscode-editorLineNumber-foreground: #858585;
+	--vscode-editorLineNumber-activeForeground: #c6c6c6;
+
+	/* Widgets / overlays */
+	--vscode-editorWidget-background: #252526;
+	--vscode-editorWidget-foreground: #cccccc;
+	--vscode-editorWidget-border: #454545;
+	--vscode-widget-shadow: rgba(0, 0, 0, 0.36);
+
+	/* Input */
+	--vscode-input-background: #3c3c3c;
+	--vscode-input-border: transparent;
+	--vscode-input-foreground: #cccccc;
+	--vscode-input-placeholderForeground: rgba(204, 204, 204, 0.5);
+	--vscode-inputOption-activeBackground: rgba(0, 127, 212, 0.4);
+	--vscode-inputOption-activeBorder: #007fd4;
+	--vscode-inputOption-activeForeground: #ffffff;
+	--vscode-inputValidation-errorBackground: #5a1d1d;
+	--vscode-inputValidation-errorBorder: #be1100;
+	--vscode-inputValidation-errorForeground: #f48771;
+
+	/* Buttons */
+	--vscode-button-background: #0e639c;
+	--vscode-button-foreground: #ffffff;
+	--vscode-button-border: transparent;
+	--vscode-button-hoverBackground: #1177bb;
+	--vscode-button-secondaryBackground: #3a3d41;
+	--vscode-button-secondaryForeground: #cccccc;
+
+	/* Misc */
+	--vscode-focusBorder: #007fd4;
+	--vscode-contrastBorder: transparent;
+	--vscode-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+	--vscode-icon-foreground: #c5c5c5;
+	--vscode-toolbar-hoverBackground: rgba(90, 93, 94, 0.31);
+	--vscode-tab-unfocusedInactiveForeground: rgba(255, 255, 255, 0.5);
+	--vscode-minimapGutter-modifiedBackground: #1b81a8;
+	--vscode-progressBar-background: #0e70c0;
+	--vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
+	--vscode-scrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.7);
+	--vscode-diffEditor-diagonalFill: rgba(128, 128, 128, 0.2);
+}
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+	:root {
+		--vscode-editor-background: #ffffff;
+		--vscode-editor-foreground: #000000;
+		--vscode-editorCursor-foreground: #000000;
+		--vscode-editor-selectionBackground: #add6ff;
+		--vscode-editor-selectionForeground: #000000;
+		--vscode-editor-inactiveSelectionBackground: #e5ebf1;
+		--vscode-editor-hoverHighlightBackground: rgba(173, 214, 255, 0.15);
+		--vscode-editorLineNumber-foreground: #237893;
+		--vscode-editorLineNumber-activeForeground: #0b216f;
+		--vscode-editorWidget-background: #f3f3f3;
+		--vscode-editorWidget-foreground: #616161;
+		--vscode-editorWidget-border: #c8c8c8;
+		--vscode-widget-shadow: rgba(0, 0, 0, 0.16);
+		--vscode-input-background: #ffffff;
+		--vscode-input-border: #cecece;
+		--vscode-input-foreground: #616161;
+		--vscode-input-placeholderForeground: rgba(97, 97, 97, 0.5);
+		--vscode-inputOption-activeBackground: rgba(0, 120, 212, 0.2);
+		--vscode-inputOption-activeBorder: #0078d4;
+		--vscode-inputOption-activeForeground: #000000;
+		--vscode-inputValidation-errorBackground: #f2dede;
+		--vscode-inputValidation-errorBorder: #be1100;
+		--vscode-inputValidation-errorForeground: #a1260d;
+		--vscode-button-background: #007acc;
+		--vscode-button-hoverBackground: #0062a3;
+		--vscode-button-secondaryBackground: #5f6a79;
+		--vscode-button-secondaryForeground: #ffffff;
+		--vscode-focusBorder: #0078d4;
+		--vscode-icon-foreground: #424242;
+		--vscode-toolbar-hoverBackground: rgba(184, 184, 184, 0.31);
+		--vscode-tab-unfocusedInactiveForeground: rgba(51, 51, 51, 0.5);
+		--vscode-progressBar-background: #0078d4;
+		--vscode-scrollbarSlider-background: rgba(100, 100, 100, 0.4);
+		--vscode-diffEditor-diagonalFill: rgba(34, 34, 34, 0.2);
+	}
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	overflow: hidden;
+	background-color: var(--vscode-editor-background);
+	color: var(--vscode-editor-foreground);
+	font-family: var(--vscode-font-family);
+	font-size: var(--vscode-editor-font-size);
+}
+
+#root {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+}

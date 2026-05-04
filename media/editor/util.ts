@@ -28,8 +28,6 @@ export const throwOnUndefinedAccessInDev = <T extends object>(value: T): T => {
 
 const style = throwOnUndefinedAccessInDev(_style);
 
-export const isMac = navigator.userAgent.indexOf("Mac OS X") >= 0;
-
 /**
  * Returns truthy classes passed in as parameters joined into a class string.
  */
@@ -162,25 +160,6 @@ export const parseHexDigit = (s: string): number | undefined => {
 			return undefined;
 	}
 };
-
-/** Calculates the dimensions of the browser scrollbar */
-export const getScrollDimensions = (() => {
-	let value: { width: number; height: number } | undefined;
-	return () => {
-		if (value !== undefined) {
-			return value;
-		}
-
-		const el = document.createElement("div");
-		el.classList.add(style.scrollbar);
-		document.body.appendChild(el);
-		const width = el.offsetWidth - el.clientWidth;
-		const height = el.offsetHeight - el.clientHeight;
-		document.body.removeChild(el);
-		value = { width, height };
-		return value;
-	};
-})();
 
 export const HexDecoratorStyles: { [key in HexDecoratorType]: string } = {
 	[HexDecoratorType.Insert]: style.diffInsert,

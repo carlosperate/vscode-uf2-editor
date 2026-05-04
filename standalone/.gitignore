@@ -1,0 +1,3 @@
+# Local build artifacts specific to standalone viewer
+node_modules/
+*.log

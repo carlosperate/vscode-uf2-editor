@@ -235,18 +235,24 @@
   },
   "scripts": {
     "compile": "tsc --noEmit && node .esbuild.config.js",
-    "lint": "eslint src --ext ts",
-    "fmt": "prettier --write \"{src,media,shared}/**/*.{ts,tsx}\" && npm run lint -- --fix",
+    "build:extension": "npm run compile",
+    "build:standalone": "node standalone/esbuild.config.js --production",
+    "build:all": "npm run build:extension && npm run build:standalone",
+    "lint": "eslint src standalone --ext ts,tsx",
+    "fmt": "prettier --write \"{src,media,shared,standalone}/**/*.{ts,tsx}\" && npm run lint -- --fix",
     "watch": "node .esbuild.config.js --watch",
+    "watch:standalone": "node standalone/esbuild.config.js --watch",
     "test": "tsc --noEmit && node ./src/test/runTest.js"
   },
   "devDependencies": {
+    "@testing-library/react": "^14.3.1",
     "@types/chai": "^4.3.0",
     "@types/diff": "^5.2.1",
+    "@types/jsdom": "^27.0.0",
     "@types/mocha": "^9.0.0",
     "@types/node": "^18.11.9",
-    "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
     "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
@@ -254,8 +260,8 @@
     "chai": "^4.3.4",
     "esbuild": "^0.19.0",
     "esbuild-css-modules-plugin": "^3.1.0",
-    "esbuild-plugin-svgr": "^2.1.0",
     "eslint": "^8.56.0",
+    "jsdom": "^27.2.0",
     "mocha": "^11.1.0",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3"
@@ -270,6 +276,7 @@
     "react-dom": "^18.2.0",
     "react-popper": "^2.3.0",
     "recoil": "^0.7.7",
+    "tslib": "^2.6.2",
     "vscode-webview-tools": "^0.1.1"
   },
   "prettier": {

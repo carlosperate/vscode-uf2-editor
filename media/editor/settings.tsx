@@ -1,11 +1,11 @@
-import SettingsGearIcon from "@vscode/codicons/src/icons/settings-gear.svg";
 import React, { useState } from "react";
 import { useRecoilState } from "recoil";
+import { settingsGearSvg } from "./codiconSvgs";
 import _style from "./settings.css";
 import * as select from "./state";
 import { strings } from "./strings";
 import { throwOnUndefinedAccessInDev } from "./util";
-import { VsIconButton, VsTextField, VsWidgetPopover } from "./vscodeUi";
+import { SvgIcon, VsIconButton, VsTextField, VsWidgetPopover } from "./vscodeUi";
 
 const style = throwOnUndefinedAccessInDev(_style);
 
@@ -21,7 +21,7 @@ export const SettingsGear: React.FC = () => {
 				onClick={() => setIsOpen(!isOpen)}
 				ref={setAnchor}
 			>
-				<SettingsGearIcon />
+				<SvgIcon svg={settingsGearSvg} />
 			</VsIconButton>
 			<VsWidgetPopover anchor={anchor} hide={() => setIsOpen(false)} visible={isOpen}>
 				<SettingsContent />

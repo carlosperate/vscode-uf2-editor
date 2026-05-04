@@ -25,20 +25,48 @@ import { binarySearch } from "../../shared/util/binarySearch";
 import { Range } from "../../shared/util/range";
 import { clamp } from "./util";
 
-const acquireVsCodeApi: () => {
+type VsCodeApi = {
 	postMessage(msg: unknown): void;
-	getState(): any;
-	setState(value: any): void;
-} = (globalThis as any).acquireVsCodeApi;
+	getState?: () => any;
+	setState?: (value: any) => void;
+};
 
-export const vscode = acquireVsCodeApi?.();
+let cachedVsCodeApi: VsCodeApi | undefined;
+let lastAcquireFn: (() => VsCodeApi) | undefined;
+
+const tryGetVsCodeApi = (): VsCodeApi | undefined => {
+	const acquire = (globalThis as { acquireVsCodeApi?: () => VsCodeApi }).acquireVsCodeApi;
+	if (!acquire) {
+		cachedVsCodeApi = undefined;
+		lastAcquireFn = undefined;
+		return undefined;
+	}
+	if (acquire !== lastAcquireFn) {
+		cachedVsCodeApi = acquire();
+		lastAcquireFn = acquire;
+	}
+	return cachedVsCodeApi;
+};
+
+const requireVsCodeApi = (): VsCodeApi => {
+	const api = tryGetVsCodeApi();
+	if (!api) {
+		throw new Error("VS Code API has not been initialized");
+	}
+	return api;
+};
 
 export const setWebviewState = (key: string, value: unknown) => {
-	vscode.setState?.({ ...(vscode.getState?.() ?? {}), [key]: value });
+	const api = tryGetVsCodeApi();
+	const setState = api?.setState;
+	if (!setState) {
+		return;
+	}
+	setState({ ...(api.getState?.() ?? {}), [key]: value });
 };
 
 export const getWebviewState = <T>(key: string, defaultValue: T): T => {
-	return (vscode.getState?.() ?? {})[key] ?? defaultValue;
+	return (tryGetVsCodeApi()?.getState?.() ?? {})[key] ?? defaultValue;
 };
 
 type HandlerFn = (message: ToWebviewMessage) => Promise<FromWebviewMessage> | undefined;
@@ -73,7 +101,7 @@ export const messageHandler = new MessageHandler<FromWebviewMessage, ToWebviewMe
 			}
 		}
 	},
-	msg => vscode.postMessage(msg),
+	msg => requireVsCodeApi().postMessage(msg),
 );
 
 window.addEventListener("message", ev => messageHandler.handleMessage(ev.data));
@@ -138,7 +166,7 @@ export const fileSize = selector({
 
 const initialOffset = selector<number>({
 	key: "initialOffset",
-	get: ({ get }) => vscode.getState()?.offset ?? get(readyQuery).initialOffset,
+	get: ({ get }) => tryGetVsCodeApi()?.getState?.()?.offset ?? get(readyQuery).initialOffset,
 });
 
 /** Editor settings which have changes persisted to user settings */
@@ -235,7 +263,8 @@ export const offset = atom({
 			let stashedOffset: number | undefined;
 
 			fx.onSet(offset => {
-				vscode.setState({ ...vscode.getState(), offset });
+				const api = tryGetVsCodeApi();
+				api?.setState?.({ ...(api.getState?.() ?? {}), offset });
 			});
 
 			registerHandler(MessageType.StashDisplayedOffset, () => {
@@ -251,7 +280,8 @@ export const offset = atom({
 
 			registerHandler(MessageType.GoToOffset, msg => {
 				const s = fx.getLoadable(columnWidth).getValue();
-				vscode.setState({ ...vscode.getState(), offset: msg.offset });
+				const api = tryGetVsCodeApi();
+				api?.setState?.({ ...(api.getState?.() ?? {}), offset: msg.offset });
 				fx.setSelf(startOfRowContainingByte(msg.offset, s));
 			});
 		},

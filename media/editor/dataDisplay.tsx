@@ -27,7 +27,6 @@ import {
 	clamp,
 	clsx,
 	getAsciiCharacter,
-	getScrollDimensions,
 	HexDecoratorStyles,
 	parseHexDigit,
 	throwOnUndefinedAccessInDev,
@@ -99,7 +98,6 @@ const DataInspector: React.FC = () => {
 			{isInspecting ? "Data Inspector" : null}
 			<div
 				className={style.dataInspectorWrap}
-				style={{ "--scrollbar-width": `${getScrollDimensions().width}px` } as React.CSSProperties}
 			>
 				<DataInspectorAside onInspecting={setIsInspecting} />
 			</div>
@@ -460,6 +458,7 @@ const DataCell: React.FC<{
 	isChar: boolean;
 	isAppend: boolean;
 	className?: string;
+	children?: React.ReactNode;
 }> = ({ offset, value, className, children, isChar, isAppend }) => {
 	const elRef = useRef<HTMLSpanElement | null>(null);
 	const focusedElement = new FocusedElement(isChar, offset);
