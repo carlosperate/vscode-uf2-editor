@@ -28,7 +28,7 @@ The UF2 editor can be set as the default editor for certain file types by using 
 
 ## Standalone Web Viewer
 
-A browser-based version of the viewer is available on the `standalone` branch. It reuses the same editor UI without requiring VS Code.
+A browser-based version of the viewer is available on the `standalone` folder. It reuses the same editor UI without requiring VS Code.
 
 ```bash
 npm run build:standalone   # production build → dist-standalone/

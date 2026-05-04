@@ -4,7 +4,7 @@ import { EditorRoot } from "../media/editor/EditorRoot";
 import { BrowserFileAccessor } from "./BrowserFileAccessor";
 import { FileDropZone } from "./components/FileDropZone";
 import { MockMessageHandler } from "./MockMessageHandler";
-import { initializeVsCodeApi } from "./vscodeApiMock";
+import { initializeVsCodeApi, resetVsCodeApiMock } from "./vscodeApiMock";
 
 export type InitializeMessagingFn = (file: File) => void;
 
@@ -92,6 +92,7 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 
 	const handleFileSelect = useCallback(
 		(selectedFile: File) => {
+			resetVsCodeApiMock();
 			setFile(selectedFile);
 			initializeMessaging(selectedFile);
 		},
@@ -129,7 +130,7 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 					</span>
 				</div>
 				<button
-					onClick={() => setFile(null)}
+					onClick={() => { resetVsCodeApiMock(); setFile(null); }}
 					style={{
 						background: "var(--vscode-button-secondaryBackground, #3a3d41)",
 						border: "1px solid var(--vscode-button-border, transparent)",

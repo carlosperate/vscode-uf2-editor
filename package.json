@@ -238,8 +238,8 @@
     "build:extension": "npm run compile",
     "build:standalone": "node standalone/esbuild.config.js --production",
     "build:all": "npm run build:extension && npm run build:standalone",
-    "lint": "eslint src --ext ts",
-    "fmt": "prettier --write \"{src,media,shared}/**/*.{ts,tsx}\" && npm run lint -- --fix",
+    "lint": "eslint src standalone --ext ts,tsx",
+    "fmt": "prettier --write \"{src,media,shared,standalone}/**/*.{ts,tsx}\" && npm run lint -- --fix",
     "watch": "node .esbuild.config.js --watch",
     "watch:standalone": "node standalone/esbuild.config.js --watch",
     "test": "tsc --noEmit && node ./src/test/runTest.js"

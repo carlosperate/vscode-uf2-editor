@@ -32,18 +32,19 @@ type VsCodeApi = {
 };
 
 let cachedVsCodeApi: VsCodeApi | undefined;
+let lastAcquireFn: (() => VsCodeApi) | undefined;
 
 const tryGetVsCodeApi = (): VsCodeApi | undefined => {
-	if (cachedVsCodeApi) {
-		return cachedVsCodeApi;
-	}
-
 	const acquire = (globalThis as { acquireVsCodeApi?: () => VsCodeApi }).acquireVsCodeApi;
 	if (!acquire) {
+		cachedVsCodeApi = undefined;
+		lastAcquireFn = undefined;
 		return undefined;
 	}
-
-	cachedVsCodeApi = acquire();
+	if (acquire !== lastAcquireFn) {
+		cachedVsCodeApi = acquire();
+		lastAcquireFn = acquire;
+	}
 	return cachedVsCodeApi;
 };
 
