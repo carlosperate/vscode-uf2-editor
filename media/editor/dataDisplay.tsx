@@ -19,7 +19,7 @@ import {
 	useIsSelected,
 	useIsUnsaved,
 } from "./dataDisplayContext";
-import { DataInspectorAside } from "./dataInspector";
+import { DataInspector } from "./dataInspector";
 import { useGlobalHandler, useLastAsyncRecoilValue } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
@@ -85,23 +85,13 @@ export const DataHeader: React.FC = () => {
 					{strings.decodedText}
 				</DataCellGroup>
 			)}
-			<DataInspector />
+			<DataCellGroup style={{ position: "relative", flexGrow: 1 }}>
+				UF2 Data Inspector
+				<div className={style.dataInspectorWrap}>
+					<DataInspector />
+				</div>
+			</DataCellGroup>
 		</div>
-	);
-};
-
-/** Component that shows a Data Inspector header, and the inspector itself directly below when appropriate. */
-const DataInspector: React.FC = () => {
-	const [isInspecting, setIsInspecting] = useState(false);
-	return (
-		<DataCellGroup style={{ position: "relative", flexGrow: 1 }}>
-			{isInspecting ? "UF2 Data Inspector" : null}
-			<div
-				className={style.dataInspectorWrap}
-			>
-				<DataInspectorAside onInspecting={setIsInspecting} />
-			</div>
-		</DataCellGroup>
 	);
 };
 

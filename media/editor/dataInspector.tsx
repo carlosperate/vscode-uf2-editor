@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { Endianness } from "../../shared/protocol";
-import { FocusedElement, useDisplayContext } from "./dataDisplayContext";
+import { useDisplayContext } from "./dataDisplayContext";
 import _style from "./dataInspector.css";
 import { inspectableTypes } from "./dataInspectorProperties";
 import { useFileBytes, usePersistedState } from "./hooks";
@@ -10,56 +10,38 @@ import { strings } from "./strings";
 import { blockAtOffset, isUf2FileSelector } from "./uf2/blockSelectors";
 import { Uf2InspectorRows } from "./uf2/Uf2InspectorRows";
 import { throwOnUndefinedAccessInDev } from "./util";
-// Tooltip popover import removed with hover inspector deletion
 
 const style = throwOnUndefinedAccessInDev(_style);
 
-// Hover inspector removed; always showing Aside variant.
+const COLUMNS = 2;
+const LOOKAHEAD = 8;
 
-/** Data inspector view shown to the right hand side of the hex editor. */
-export const DataInspectorAside: React.FC<{ onInspecting?(isInspecting: boolean): void }> = ({
-	onInspecting,
-}) => {
+/** Always-visible UF2 Data Inspector. Tracks the focused byte; defaults to byte 0. */
+export const DataInspector: React.FC = () => {
 	const ctx = useDisplayContext();
-	const [inspected, setInspected] = useState<FocusedElement | undefined>(ctx.focusedElement);
+	const [offset, setOffset] = useState<number>(ctx.focusedElement?.byte ?? 0);
 
 	useEffect(() => {
 		const disposable = ctx.onDidFocus(focused => {
-			if (!inspected) {
-				onInspecting?.(true);
-			}
-			if (focused) {
-				setInspected(focused);
-			}
+			if (focused) setOffset(focused.byte);
 		});
 		return () => disposable.dispose();
 	}, []);
 
-	if (!inspected) {
-		return null;
-	}
-
 	return (
 		<Suspense fallback={null}>
-			<InspectorContents columns={2} offset={inspected.byte} />
+			<InspectorContents offset={offset} />
 		</Suspense>
 	);
 };
 
-const lookahead = 8;
-
-/** Inner contents of the data inspector. */
-const InspectorContents: React.FC<{
-	offset: number;
-	columns: number;
-}> = ({ offset, columns }) => {
+const InspectorContents: React.FC<{ offset: number }> = ({ offset }) => {
 	const defaultEndianness = useRecoilValue(select.editorSettings).defaultEndianness;
 	const [endianness, setEndianness] = usePersistedState("endianness", defaultEndianness);
-	const target = useFileBytes(offset, lookahead);
+	const target = useFileBytes(offset, LOOKAHEAD);
 	const dv = new DataView(target.buffer);
 	const le = endianness === Endianness.Little;
-
-	const gridTemplate = "max-content ".repeat(columns);
+	const gridTemplate = "max-content ".repeat(COLUMNS);
 
 	return (
 		<>
@@ -84,11 +66,7 @@ const InspectorContents: React.FC<{
 	);
 };
 
-/**
- * Renders the "UF2 Block Info" subsection above the typed inspector when
- * the file is UF2. Heading + rows live in the same section so the grid
- * sizing matches the lower one.
- */
+/** "UF2 Block Info" subsection above the typed inspector, only when the file is UF2. */
 const Uf2BlockSection: React.FC<{ offset: number; gridTemplate: string }> = ({
 	offset,
 	gridTemplate,
@@ -110,7 +88,6 @@ const Uf2BlockRows: React.FC<{ offset: number }> = ({ offset }) => {
 	return <Uf2InspectorRows result={result} />;
 };
 
-/** Controlled checkbox that toggles between little and big endian. */
 const EndiannessToggle: React.FC<{
 	endianness: Endianness;
 	setEndianness: (e: Endianness) => void;
