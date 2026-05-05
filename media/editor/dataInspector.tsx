@@ -7,6 +7,8 @@ import { inspectableTypes } from "./dataInspectorProperties";
 import { useFileBytes, usePersistedState } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
+import { blockAtOffset, isUf2FileSelector } from "./uf2/blockSelectors";
+import { Uf2InspectorRows } from "./uf2/Uf2InspectorRows";
 import { throwOnUndefinedAccessInDev } from "./util";
 // Tooltip popover import removed with hover inspector deletion
 
@@ -57,9 +59,13 @@ const InspectorContents: React.FC<{
 	const dv = new DataView(target.buffer);
 	const le = endianness === Endianness.Little;
 
+	const gridTemplate = "max-content ".repeat(columns);
+
 	return (
 		<>
-			<dl className={style.types} style={{ gridTemplateColumns: "max-content ".repeat(columns) }}>
+			<Uf2BlockSection offset={offset} gridTemplate={gridTemplate} />
+			<h4 className={style.sectionHeading}>Selected Data Inspector</h4>
+			<dl className={style.types} style={{ gridTemplateColumns: gridTemplate }}>
 				{inspectableTypes.map(({ label, convert, minBytes }) => (
 					<React.Fragment key={label}>
 						<dt>{label}</dt>
@@ -76,6 +82,32 @@ const InspectorContents: React.FC<{
 			<EndiannessToggle endianness={endianness} setEndianness={setEndianness} />
 		</>
 	);
+};
+
+/**
+ * Renders the "UF2 Block Info" subsection above the typed inspector when
+ * the file is UF2. Heading + rows live in the same section so the grid
+ * sizing matches the lower one.
+ */
+const Uf2BlockSection: React.FC<{ offset: number; gridTemplate: string }> = ({
+	offset,
+	gridTemplate,
+}) => {
+	const isUf2 = useRecoilValue(isUf2FileSelector);
+	if (!isUf2) return null;
+	return (
+		<Suspense fallback={null}>
+			<h4 className={style.sectionHeading}>UF2 Block Info</h4>
+			<dl className={style.types} style={{ gridTemplateColumns: gridTemplate }}>
+				<Uf2BlockRows offset={offset} />
+			</dl>
+		</Suspense>
+	);
+};
+
+const Uf2BlockRows: React.FC<{ offset: number }> = ({ offset }) => {
+	const result = useRecoilValue(blockAtOffset(offset));
+	return <Uf2InspectorRows result={result} />;
 };
 
 /** Controlled checkbox that toggles between little and big endian. */

@@ -9,6 +9,7 @@ const fileImports = [
 	() => import("./StandaloneDataFlow.test"),
 	() => import("./vscodeApiMock.test"),
 	() => import("./integration.test"),
+	() => import("./Uf2InspectorRows.test"),
 ];
 
 async function run(): Promise<void> {

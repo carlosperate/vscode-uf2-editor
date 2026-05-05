@@ -95,7 +95,7 @@ const DataInspector: React.FC = () => {
 	const [isInspecting, setIsInspecting] = useState(false);
 	return (
 		<DataCellGroup style={{ position: "relative", flexGrow: 1 }}>
-			{isInspecting ? "Data Inspector" : null}
+			{isInspecting ? "UF2 Data Inspector" : null}
 			<div
 				className={style.dataInspectorWrap}
 			>

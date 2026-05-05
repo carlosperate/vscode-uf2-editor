@@ -1,3 +1,16 @@
+.section-heading {
+	color: var(--vscode-descriptionForeground);
+	font-size: 0.75em;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	margin: 0.6rem 0 0.3rem;
+	text-transform: uppercase;
+}
+
+.section-heading:first-child {
+	margin-top: 0;
+}
+
 .types {
 	display: grid;
 	gap: 0.3rem 1rem;
