@@ -13,6 +13,7 @@ const fileImports = [
 	() => import("./hexDocumentModel.test"),
 	() => import("./searchRequest.test"),
 	() => import("./range.test"),
+	() => import("./uf2.test"),
 ];
 
 export async function run(): Promise<void> {

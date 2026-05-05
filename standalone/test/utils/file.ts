@@ -39,10 +39,17 @@ export function createTestFile(
  * `__dirname` resolves to `dist-extension/` in the bundle, so `..` is the project root.
  */
 export function loadFixture(filename: string): File {
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	return createTestFile(loadFixtureBytes(filename), filename);
+}
+
+/**
+ * Loads a fixture file as raw bytes. Same Node-runner-only constraint as `loadFixture`.
+ */
+export function loadFixtureBytes(filename: string): Uint8Array {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const fs = require("fs") as typeof import("fs");
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const path = require("path") as typeof import("path");
 	const buf: Buffer = fs.readFileSync(path.join(__dirname, "..", "tests", "uf2_files", filename));
-	return createTestFile(buf, filename);
+	return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
 }
