@@ -242,7 +242,9 @@
     "fmt": "prettier --write \"{src,media,shared,standalone}/**/*.{ts,tsx}\" && npm run lint -- --fix",
     "watch": "node .esbuild.config.js --watch",
     "watch:standalone": "node standalone/esbuild.config.js --watch",
-    "test": "tsc --noEmit && node ./src/test/runTest.js"
+    "test:extension": "node .esbuild.config.js && node ./src/test/runTest.js",
+    "test:standalone": "node standalone/esbuild.test.config.js && node dist-standalone/test.js",
+    "test": "npm run lint && npm run test:extension && npm run test:standalone"
   },
   "devDependencies": {
     "@testing-library/react": "^14.3.1",
