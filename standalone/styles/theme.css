@@ -51,6 +51,24 @@
 	--vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
 	--vscode-scrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.7);
 	--vscode-diffEditor-diagonalFill: rgba(128, 128, 128, 0.2);
+
+	/* Terminal ANSI colours — used for UF2 field colour washes */
+	--vscode-terminal-ansiBlack:         #000000;
+	--vscode-terminal-ansiRed:           #cd3131;
+	--vscode-terminal-ansiGreen:         #0dbc79;
+	--vscode-terminal-ansiYellow:        #e5e510;
+	--vscode-terminal-ansiBlue:          #2472c8;
+	--vscode-terminal-ansiMagenta:       #bc3fbc;
+	--vscode-terminal-ansiCyan:          #11a8cd;
+	--vscode-terminal-ansiWhite:         #e5e5e5;
+	--vscode-terminal-ansiBrightBlack:   #666666;
+	--vscode-terminal-ansiBrightRed:     #f14c4c;
+	--vscode-terminal-ansiBrightGreen:   #23d18b;
+	--vscode-terminal-ansiBrightYellow:  #f5f543;
+	--vscode-terminal-ansiBrightBlue:    #3b8eea;
+	--vscode-terminal-ansiBrightMagenta: #d670d6;
+	--vscode-terminal-ansiBrightCyan:    #29b8db;
+	--vscode-terminal-ansiBrightWhite:   #e5e5e5;
 }
 
 /* Light theme */
@@ -90,6 +108,26 @@
 		--vscode-progressBar-background: #0078d4;
 		--vscode-scrollbarSlider-background: rgba(100, 100, 100, 0.4);
 		--vscode-diffEditor-diagonalFill: rgba(34, 34, 34, 0.2);
+
+		/* Terminal ANSI colours — light theme values (darker/more saturated for
+		 * legibility as text on white; at 15% opacity they still produce visible
+		 * background washes) */
+		--vscode-terminal-ansiBlack:         #000000;
+		--vscode-terminal-ansiRed:           #cd3131;
+		--vscode-terminal-ansiGreen:         #00bc00;
+		--vscode-terminal-ansiYellow:        #949800;
+		--vscode-terminal-ansiBlue:          #0451a5;
+		--vscode-terminal-ansiMagenta:       #bc05bc;
+		--vscode-terminal-ansiCyan:          #0598bc;
+		--vscode-terminal-ansiWhite:         #555555;
+		--vscode-terminal-ansiBrightBlack:   #666666;
+		--vscode-terminal-ansiBrightRed:     #cd3131;
+		--vscode-terminal-ansiBrightGreen:   #14ce14;
+		--vscode-terminal-ansiBrightYellow:  #b5ba00;
+		--vscode-terminal-ansiBrightBlue:    #0451a5;
+		--vscode-terminal-ansiBrightMagenta: #bc05bc;
+		--vscode-terminal-ansiBrightCyan:    #0598bc;
+		--vscode-terminal-ansiBrightWhite:   #a5a5a5;
 	}
 }
 

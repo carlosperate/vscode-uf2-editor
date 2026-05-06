@@ -2,9 +2,11 @@
 // Licensed under the MIT license
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoil";
 import { HexDecorator } from "../../shared/decorators";
 import { CopyFormat, DeleteAcceptedMessage, MessageType } from "../../shared/protocol";
+import { UF2_BLOCK_SIZE } from "../../shared/uf2/block";
+import { Uf2FieldKind, uf2FieldKindForOffset } from "../../shared/uf2/fieldKinds";
 import { EditRangeOp, Uf2DocumentEditOp } from "../../shared/uf2DocumentModel";
 import { binarySearch } from "../../shared/util/binarySearch";
 import { Range } from "../../shared/util/range";
@@ -23,6 +25,7 @@ import { DataInspector } from "./dataInspector";
 import { useGlobalHandler, useLastAsyncRecoilValue } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
+import { isUf2FileSelector } from "./uf2/blockSelectors";
 import {
 	clamp,
 	clsx,
@@ -33,6 +36,19 @@ import {
 } from "./util";
 
 const style = throwOnUndefinedAccessInDev(_style);
+
+const UF2_FIELD_STYLES: Record<Uf2FieldKind, string | undefined> = {
+	[Uf2FieldKind.MagicHeader]: style.uf2FieldMagicHeader,
+	[Uf2FieldKind.Flags]: style.uf2FieldFlags,
+	[Uf2FieldKind.TargetAddr]: style.uf2FieldTargetAddr,
+	[Uf2FieldKind.PayloadSize]: style.uf2FieldPayloadSize,
+	[Uf2FieldKind.BlockNo]: style.uf2FieldBlockNo,
+	[Uf2FieldKind.NumBlocks]: style.uf2FieldNumBlocks,
+	[Uf2FieldKind.FileSizeOrFamilyId]: style.uf2FieldFileFamily,
+	[Uf2FieldKind.Data]: style.uf2FieldData,
+	[Uf2FieldKind.Padding]: undefined, // transparent — visually distinct from Data
+	[Uf2FieldKind.MagicEnd]: style.uf2FieldMagicEnd,
+};
 
 const EmptyDataCell = () => (
 	<span className={dataCellCls} aria-hidden style={{ visibility: "hidden" }}>
@@ -300,6 +316,10 @@ const DataRows: React.FC = () => {
 	const showDecodedText = useRecoilValue(select.showDecodedText);
 	const dimensions = useRecoilValue(select.dimensions);
 	const fileSize = useRecoilValue(select.fileSize) ?? Infinity;
+	// Lazy: avoid suspending row rendering while the first page loads — until
+	// then we render without block dividers and re-render once it resolves.
+	const isUf2Loadable = useRecoilValueLoadable(isUf2FileSelector);
+	const isUf2 = isUf2Loadable.state === "hasValue" && isUf2Loadable.contents;
 
 	const displayedBytes = select.getDisplayedBytes(dimensions, columnWidth);
 	const dataPageSize = useRecoilValue(select.dataPageSize);
@@ -328,6 +348,7 @@ const DataRows: React.FC = () => {
 				showDecodedText={showDecodedText}
 				fileSize={fileSize}
 				dimensions={dimensions}
+				isUf2={isUf2}
 			/>,
 		);
 	}
@@ -375,6 +396,8 @@ interface IDataPageProps {
 	fileSize: number;
 	showDecodedText: boolean;
 	dimensions: select.IDimensions;
+	/** Band cells by 512-byte UF2 block via alternating background tint. */
+	isUf2: boolean;
 }
 
 const DataPage: React.FC<IDataPageProps> = props => (
@@ -423,6 +446,17 @@ const DataPageContents: React.FC<IDataPageProps> = props => {
 	const dataPageSelector = select.editedDataPages(props.pageNo);
 	const [data] = useLastAsyncRecoilValue(dataPageSelector);
 
+	// Read payloadSize for a block directly from the already-loaded page buffer.
+	// Bytes 16–19 within each 512-byte block are the payloadSize (little-endian u32).
+	// This avoids an async Recoil selector and works identically in extension and standalone.
+	const getBlockPayloadSize = (absoluteOffset: number): number | undefined => {
+		if (!props.isUf2) return undefined;
+		const blockStart = Math.floor(absoluteOffset / UF2_BLOCK_SIZE) * UF2_BLOCK_SIZE;
+		const psIdx = blockStart - props.pageStart + 16;
+		if (psIdx < 0 || psIdx + 4 > data.byteLength) return undefined;
+		return ((data[psIdx] | (data[psIdx + 1] << 8) | (data[psIdx + 2] << 16) | (data[psIdx + 3] << 24)) >>> 0);
+	};
+
 	return (
 		<>
 			{generateRows(props, (offset, isRowWithInsertDataCell) => (
@@ -436,6 +470,8 @@ const DataPageContents: React.FC<IDataPageProps> = props => {
 					showDecodedText={props.showDecodedText}
 					isRowWithInsertDataCell={isRowWithInsertDataCell}
 					decorators={decorators}
+					isUf2={props.isUf2}
+					blockPayloadSize={getBlockPayloadSize(offset)}
 				/>
 			))}
 		</>
@@ -683,7 +719,9 @@ const DataRowContents: React.FC<{
 	rawBytes: Uint8Array;
 	isRowWithInsertDataCell: boolean;
 	decorators: HexDecorator[];
-}> = ({ offset, width, showDecodedText, rawBytes, isRowWithInsertDataCell, decorators }) => {
+	isUf2: boolean;
+	blockPayloadSize: number | undefined;
+}> = ({ offset, width, showDecodedText, rawBytes, isRowWithInsertDataCell, decorators, isUf2, blockPayloadSize }) => {
 	let memoValue = "";
 	const ctx = useDisplayContext();
 	for (const byte of rawBytes) {
@@ -709,6 +747,16 @@ const DataRowContents: React.FC<{
 				j++;
 			}
 
+			// Per-cell UF2 field colour. For UF2 files, colours each header/footer
+			// field distinctly and applies a neutral wash to the data region.
+			// Block boundaries are visible from the repeating magic-header colour.
+			// For non-UF2 files, fall back to the alternating-block tint.
+			const fieldClass = isUf2
+				? UF2_FIELD_STYLES[uf2FieldKindForOffset(boffset % UF2_BLOCK_SIZE, blockPayloadSize)]
+				: Math.floor(boffset / UF2_BLOCK_SIZE) % 2 === 1
+					? style.dataCellAlternateBlock
+					: undefined;
+
 			if (value === undefined) {
 				if (isRowWithInsertDataCell && !ctx.isReadonly) {
 					bytes.push(
@@ -732,7 +780,7 @@ const DataRowContents: React.FC<{
 			bytes.push(
 				<DataCell
 					key={i}
-					className={clsx(decorator !== undefined && HexDecoratorStyles[decorator.type])}
+					className={clsx(decorator !== undefined && HexDecoratorStyles[decorator.type], fieldClass)}
 					offset={boffset}
 					isChar={false}
 					isAppend={false}
@@ -753,6 +801,7 @@ const DataRowContents: React.FC<{
 						className={clsx(
 							char === undefined ? style.nonGraphicChar : undefined,
 							decorator !== undefined && HexDecoratorStyles[decorator.type],
+							fieldClass,
 						)}
 						value={value}
 					>
@@ -763,7 +812,7 @@ const DataRowContents: React.FC<{
 		}
 
 		return { bytes, chars };
-	}, [memoValue, showDecodedText, isRowWithInsertDataCell]);
+	}, [memoValue, showDecodedText, isRowWithInsertDataCell, isUf2, offset, blockPayloadSize]);
 
 	return (
 		<>

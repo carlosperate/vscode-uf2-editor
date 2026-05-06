@@ -1,0 +1,40 @@
+/* Left-border field indicators for UF2 Data Inspector <dt> labels.
+ * Uses the same terminal ANSI colour variables as the hex-cell field washes so
+ * the colours automatically adapt to the active VS Code theme. rgba() lines are
+ * fallbacks for browsers without color-mix() support (approximates Dark+ values). */
+
+.field-magic {
+    border-left: 2px solid rgba(188,  63, 188, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiMagenta) 75%, transparent);
+    padding-left: 4px;
+}
+.field-flags {
+    border-left: 2px solid rgba(229, 229,  16, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiYellow) 75%, transparent);
+    padding-left: 4px;
+}
+.field-target-addr {
+    border-left: 2px solid rgba( 17, 168, 205, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiCyan) 75%, transparent);
+    padding-left: 4px;
+}
+.field-payload-size {
+    border-left: 2px solid rgba(205,  49,  49, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiRed) 75%, transparent);
+    padding-left: 4px;
+}
+.field-block-no {
+    border-left: 2px solid rgba( 36, 114, 200, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiBlue) 75%, transparent);
+    padding-left: 4px;
+}
+.field-num-blocks {
+    border-left: 2px solid rgba( 35, 209, 139, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiBrightGreen) 75%, transparent);
+    padding-left: 4px;
+}
+.field-file-family {
+    border-left: 2px solid rgba(214, 112, 214, 0.75);
+    border-left: 2px solid color-mix(in srgb, var(--vscode-terminal-ansiBrightMagenta) 75%, transparent);
+    padding-left: 4px;
+}

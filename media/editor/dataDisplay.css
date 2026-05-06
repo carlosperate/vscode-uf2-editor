@@ -126,6 +126,60 @@
 	display: flex;
 }
 
+/* Subtle alternating tint for cells in every other 512-byte UF2 block, banding
+ * the hex view into block-sized groups without a hard divider line. Per-cell
+ * so the boundary is correct even mid-row when columnWidth doesn't divide 512
+ * evenly. Uses the editor foreground so the tint adapts to theme: lightens
+ * dark themes, darkens light themes — a fixed-gray alpha is asymmetric on white. */
+.data-cell-alternate-block {
+	background: rgba(128, 128, 128, 0.08); /* fallback */
+	background: color-mix(in srgb, var(--vscode-editor-foreground) 8%, transparent);
+}
+
+/* UF2 field colour washes — derived from the terminal ANSI colour variables so
+ * they automatically adapt to whatever VS Code theme is active. rgba() lines are
+ * fallbacks for browsers without color-mix() support (approximates Dark+ values).
+ * Each adjacent field in the block layout maps to a well-separated ANSI hue so
+ * neighbouring fields are always visually distinct. MagicEnd uses ansiBrightYellow
+ * (not ansiMagenta) so the block boundary between MagicEnd and the next block's
+ * MagicHeader is clearly a colour change. */
+.uf2-field-magic-header {
+    background: rgba(188,  63, 188, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiMagenta) 15%, transparent);
+}
+.uf2-field-flags {
+    background: rgba(229, 229,  16, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiYellow) 15%, transparent);
+}
+.uf2-field-target-addr {
+    background: rgba( 17, 168, 205, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiCyan) 15%, transparent);
+}
+.uf2-field-payload-size {
+    background: rgba(205,  49,  49, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiRed) 15%, transparent);
+}
+.uf2-field-block-no {
+    background: rgba( 36, 114, 200, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiBlue) 15%, transparent);
+}
+.uf2-field-num-blocks {
+    background: rgba( 35, 209, 139, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiBrightGreen) 15%, transparent);
+}
+.uf2-field-file-family {
+    background: rgba(214, 112, 214, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiBrightMagenta) 15%, transparent);
+}
+.uf2-field-data {
+    background: rgba(107, 114, 128, 0.07);
+    background: color-mix(in srgb, var(--vscode-editor-foreground) 5%, transparent);
+}
+.uf2-field-magic-end {
+    background: rgba(245, 245,  67, 0.15);
+    background: color-mix(in srgb, var(--vscode-terminal-ansiBrightYellow) 15%, transparent);
+}
+
 .data-cell-char {
 	width: calc(var(--cell-size) * 0.7) !important;
 }

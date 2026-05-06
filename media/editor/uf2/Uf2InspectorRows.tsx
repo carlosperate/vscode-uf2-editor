@@ -1,6 +1,10 @@
 import React from "react";
 import { Uf2ParseResult } from "../../../shared/uf2/block";
 import { Uf2Flag, hasFlag } from "../../../shared/uf2/flags";
+import _styles from "./uf2InspectorRows.css";
+import { throwOnUndefinedAccessInDev } from "../util";
+
+const styles = throwOnUndefinedAccessInDev(_styles);
 
 const hex = (value: number, width = 8): string =>
 	"0x" + value.toString(16).toUpperCase().padStart(width, "0");
@@ -37,21 +41,21 @@ export const Uf2InspectorRows: React.FC<{ result: Uf2ParseResult }> = ({ result 
 
 	return (
 		<>
-			<dt>Block</dt>
+			<dt className={styles.fieldBlockNo}>Block</dt>
 			<dd>
 				{result.blockNo} / {result.numBlocks}
 			</dd>
-			<dt>Address</dt>
+			<dt className={styles.fieldTargetAddr}>Address</dt>
 			<dd data-testid="uf2-block-target-addr">{hex(result.targetAddr)}</dd>
-			<dt>Payload</dt>
+			<dt className={styles.fieldPayloadSize}>Payload</dt>
 			<dd>{result.payloadSize} bytes</dd>
 			{hasFlag(result.flags, Uf2Flag.FamilyIdPresent) && (
 				<>
-					<dt>Family ID</dt>
+					<dt className={styles.fieldFileFamily}>Family ID</dt>
 					<dd data-testid="uf2-block-family-id">{hex(result.fileSizeOrFamilyId)}</dd>
 				</>
 			)}
-			<dt>Flags</dt>
+			<dt className={styles.fieldFlags}>Flags</dt>
 			<dd>{formatFlags(result.flags)}</dd>
 		</>
 	);
