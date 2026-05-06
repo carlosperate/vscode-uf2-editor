@@ -183,3 +183,19 @@
 .data-cell-char {
 	width: calc(var(--cell-size) * 0.7) !important;
 }
+
+/* Custom tooltip for UF2 field names — shown immediately on mouseover (no
+ * browser-native delay). position: fixed so it is never clipped by overflow. */
+.uf2-field-tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: var(--vscode-editorWidget-background, #252526);
+    color: var(--vscode-editorWidget-foreground, #cccccc);
+    border: 1px solid var(--vscode-editorWidget-border, #454545);
+    padding: 2px 6px;
+    font-size: 0.85em;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 4px var(--vscode-widget-shadow, rgba(0,0,0,0.36));
+}

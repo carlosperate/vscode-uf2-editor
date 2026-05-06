@@ -85,7 +85,8 @@ const Uf2BlockSection: React.FC<{ offset: number; gridTemplate: string }> = ({
 
 const Uf2BlockRows: React.FC<{ offset: number }> = ({ offset }) => {
 	const result = useRecoilValue(blockAtOffset(offset));
-	return <Uf2InspectorRows result={result} />;
+	const hoveredFieldKind = useRecoilValue(select.hoveredUf2FieldKind);
+	return <Uf2InspectorRows result={result} hoveredFieldKind={hoveredFieldKind} />;
 };
 
 const EndiannessToggle: React.FC<{

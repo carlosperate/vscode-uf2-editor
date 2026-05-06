@@ -6,7 +6,7 @@ import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoi
 import { HexDecorator } from "../../shared/decorators";
 import { CopyFormat, DeleteAcceptedMessage, MessageType } from "../../shared/protocol";
 import { UF2_BLOCK_SIZE } from "../../shared/uf2/block";
-import { Uf2FieldKind, uf2FieldKindForOffset } from "../../shared/uf2/fieldKinds";
+import { Uf2FieldKind, uf2FieldKindForOffset, uf2FieldLabel } from "../../shared/uf2/fieldKinds";
 import { EditRangeOp, Uf2DocumentEditOp } from "../../shared/uf2DocumentModel";
 import { binarySearch } from "../../shared/util/binarySearch";
 import { Range } from "../../shared/util/range";
@@ -324,6 +324,48 @@ const DataRows: React.FC = () => {
 	const displayedBytes = select.getDisplayedBytes(dimensions, columnWidth);
 	const dataPageSize = useRecoilValue(select.dataPageSize);
 
+	const tooltipRef = useRef<HTMLDivElement>(null);
+	const lastFieldKindRef = useRef<number | undefined>(undefined);
+	const setHoveredField = useSetRecoilState(select.hoveredUf2FieldKind);
+
+	const onMouseMove = useCallback(
+		(e: React.MouseEvent) => {
+			const el = (e.target as HTMLElement).closest<HTMLElement>("[data-uf2-fk]");
+			const tip = tooltipRef.current;
+			if (!tip) return;
+			if (!el) {
+				tip.style.display = "none";
+				if (lastFieldKindRef.current !== undefined) {
+					lastFieldKindRef.current = undefined;
+					setHoveredField(undefined);
+				}
+				return;
+			}
+			const kindStr = el.dataset.uf2Fk;
+			const kind = kindStr !== undefined ? parseInt(kindStr, 10) : NaN;
+			if (!isNaN(kind)) {
+				tip.textContent = uf2FieldLabel(kind as Uf2FieldKind);
+				tip.style.display = "block";
+				tip.style.left = e.clientX + 12 + "px";
+				tip.style.top = e.clientY + 16 + "px";
+				if (lastFieldKindRef.current !== kind) {
+					lastFieldKindRef.current = kind;
+					setHoveredField(kind);
+				}
+			}
+		},
+		[setHoveredField],
+	);
+
+	const onMouseLeave = useCallback(() => {
+		const tip = tooltipRef.current;
+		if (tip) tip.style.display = "none";
+		if (lastFieldKindRef.current !== undefined) {
+			lastFieldKindRef.current = undefined;
+			setHoveredField(undefined);
+		}
+	}, [setHoveredField]);
+
 	const startPageNo = Math.floor(offset / dataPageSize);
 	const startPageStartsAt = startPageNo * dataPageSize;
 	const endPageNo = Math.floor((offset + displayedBytes) / dataPageSize);
@@ -353,7 +395,12 @@ const DataRows: React.FC = () => {
 		);
 	}
 
-	return <>{rows}</>;
+	return (
+		<div onMouseMove={isUf2 ? onMouseMove : undefined} onMouseLeave={isUf2 ? onMouseLeave : undefined}>
+			{rows}
+			{isUf2 && <div ref={tooltipRef} className={style.uf2FieldTooltip} style={{ display: "none" }} />}
+		</div>
+	);
 };
 
 const LoadingDataRow: React.FC<{ width: number; showDecodedText: boolean }> = ({
@@ -484,8 +531,10 @@ const DataCell: React.FC<{
 	isChar: boolean;
 	isAppend: boolean;
 	className?: string;
+	/** UF2 field kind value — stored as a data attribute for event-delegation tooltip. */
+	uf2FieldKind?: number;
 	children?: React.ReactNode;
-}> = ({ offset, value, className, children, isChar, isAppend }) => {
+}> = ({ offset, value, className, uf2FieldKind, children, isChar, isAppend }) => {
 	const elRef = useRef<HTMLSpanElement | null>(null);
 	const focusedElement = new FocusedElement(isChar, offset);
 	const ctx = useDisplayContext();
@@ -688,6 +737,7 @@ const DataCell: React.FC<{
 		<span
 			ref={elRef}
 			tabIndex={0}
+			data-uf2-fk={uf2FieldKind}
 			onFocus={onFocus}
 			onBlur={onBlur}
 			className={clsx(
@@ -747,12 +797,14 @@ const DataRowContents: React.FC<{
 				j++;
 			}
 
-			// Per-cell UF2 field colour. For UF2 files, colours each header/footer
-			// field distinctly and applies a neutral wash to the data region.
-			// Block boundaries are visible from the repeating magic-header colour.
-			// For non-UF2 files, fall back to the alternating-block tint.
-			const fieldClass = isUf2
-				? UF2_FIELD_STYLES[uf2FieldKindForOffset(boffset % UF2_BLOCK_SIZE, blockPayloadSize)]
+			// Per-cell UF2 field colour and tooltip. For UF2 files, colours each
+			// header/footer field distinctly and applies a neutral wash to the
+			// data region. Block boundaries are visible from the repeating
+			// magic-header colour. For non-UF2 files, fall back to the
+			// alternating-block tint.
+			const fieldKind = isUf2 ? uf2FieldKindForOffset(boffset % UF2_BLOCK_SIZE, blockPayloadSize) : undefined;
+			const fieldClass = fieldKind !== undefined
+				? UF2_FIELD_STYLES[fieldKind]
 				: Math.floor(boffset / UF2_BLOCK_SIZE) % 2 === 1
 					? style.dataCellAlternateBlock
 					: undefined;
@@ -781,6 +833,7 @@ const DataRowContents: React.FC<{
 				<DataCell
 					key={i}
 					className={clsx(decorator !== undefined && HexDecoratorStyles[decorator.type], fieldClass)}
+					uf2FieldKind={fieldKind}
 					offset={boffset}
 					isChar={false}
 					isAppend={false}
@@ -798,6 +851,7 @@ const DataRowContents: React.FC<{
 						offset={boffset}
 						isChar={true}
 						isAppend={false}
+						uf2FieldKind={fieldKind}
 						className={clsx(
 							char === undefined ? style.nonGraphicChar : undefined,
 							decorator !== undefined && HexDecoratorStyles[decorator.type],

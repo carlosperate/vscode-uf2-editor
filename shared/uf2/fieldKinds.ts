@@ -11,6 +11,21 @@ export const enum Uf2FieldKind {
 	MagicEnd, // bytes 508–511
 }
 
+export function uf2FieldLabel(kind: Uf2FieldKind): string {
+	switch (kind) {
+		case Uf2FieldKind.MagicHeader: return "Magic Header";
+		case Uf2FieldKind.Flags: return "Flags";
+		case Uf2FieldKind.TargetAddr: return "Target Address";
+		case Uf2FieldKind.PayloadSize: return "Payload Size";
+		case Uf2FieldKind.BlockNo: return "Block Number";
+		case Uf2FieldKind.NumBlocks: return "Total Blocks";
+		case Uf2FieldKind.FileSizeOrFamilyId: return "Family ID / File Size";
+		case Uf2FieldKind.Data: return "Payload Data";
+		case Uf2FieldKind.Padding: return "Padding";
+		case Uf2FieldKind.MagicEnd: return "Magic Footer";
+	}
+}
+
 /**
  * Returns the UF2 field that owns `blockOffset` (0–511 within a 512-byte block).
  * Pass `payloadSize` (from the parsed block) to distinguish `Data` from `Padding`;

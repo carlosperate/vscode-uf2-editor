@@ -540,3 +540,9 @@ export const searchResults = atom<SearchResultsWithProgress>({
 		},
 	],
 });
+
+/** The UF2 field kind (Uf2FieldKind number) currently under the mouse, or undefined. */
+export const hoveredUf2FieldKind = atom<number | undefined>({
+	key: "hoveredUf2FieldKind",
+	default: undefined,
+});
