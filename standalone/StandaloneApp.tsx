@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RecoilRoot } from "recoil";
 import { EditorRoot } from "../media/editor/EditorRoot";
+import { bumpWebviewSession } from "../media/editor/state";
 import { BrowserFileAccessor } from "./BrowserFileAccessor";
 import { FileDropZone } from "./components/FileDropZone";
 import { MockMessageHandler } from "./MockMessageHandler";
@@ -67,6 +68,7 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 	const handleFileSelect = useCallback(
 		(selectedFile: File) => {
 			resetVsCodeApiMock();
+			bumpWebviewSession();
 			setFile(selectedFile);
 			initializeMessaging(selectedFile);
 		},

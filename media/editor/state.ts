@@ -106,9 +106,31 @@ export const messageHandler = new MessageHandler<FromWebviewMessage, ToWebviewMe
 
 window.addEventListener("message", ev => messageHandler.handleMessage(ev.data));
 
+/**
+ * Module-level counter incremented via {@link bumpWebviewSession}. The
+ * standalone host bumps this whenever it swaps the underlying file/messaging
+ * handler so that a freshly-mounted `RecoilRoot` evaluates `readyQuery` (and
+ * other session-scoped selectors) against the new backend instead of reusing
+ * Recoil's cross-store cache.
+ */
+let webviewSessionCounter = 0;
+
+export const bumpWebviewSession = (): void => {
+	webviewSessionCounter++;
+};
+
+const webviewSession = atom<number>({
+	key: "webviewSession",
+	default: 0,
+	effects_UNSTABLE: [fx => fx.setSelf(webviewSessionCounter)],
+});
+
 const readyQuery = selector({
 	key: "ready",
-	get: () => messageHandler.sendRequest<ReadyResponseMessage>({ type: MessageType.ReadyRequest }),
+	get: ({ get }) => {
+		get(webviewSession);
+		return messageHandler.sendRequest<ReadyResponseMessage>({ type: MessageType.ReadyRequest });
+	},
 });
 
 export const isReadonly = selector({
@@ -499,6 +521,7 @@ const rawDataPages = selectorFamily({
 		async ({ get }) => {
 			get(reloadGeneration); // used to trigger invalidation
 			get(unsavedEditIndex); // used to trigger invalidation when the user saves
+			get(webviewSession); // bust the cross-RecoilRoot cache when the standalone host swaps files
 			const pageSize = get(dataPageSize);
 			const response = await messageHandler.sendRequest<ReadRangeResponseMessage>({
 				type: MessageType.ReadRangeRequest,

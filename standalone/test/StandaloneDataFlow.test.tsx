@@ -40,4 +40,32 @@ describe("Standalone data flow", () => {
 		await waitFor(() => expect(getByTestId("file-size").textContent).to.equal("4"));
 		await waitFor(() => expect(getByTestId("page-bytes").textContent).to.equal("17,34,51,68"));
 	});
+
+	it("refreshes the displayed data after switching to another file", async () => {
+		const fileA = createTestFile([0x11, 0x22, 0x33, 0x44], "a.uf2");
+		const fileB = createTestFile([0xaa, 0xbb, 0xcc, 0xdd, 0xee], "b.uf2");
+
+		const { getByLabelText, getByRole, getByTestId, queryByTestId } = render(
+			<StandaloneApp renderViewer={renderViewer} />,
+		);
+
+		fireEvent.change(getByLabelText(/select file/i) as HTMLInputElement, {
+			target: { files: [fileA] },
+		});
+		await waitFor(() => expect(getByTestId("file-size").textContent).to.equal("4"));
+		await waitFor(() => expect(getByTestId("page-bytes").textContent).to.equal("17,34,51,68"));
+
+		fireEvent.click(getByRole("button", { name: /choose another file/i }));
+		await waitFor(() => expect(queryByTestId("file-dropzone")).to.exist);
+
+		fireEvent.change(getByLabelText(/select file/i) as HTMLInputElement, {
+			target: { files: [fileB] },
+		});
+
+		await waitFor(() => expect(queryByTestId("file-dropzone")).to.be.null);
+		await waitFor(() => expect(getByTestId("file-size").textContent).to.equal("5"));
+		await waitFor(() =>
+			expect(getByTestId("page-bytes").textContent).to.equal("170,187,204,221,238"),
+		);
+	});
 });
