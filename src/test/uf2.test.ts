@@ -86,4 +86,14 @@ describe("UF2 parser", () => {
 		expect(isUf2(loadFixtureBytes("family_a.uf2"))).to.equal(true);
 		expect(isUf2(loadFixtureBytes("incrementing.bin"))).to.equal(false);
 	});
+
+	it("parses all 24 576 blocks of large.uf2 within 200 ms", () => {
+		const bytes = loadFixtureBytes("large.uf2");
+		const numBlocks = bytes.byteLength / UF2_BLOCK_SIZE;
+		const start = Date.now();
+		for (let i = 0; i < numBlocks; i++) {
+			parseBlock(bytes, i * UF2_BLOCK_SIZE);
+		}
+		expect(Date.now() - start).to.be.lessThan(200);
+	});
 });

@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import { expect } from "chai";
 import React from "react";
 import { Uf2InspectorRows } from "../../media/editor/uf2/Uf2InspectorRows";
-import { parseBlock } from "../../shared/uf2/block";
+import { parseBlock, UF2_BLOCK_SIZE } from "../../shared/uf2/block";
 import { loadFixtureBytes } from "./utils/file";
 
 const renderRows = (children: React.ReactNode) => render(<dl>{children}</dl>);
@@ -23,5 +23,15 @@ describe("Uf2InspectorRows", () => {
 			<Uf2InspectorRows result={{ ok: false, reason: "bad-magic-start" }} />,
 		);
 		expect(getByTestId("uf2-block-error").textContent).to.match(/bad-magic-start/);
+	});
+
+	it("renders a notice for a trailing partial block without throwing", () => {
+		// A file whose length is not a multiple of 512 has a trailing partial block.
+		// The parser must return too-short; the inspector must show a notice rather than throw.
+		const partial = loadFixtureBytes("family_a.uf2").subarray(0, UF2_BLOCK_SIZE - 100);
+		const result = parseBlock(partial, 0);
+		expect(result.ok).to.equal(false);
+		const { getByTestId } = renderRows(<Uf2InspectorRows result={result} />);
+		expect(getByTestId("uf2-block-error").textContent).to.include("too-short");
 	});
 });
