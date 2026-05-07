@@ -23,6 +23,13 @@ function copyIndexHtml() {
 	fs.copyFileSync(src, dest);
 }
 
+function copyStandaloneCss() {
+	ensureDistDir();
+	const src = path.join(__dirname, "styles", "standalone.css");
+	const dest = path.join(distDir, "standalone-chrome.css");
+	fs.copyFileSync(src, dest);
+}
+
 const buildOptions = {
 	entryPoints: [path.join(__dirname, "index.tsx")],
 	tsconfig: path.join(__dirname, "..", "tsconfig.json"),
@@ -45,6 +52,7 @@ async function build() {
 	const buildOnce = async () => {
 		await context.rebuild();
 		copyIndexHtml();
+		copyStandaloneCss();
 	};
 
 	if (watch) {
@@ -56,6 +64,7 @@ async function build() {
 					return;
 				}
 				copyIndexHtml();
+				copyStandaloneCss();
 				console.log("Standalone build updated");
 			},
 		});

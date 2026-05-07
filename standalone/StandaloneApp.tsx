@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RecoilRoot } from "recoil";
 import { EditorRoot } from "../media/editor/EditorRoot";
 import { BrowserFileAccessor } from "./BrowserFileAccessor";
@@ -31,14 +31,7 @@ const formatBytes = (size: number): string => {
 	return `${mb.toFixed(1)} MB`;
 };
 
-const dropZoneStyle: React.CSSProperties = {
-	alignItems: "center",
-	display: "flex",
-	height: "100vh",
-	justifyContent: "center",
-	padding: "2rem",
-	boxSizing: "border-box",
-};
+const TOPBAR_HEIGHT = 48;
 
 const viewerWrapStyle: React.CSSProperties = {
 	position: "fixed",
@@ -46,24 +39,12 @@ const viewerWrapStyle: React.CSSProperties = {
 	overflow: "hidden",
 };
 
-const infoBarStyle: React.CSSProperties = {
-	alignItems: "center",
-	background: "var(--vscode-editorWidget-background, #252526)",
-	borderBottom: "1px solid var(--vscode-editorWidget-border, #454545)",
-	display: "flex",
-	gap: "1rem",
-	justifyContent: "space-between",
-	left: 0,
-	padding: "4px 12px",
-	position: "absolute",
-	right: 0,
-	top: 0,
-	zIndex: 10,
-};
-
 const editorSlotStyle: React.CSSProperties = {
 	position: "absolute",
-	inset: 0,
+	left: 0,
+	right: 0,
+	bottom: 0,
+	top: TOPBAR_HEIGHT,
 };
 
 export const StandaloneApp: React.FC<StandaloneAppProps> = ({
@@ -71,13 +52,6 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 	renderViewer,
 }) => {
 	const [file, setFile] = useState<File | null>(null);
-	const [infoBarHeight, setInfoBarHeight] = useState(0);
-
-	const infoBarRef = useCallback((el: HTMLDivElement | null) => {
-		if (el) {
-			setInfoBarHeight(el.getBoundingClientRect().height);
-		}
-	}, []);
 
 	const viewer = useMemo(
 		() =>
@@ -99,55 +73,49 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 		[initializeMessaging],
 	);
 
+	const closeFile = useCallback(() => {
+		resetVsCodeApiMock();
+		setFile(null);
+	}, []);
+
+	useEffect(() => {
+		if (!file) {
+			return;
+		}
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+				const target = event.target as HTMLElement | null;
+				if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+					return;
+				}
+				closeFile();
+			}
+		};
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [file, closeFile]);
+
 	if (!file) {
-		return (
-			<div style={dropZoneStyle}>
-				<FileDropZone onFileSelect={handleFileSelect} />
-			</div>
-		);
+		return <FileDropZone onFileSelect={handleFileSelect} />;
 	}
 
 	return (
 		<div data-testid="standalone-viewer" style={viewerWrapStyle}>
-			<div ref={infoBarRef} style={infoBarStyle}>
-				<div>
-					<strong
-						style={{
-							color: "var(--vscode-editorWidget-foreground, #cccccc)",
-							fontSize: "0.9em",
-						}}
-					>
-						{file.name}
-					</strong>
-					<span
-						style={{
-							color: "var(--vscode-editorLineNumber-foreground, #858585)",
-							fontSize: "0.8em",
-							marginLeft: "0.5rem",
-						}}
-					>
-						{formatBytes(file.size)}
-					</span>
+			<div className="sa-topbar">
+				<div className="sa-pill">
+					<span className="sa-pill-dot" />
+					<span className="sa-pill-name">{file.name}</span>
+					<span className="sa-pill-meta">{formatBytes(file.size)}</span>
 				</div>
-				<button
-					onClick={() => { resetVsCodeApiMock(); setFile(null); }}
-					style={{
-						background: "var(--vscode-button-secondaryBackground, #3a3d41)",
-						border: "1px solid var(--vscode-button-border, transparent)",
-						color: "var(--vscode-button-secondaryForeground, #cccccc)",
-						cursor: "pointer",
-						fontSize: "0.8em",
-						padding: "3px 8px",
-					}}
-					type="button"
-				>
+				<div className="sa-spacer" />
+				<button className="fdz-btn" onClick={closeFile} type="button">
 					Choose another file
 				</button>
 			</div>
 			<div
 				data-testid="standalone-viewer-root"
 				key={`${file.name}-${file.size}-${file.lastModified}`}
-				style={{ ...editorSlotStyle, top: infoBarHeight }}
+				style={editorSlotStyle}
 			>
 				{viewer()}
 			</div>

@@ -39,8 +39,8 @@ const createMockDataTransfer = (...files: File[]): DataTransfer =>
 
 describe("FileDropZone", () => {
 	it("renders the default heading and description", () => {
-		const { getByText } = render(<FileDropZone onFileSelect={() => {}} />);
-		expect(getByText(/UF2/)).to.exist;
+		const { getByRole, getByText } = render(<FileDropZone onFileSelect={() => {}} />);
+		expect(getByRole("heading", { level: 1 }).textContent).to.match(/UF2/);
 		expect(getByText(/Drop a file here/)).to.exist;
 	});
 

@@ -1,33 +1,38 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 export interface FileDropZoneProps {
 	onFileSelect(file: File): void;
 	heading?: string;
-	description?: string;
+	description?: React.ReactNode;
+	explainer?: React.ReactNode;
 }
 
-const baseStyle: React.CSSProperties = {
-	alignItems: "center",
-	border: "2px dashed var(--vscode-editor-foreground, #666)",
-	borderRadius: 8,
-	cursor: "pointer",
-	display: "flex",
-	flexDirection: "column",
-	gap: "0.5rem",
-	justifyContent: "center",
-	minHeight: 260,
-	padding: "2rem",
-	textAlign: "center",
-	transition: "border-color 200ms ease, background 200ms ease",
-};
+const defaultDescription = (
+	<>
+		Drop a file here or choose a <code>.uf2</code> (or any binary) to inspect its parsed UF2 block
+		fields and raw bytes.
+	</>
+);
+
+const defaultExplainer = (
+	<>
+		<strong>UF2</strong> is a binary file format designed for microcontroller boards, particularly
+		suitable for flashing firmware over MSC USB (i.e. a removable flash drive).
+	</>
+);
 
 export const FileDropZone: React.FC<FileDropZoneProps> = ({
 	onFileSelect,
-	heading = "UF2 / Hex Viewer",
-	description = "Drop a file here or choose one to get started.",
+	heading = "UF2 File Viewer",
+	description = defaultDescription,
+	explainer = defaultExplainer,
 }) => {
 	const [isDragging, setIsDragging] = useState(false);
 	const inputRef = useRef<HTMLInputElement | null>(null);
+
+	const openPicker = useCallback(() => {
+		inputRef.current?.click();
+	}, []);
 
 	const handleFiles = useCallback(
 		(files: FileList | null | undefined) => {
@@ -67,39 +72,77 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
 		[handleFiles],
 	);
 
-	const dynamicStyle = useMemo<React.CSSProperties>(() => {
-		if (!isDragging) {
-			return baseStyle;
-		}
-
-		return {
-			...baseStyle,
-			background: "rgba(255,255,255,0.05)",
-			borderColor: "var(--vscode-focusBorder, #4fc1ff)",
+	useEffect(() => {
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.metaKey || event.ctrlKey || event.altKey) {
+				return;
+			}
+			const target = event.target as HTMLElement | null;
+			if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+				return;
+			}
+			if (event.key === "o" || event.key === "O") {
+				event.preventDefault();
+				openPicker();
+			}
 		};
-	}, [isDragging]);
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [openPicker]);
+
+	const className = `fdz-zone${isDragging ? " fdz-dragging" : ""}`;
 
 	return (
-		<div
-			data-testid="file-dropzone"
-			style={dynamicStyle}
-			onDragOver={onDragOver}
-			onDragLeave={onDragLeave}
-			onDrop={onDrop}
-		>
-			<input
-				aria-label="Select file"
-				data-testid="file-input"
-				ref={inputRef}
-				onChange={onInputChange}
-				style={{ display: "none" }}
-				type="file"
-			/>
-			<h1>{heading}</h1>
-			<p>{description}</p>
-			<button onClick={() => inputRef.current?.click()} type="button">
-				Choose File
-			</button>
+		<div className="fdz-stage">
+			<div
+				className={className}
+				data-testid="file-dropzone"
+				onClick={openPicker}
+				onDragOver={onDragOver}
+				onDragLeave={onDragLeave}
+				onDrop={onDrop}
+				role="button"
+				tabIndex={0}
+				onKeyDown={event => {
+					if (event.key === "Enter" || event.key === " ") {
+						event.preventDefault();
+						openPicker();
+					}
+				}}
+			>
+				<input
+					aria-label="Select file"
+					data-testid="file-input"
+					ref={inputRef}
+					onChange={onInputChange}
+					style={{ display: "none" }}
+					type="file"
+				/>
+				<div />
+				<div className="fdz-content">
+					<div className="fdz-mark">
+						<span className="fdz-mark-uf">UF2</span>
+					</div>
+					<h1 className="fdz-title">{heading}</h1>
+					<p className="fdz-sub">{description}</p>
+					{explainer ? <p className="fdz-explainer">{explainer}</p> : null}
+					<div className="fdz-actions">
+						<button
+							className="fdz-btn fdz-btn-primary"
+							onClick={event => {
+								event.stopPropagation();
+								openPicker();
+							}}
+							type="button"
+						>
+							Choose file
+						</button>
+					</div>
+				</div>
+				<div className="fdz-hint">
+					Press <kbd>O</kbd> to open
+				</div>
+			</div>
 		</div>
 	);
 };

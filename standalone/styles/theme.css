@@ -1,10 +1,11 @@
 /* Dark theme (default) */
 :root {
 	/* Editor */
-	--vscode-editor-background: #1e1e1e;
-	--vscode-editor-foreground: #d4d4d4;
-	--vscode-editor-font-family: "Droid Sans Mono", "monospace", monospace;
-	--vscode-editor-font-size: 14px;
+	--vscode-editor-background: #1c1d20;
+	--vscode-editor-foreground: #d8d8d2;
+	--vscode-editor-font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono",
+		Menlo, Consolas, "Liberation Mono", monospace;
+	--vscode-editor-font-size: 13px;
 	--vscode-editorCursor-foreground: #aeafad;
 	--vscode-editor-selectionBackground: #264f78;
 	--vscode-editor-selectionForeground: #d4d4d4;
@@ -14,9 +15,9 @@
 	--vscode-editorLineNumber-activeForeground: #c6c6c6;
 
 	/* Widgets / overlays */
-	--vscode-editorWidget-background: #252526;
-	--vscode-editorWidget-foreground: #cccccc;
-	--vscode-editorWidget-border: #454545;
+	--vscode-editorWidget-background: #232428;
+	--vscode-editorWidget-foreground: #cfcfca;
+	--vscode-editorWidget-border: #3a3b40;
 	--vscode-widget-shadow: rgba(0, 0, 0, 0.36);
 
 	/* Input */
@@ -42,7 +43,10 @@
 	/* Misc */
 	--vscode-focusBorder: #007fd4;
 	--vscode-contrastBorder: transparent;
-	--vscode-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+	--vscode-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+		sans-serif;
+	--vscode-descriptionForeground: #9b9c97;
+	--vscode-disabledForeground: #6e6f6b;
 	--vscode-icon-foreground: #c5c5c5;
 	--vscode-toolbar-hoverBackground: rgba(90, 93, 94, 0.31);
 	--vscode-tab-unfocusedInactiveForeground: rgba(255, 255, 255, 0.5);
@@ -74,8 +78,8 @@
 /* Light theme */
 @media (prefers-color-scheme: light) {
 	:root {
-		--vscode-editor-background: #ffffff;
-		--vscode-editor-foreground: #000000;
+		--vscode-editor-background: #fbfaf7;
+		--vscode-editor-foreground: #1c1f24;
 		--vscode-editorCursor-foreground: #000000;
 		--vscode-editor-selectionBackground: #add6ff;
 		--vscode-editor-selectionForeground: #000000;
@@ -83,9 +87,11 @@
 		--vscode-editor-hoverHighlightBackground: rgba(173, 214, 255, 0.15);
 		--vscode-editorLineNumber-foreground: #237893;
 		--vscode-editorLineNumber-activeForeground: #0b216f;
-		--vscode-editorWidget-background: #f3f3f3;
-		--vscode-editorWidget-foreground: #616161;
-		--vscode-editorWidget-border: #c8c8c8;
+		--vscode-editorWidget-background: #fefdfb;
+		--vscode-editorWidget-foreground: #4a4d52;
+		--vscode-editorWidget-border: #e3e1d9;
+		--vscode-descriptionForeground: #6a6d72;
+		--vscode-disabledForeground: #9b9d99;
 		--vscode-widget-shadow: rgba(0, 0, 0, 0.16);
 		--vscode-input-background: #ffffff;
 		--vscode-input-border: #cecece;
@@ -141,6 +147,9 @@ body {
 	color: var(--vscode-editor-foreground);
 	font-family: var(--vscode-font-family);
 	font-size: var(--vscode-editor-font-size);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
 
 #root {
@@ -148,3 +157,4 @@ body {
 	height: 100vh;
 	overflow: hidden;
 }
+
