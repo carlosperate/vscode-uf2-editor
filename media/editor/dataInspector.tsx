@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useTransition } from "react";
 import { useRecoilValue } from "recoil";
 import { Endianness } from "../../shared/protocol";
 import { useDisplayContext } from "./dataDisplayContext";
@@ -7,6 +7,7 @@ import { inspectableTypes } from "./dataInspectorProperties";
 import { useFileBytes, usePersistedState } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
+import { UF2_BLOCK_SIZE } from "../../shared/uf2/block";
 import { blockAtOffset, isUf2FileSelector } from "./uf2/blockSelectors";
 import { Uf2InspectorRows } from "./uf2/Uf2InspectorRows";
 import { throwOnUndefinedAccessInDev } from "./util";
@@ -16,21 +17,24 @@ const style = throwOnUndefinedAccessInDev(_style);
 const COLUMNS = 2;
 const LOOKAHEAD = 8;
 
-/** Always-visible UF2 Data Inspector. Tracks the focused byte; defaults to byte 0. */
+/** Always-visible UF2 Data Inspector. Follows the hovered byte; falls back to the last clicked. */
 export const DataInspector: React.FC = () => {
 	const ctx = useDisplayContext();
-	const [offset, setOffset] = useState<number>(ctx.focusedElement?.byte ?? 0);
+	const [clickedOffset, setClickedOffset] = useState<number>(ctx.focusedElement?.byte ?? 0);
+	const [hoveredOffset, setHoveredOffset] = useState<number | undefined>(undefined);
+	const [, startTransition] = useTransition();
 
 	useEffect(() => {
-		const disposable = ctx.onDidFocus(focused => {
-			if (focused) setOffset(focused.byte);
+		const a = ctx.onDidFocus(focused => { if (focused) setClickedOffset(focused.byte); });
+		const b = ctx.onDidHover(hovered => {
+			startTransition(() => setHoveredOffset(hovered?.byte));
 		});
-		return () => disposable.dispose();
+		return () => { a.dispose(); b.dispose(); };
 	}, []);
 
 	return (
 		<Suspense fallback={null}>
-			<InspectorContents offset={offset} />
+			<InspectorContents offset={hoveredOffset ?? clickedOffset} />
 		</Suspense>
 	);
 };
@@ -84,7 +88,10 @@ const Uf2BlockSection: React.FC<{ offset: number; gridTemplate: string }> = ({
 };
 
 const Uf2BlockRows: React.FC<{ offset: number }> = ({ offset }) => {
-	const result = useRecoilValue(blockAtOffset(offset));
+	// Normalize to block-start so all bytes in the same 512-byte block share one
+	// cached selector instance — otherwise every hovered byte triggers a new async lookup.
+	const blockOffset = Math.floor(offset / UF2_BLOCK_SIZE) * UF2_BLOCK_SIZE;
+	const result = useRecoilValue(blockAtOffset(blockOffset));
 	const hoveredFieldKind = useRecoilValue(select.hoveredUf2FieldKind);
 	return <Uf2InspectorRows result={result} hoveredFieldKind={hoveredFieldKind} />;
 };
