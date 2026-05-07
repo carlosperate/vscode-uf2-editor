@@ -1,12 +1,12 @@
 {
   "name": "uf2editor",
   "displayName": "UF2 Editor",
-  "description": "Allows viewing and editing UF2 files",
+  "description": "View, inspect, and edit UF2 files.",
   "version": "0.1.0",
   "publisher": "carlosperate",
   "repository": {
     "type": "git",
-    "url": "https://github.com/carlosperate/vscode-uf2-editor"
+    "url": "https://github.com/carlosperate/vscode-uf2-editor.git"
   },
   "bugs": {
     "url": "https://github.com/carlosperate/vscode-uf2-editor/issues"
@@ -16,7 +16,20 @@
     "vscode": "^1.74.0"
   },
   "categories": [
+    "Visualization",
     "Other"
+  ],
+  "keywords": [
+    "uf2",
+    "hex",
+    "binary",
+    "microcontroller",
+    "micro:bit"
+  ],
+  "qna": "https://github.com/carlosperate/vscode-uf2-editor/issues",
+  "extensionKind": [
+    "ui",
+    "workspace"
   ],
   "icon": "icon.png",
   "activationEvents": [],

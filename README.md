@@ -3,9 +3,13 @@
 Visual Studio Code extension that provides an editor for viewing and
 manipulating [UF2](https://github.com/microsoft/uf2) files.
 
+It also provides a standalone web viewer that can be used to view UF2 files online:
+https://carlosperate.github.io/vscode-uf2-editor/
+
 ## Features
 
 - Open UF2 files directly with this editor
+- **UF2 Data Inspector**: decoded view of every UF2 block field (address, payload size, flags, family ID, extension tags, file container info) alongside the raw hex. The panel follows the hovered byte and falls back to the last clicked byte when nothing is hovered.
 - A data inspector for viewing the hex values as various different data types
 - Editing with undo, redo, copy, and paste support
 - Find and replace
