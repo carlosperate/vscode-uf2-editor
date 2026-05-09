@@ -4,9 +4,9 @@ node_modules/**
 out
 media/**
 src/**
+.gitmodules
 .gitignore
 .github
-vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
@@ -17,6 +17,14 @@ vsc-extension-quickstart.md
 build
 *.tgz
 *.vsix
+.claude
+.tool-versions
+icon.svg
+dev.md
+standalone/**
+dist-standalone/**
+tests/**
+uf2/**
 
 # We need the codicon node module included for the fonts + icons to work
 !node_modules/@vscode/codicons/dist

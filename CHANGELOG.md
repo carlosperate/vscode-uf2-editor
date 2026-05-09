@@ -1,6 +1,8 @@
 # Release Notes
 
-## 0.1.0 - 2026-05-07
+## v0.1.1 - 2026-??-??
+
+## v0.1.0 - 2026-05-07
 
 Initial release of the UF2 Editor, forked from [Microsoft VS Code Hex Editor](https://github.com/microsoft/vscode-hexeditor) v1.11.1.
 
@@ -23,6 +25,5 @@ Reusing the VSCode extension code, there is also a standalone web viewer.
 
 ### Major Changes from Upstream
 
-- Renamed to UF2 Editor
-- Simplified data inspector to only appear aside the editor.
+- Data inspector had 3 configurable locations, only renders inside editor now.
 - Removed Microsoft telemetry
