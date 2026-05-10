@@ -30,6 +30,22 @@ function copyStandaloneCss() {
 	fs.copyFileSync(src, dest);
 }
 
+const copyPlugin = {
+	name: "copy-static",
+	setup(build) {
+		build.onEnd(result => {
+			if (result.errors.length > 0) {
+				return;
+			}
+			copyIndexHtml();
+			copyStandaloneCss();
+			if (watch) {
+				console.log("Standalone build updated");
+			}
+		});
+	},
+};
+
 const buildOptions = {
 	entryPoints: [path.join(__dirname, "index.tsx")],
 	tsconfig: path.join(__dirname, "..", "tsconfig.json"),
@@ -40,7 +56,7 @@ const buildOptions = {
 	sourcemap: !production,
 	minify: production,
 	define,
-	plugins: [css({ v2: true, filter: /\.css$/i })],
+	plugins: [css({ v2: true, filter: /\.css$/i }), copyPlugin],
 	loader: {
 		".svg": "dataurl",
 	},
@@ -49,28 +65,17 @@ const buildOptions = {
 async function build() {
 	const context = await esbuild.context(buildOptions);
 
-	const buildOnce = async () => {
-		await context.rebuild();
-		copyIndexHtml();
-		copyStandaloneCss();
-	};
-
 	if (watch) {
-		await buildOnce();
-		await context.watch({
-			onRebuild(error) {
-				if (error) {
-					console.error("Standalone build failed", error);
-					return;
-				}
-				copyIndexHtml();
-				copyStandaloneCss();
-				console.log("Standalone build updated");
-			},
+		await context.rebuild();
+		await context.watch();
+		const cssFile = path.join(__dirname, "styles", "standalone.css");
+		fs.watch(cssFile, () => {
+			copyStandaloneCss();
+			console.log("Standalone build updated");
 		});
 		console.log("Watching standalone viewer...");
 	} else {
-		await buildOnce();
+		await context.rebuild();
 		await context.dispose();
 	}
 }

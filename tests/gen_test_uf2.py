@@ -104,6 +104,104 @@ def make_extension_tags(src: bytes) -> bytes:
     return bytes(out)
 
 
+DEMO_FAMILY_ID = 0xD5F10D10
+
+
+def make_demo(out_path: Path) -> None:
+    """Build a 3-block demo UF2 with ASCII payload text explaining editor features.
+
+    Flags: FAMILY_ID + EXT_TAGS + NOT_MAIN_FLASH, so three different header fields
+    are active and the extension-tag region is populated after each payload.
+    """
+    base_addr = 0x10000000
+    flags = FLAG_FAMILY_ID | FLAG_EXT_TAGS | FLAG_NOT_MAIN_FLASH
+    payload_size = 256
+    num_blocks = 3
+
+    payloads_text = [
+        (
+            "UF2 EDITOR DEMO!"
+            "================"
+            "Try doing this:\n"
+            "- Hover coloured fields for info"
+            "- Click bytes to view decodings\n"
+            "               \n"
+            "This area is the block payload.\n"
+            "               \n"
+            "Extension tags \n"
+            "are located    \n"
+            "after payload. \n"
+            "---------------\n"
+            "Block 1 of 3\n"
+        ),
+        (
+            "Flags & FamilyID"
+            "================"
+            "Flags used:    \n"
+            " 0x0001        \n"
+            "  NOT_MAIN_FLASH"
+            " 0x2000        \n"
+            "  FAMILY_ID    \n"
+            " 0x8000        \n"
+            "  EXTENSION_TAGS"
+            "               \n"
+            "Family ID:     \n"
+            "  0xD5F10D10.  \n"
+            "               \n"
+            "---------------\n"
+            "Block 2 of 3.\n"
+        ),
+        (
+            "Extension Tags \n"
+            "================"
+            "Format:        \n"
+            " [size][3B type][payload][pad] \n"
+            "               \n"
+            "Tags used:     \n"
+            "- 0x9FC7BC     \n"
+            " version: 1.0.0\n"
+            "- 0x650D9D     \n"
+            " description:  \n"
+            "   UF2 Editor  \n"
+            "   Demo        \n"
+            "               \n"
+            "---------------\n"
+            "Block 3 of 3.\n"
+        ),
+    ]
+
+    tags = b""
+    tags += encode_ext_tag(0x9FC7BC, b"1.0.0\x00")
+    tags += encode_ext_tag(0x650D9D, b"UF2 Editor Demo\x00")
+    tags += b"\x00\x00\x00\x00"  # terminator
+    assert len(tags) <= 220, f"ext tags too large: {len(tags)}"
+
+    blocks = []
+    for blockno, text in enumerate(payloads_text):
+        payload = text.encode("ascii")
+        assert len(payload) <= payload_size, (
+            f"demo block {blockno} payload too large: {len(payload)} bytes"
+        )
+        payload_padded = payload + b"\x00" * (payload_size - len(payload))
+        header = struct.pack(
+            "<IIIIIIII",
+            UF2_MAGIC_START0, UF2_MAGIC_START1,
+            flags,
+            base_addr + blockno * payload_size,
+            payload_size, blockno, num_blocks,
+            DEMO_FAMILY_ID,
+        )
+        data = bytearray(476)
+        data[0:payload_size] = payload_padded
+        data[payload_size:payload_size + len(tags)] = tags
+        block = header + bytes(data) + struct.pack("<I", UF2_MAGIC_END)
+        assert len(block) == 512
+        blocks.append(block)
+
+    out_path.write_bytes(b"".join(blocks))
+    print(f"Wrote {num_blocks * 512} bytes ({num_blocks} blocks) to {out_path}")
+
+
 def make_file_container(out_path: Path) -> None:
     """Build a tiny UF2 from scratch holding one embedded file.
 
@@ -168,6 +266,7 @@ def main() -> None:
     (OUT_DIR / "flag_md5.uf2").write_bytes(make_md5(base_uf2))
     (OUT_DIR / "flag_extension_tags.uf2").write_bytes(make_extension_tags(base_uf2))
     make_file_container(OUT_DIR / "flag_file_container.uf2")
+    make_demo(OUT_DIR / "demo.uf2")
 
     # Large fixture: 6 MiB bin -> 12 MiB UF2 (24576 blocks of 512 bytes).
     # Sized to clearly exceed the 10 MiB boundary the editor treats as "large".
@@ -182,6 +281,7 @@ def main() -> None:
     selfcheck(OUT_DIR / "flag_md5.uf2", FLAG_MD5 | FLAG_FAMILY_ID)
     selfcheck(OUT_DIR / "flag_extension_tags.uf2", FLAG_EXT_TAGS | FLAG_FAMILY_ID)
     selfcheck(OUT_DIR / "flag_file_container.uf2", FLAG_FILE_CONTAINER)
+    selfcheck(OUT_DIR / "demo.uf2", FLAG_FAMILY_ID | FLAG_EXT_TAGS | FLAG_NOT_MAIN_FLASH)
 
 
 if __name__ == "__main__":

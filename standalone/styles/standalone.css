@@ -86,7 +86,7 @@
 }
 .fdz-sub {
 	margin: 0 0 14px;
-	font-size: 16px;
+	font-size: 17px;
 	line-height: 1.5;
 	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
 }
@@ -115,12 +115,13 @@
 }
 .fdz-actions {
 	display: flex;
+	flex-direction: column;
 	gap: 10px;
 	align-items: center;
-	justify-content: center;
 }
 .fdz-btn {
 	box-sizing: border-box;
+	display: inline-block;
 	padding: 8px 14px;
 	background: var(--vscode-button-secondaryBackground);
 	border: 1px solid var(--vscode-editorWidget-border);
@@ -130,6 +131,7 @@
 	font-size: 13px;
 	font-weight: 500;
 	cursor: pointer;
+	text-decoration: none;
 	transition:
 		background 140ms ease,
 		border-color 140ms ease,
@@ -139,6 +141,8 @@
 	border-color: var(--vscode-focusBorder);
 }
 .fdz-btn.fdz-btn-primary {
+	padding: 8px 24px;
+	font-size: 16px;
 	background: var(--vscode-button-background);
 	border-color: var(--vscode-button-background);
 	color: var(--vscode-button-foreground);
@@ -146,6 +150,16 @@
 .fdz-btn.fdz-btn-primary:hover {
 	background: var(--vscode-button-hoverBackground);
 	border-color: var(--vscode-button-hoverBackground);
+}
+.fdz-btn.fdz-btn-ghost {
+	background: transparent;
+	border: 1px solid #bbb;
+	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+	font-size: 13px;
+}
+.fdz-btn.fdz-btn-ghost:hover {
+	border-color: #777;
+	color: var(--vscode-editor-foreground);
 }
 .fdz-btn:focus-visible {
 	outline: 2px solid var(--vscode-focusBorder);
@@ -230,4 +244,65 @@
 .sa-topbar .fdz-btn {
 	padding: 6px 12px;
 	font-size: 12px;
+}
+
+/* ============================================================
+ * URL fetch states (loading / error)
+ * ============================================================ */
+.sa-url-card {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: min(480px, 92vw);
+	padding: 40px 44px;
+	background: var(--vscode-editorWidget-background);
+	border: 1.5px solid var(--vscode-editorWidget-border);
+	border-radius: 18px;
+	color: var(--vscode-editor-foreground);
+	text-align: center;
+}
+.sa-url-spinner {
+	width: 36px;
+	height: 36px;
+	margin-bottom: 20px;
+	border: 3px solid var(--vscode-editorWidget-border);
+	border-top-color: var(--vscode-focusBorder);
+	border-radius: 50%;
+	animation: sa-spin 0.7s linear infinite;
+}
+@keyframes sa-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+.sa-url-title {
+	margin: 0 0 8px;
+	font-size: 20px;
+	font-weight: 600;
+}
+.sa-url-error-title {
+	color: var(--vscode-errorForeground, var(--vscode-notificationsErrorIcon-foreground, #f14c4c));
+}
+.sa-url-sub {
+	margin: 0 0 6px;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+}
+.sa-url-url {
+	max-width: 100%;
+	overflow-wrap: break-word;
+	word-break: break-all;
+	font-family: var(--vscode-editor-font-family);
+	font-size: 11.5px;
+}
+.sa-url-error-msg {
+	padding: 6px 10px;
+	background: var(--vscode-editor-background);
+	border: 1px solid var(--vscode-editorWidget-border);
+	border-radius: 6px;
+	font-family: var(--vscode-editor-font-family);
+	font-size: 12px;
+	color: var(--vscode-errorForeground, var(--vscode-notificationsErrorIcon-foreground, #f14c4c));
 }
