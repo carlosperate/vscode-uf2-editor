@@ -1,7 +1,5 @@
 const esbuild = require("esbuild");
 const css = require("esbuild-css-modules-plugin");
-const fs = require("fs");
-const path = require("path");
 
 const watch = process.argv.includes("--watch");
 const minify = !watch || process.argv.includes("--minify");
@@ -11,31 +9,6 @@ const envDefine = {
 const testDefine = {
 	"process.env.NODE_ENV": '"test"',
 };
-
-// Copy assets (manually maintained files) to dist-extension after build
-function copyAssets() {
-	const assetsDir = path.join(__dirname, "assets");
-	const distDir = path.join(__dirname, "dist-extension");
-
-	if (!fs.existsSync(distDir)) {
-		fs.mkdirSync(distDir, { recursive: true });
-	}
-
-	if (!fs.existsSync(assetsDir)) {
-		return;
-	}
-
-	const files = fs.readdirSync(assetsDir);
-	for (const file of files) {
-		const src = path.join(assetsDir, file);
-		const dest = path.join(distDir, file);
-		fs.copyFileSync(src, dest);
-	}
-
-	if (files.length > 0) {
-		console.log(`Copied ${files.length} asset(s) to dist-extension/`);
-	}
-}
 
 function build(options) {
 	(async () => {
@@ -115,6 +88,3 @@ const editorBuildOptions = {
 };
 
 build(editorBuildOptions);
-
-// Copy assets after build completes
-setTimeout(() => copyAssets(), 100);

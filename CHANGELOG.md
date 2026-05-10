@@ -2,6 +2,8 @@
 
 ## v0.1.1 - 2026-??-??
 
+- Updated icon to show a file with the microcontroller inside, as it's more representative for this extension.
+
 ## v0.1.0 - 2026-05-07
 
 Initial release of the UF2 Editor, forked from [Microsoft VS Code Hex Editor](https://github.com/microsoft/vscode-hexeditor) v1.11.1.
