@@ -1,8 +1,11 @@
 # Release Notes
 
-## v0.1.1 - 2026-??-??
+## v0.1.1 - 2026-05-11
 
 - Updated icon to show a file with the microcontroller inside, as it's more representative for this extension.
+- Standalone web viewer can now open UF2 files from URLs via the `?uf2FileUrl=` query parameter
+  - e.g. https://carlosperate.github.io/vscode-uf2-editor/?uf2FileUrl=https://raw.githubusercontent.com/carlosperate/vscode-uf2-editor/main/tests/uf2_files/family_a.uf2
+- A button has been added to the standalone viewer to open a demo UF2 file.
 
 ## v0.1.0 - 2026-05-07
 

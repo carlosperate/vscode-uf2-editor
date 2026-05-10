@@ -2,7 +2,7 @@
   "name": "uf2editor",
   "displayName": "UF2 Editor",
   "description": "View, inspect, and edit UF2 files.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "carlosperate",
   "repository": {
     "type": "git",

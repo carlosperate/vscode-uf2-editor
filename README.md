@@ -1,6 +1,6 @@
 # VS Code UF2 Editor
 
-Visual Studio Code extension that provides an editor for viewing and
+Visual Studio Code extension that provides an editor for viewing, decoding, and
 manipulating [UF2](https://github.com/microsoft/uf2) files.
 
 ![VSCode window showing UF2 files with this extension](assets/screenshot.png)
