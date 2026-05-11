@@ -55,7 +55,7 @@ export const Uf2InspectorRows: React.FC<{
 		return (
 			<>
 				<dt>UF2 Block</dt>
-				<dd data-testid="uf2-block-error">parse error: {result.reason}</dd>
+				<dd data-testid="uf2-block-error">Invalid UF2 block</dd>
 			</>
 		);
 	}

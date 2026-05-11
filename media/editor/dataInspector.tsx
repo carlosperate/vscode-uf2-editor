@@ -8,7 +8,7 @@ import { useFileBytes, usePersistedState } from "./hooks";
 import * as select from "./state";
 import { strings } from "./strings";
 import { UF2_BLOCK_SIZE } from "../../shared/uf2/block";
-import { blockAtOffset, isUf2FileSelector } from "./uf2/blockSelectors";
+import { blockAtOffset } from "./uf2/blockSelectors";
 import { Uf2InspectorRows } from "./uf2/Uf2InspectorRows";
 import { throwOnUndefinedAccessInDev } from "./util";
 
@@ -70,22 +70,18 @@ const InspectorContents: React.FC<{ offset: number }> = ({ offset }) => {
 	);
 };
 
-/** "UF2 Block Info" subsection above the typed inspector, only when the file is UF2. */
+/** "UF2 Block Info" subsection above the typed inspector, always visible. */
 const Uf2BlockSection: React.FC<{ offset: number; gridTemplate: string }> = ({
 	offset,
 	gridTemplate,
-}) => {
-	const isUf2 = useRecoilValue(isUf2FileSelector);
-	if (!isUf2) return null;
-	return (
-		<Suspense fallback={null}>
-			<h4 className={style.sectionHeading}>UF2 Block Info</h4>
-			<dl className={style.types} style={{ gridTemplateColumns: gridTemplate }}>
-				<Uf2BlockRows offset={offset} />
-			</dl>
-		</Suspense>
-	);
-};
+}) => (
+	<Suspense fallback={null}>
+		<h4 className={style.sectionHeading}>UF2 Block Info</h4>
+		<dl className={style.types} style={{ gridTemplateColumns: gridTemplate }}>
+			<Uf2BlockRows offset={offset} />
+		</dl>
+	</Suspense>
+);
 
 const Uf2BlockRows: React.FC<{ offset: number }> = ({ offset }) => {
 	// Normalize to block-start so all bytes in the same 512-byte block share one
