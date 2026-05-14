@@ -28,16 +28,16 @@ const formatFlags = (flags: number): string => {
 /** Maps a hovered cell's Uf2FieldKind to the inspector row it corresponds to. */
 type InspectorRow = "blockNo" | "numBlocks" | "addr" | "payloadSize" | "payloadData" | "family" | "flags";
 
-const INSPECTOR_ROW_FOR_KIND = new Map<number, InspectorRow>([
-	[Uf2FieldKind.BlockNo, "blockNo"],
-	[Uf2FieldKind.NumBlocks, "numBlocks"],
-	[Uf2FieldKind.TargetAddr, "addr"],
-	[Uf2FieldKind.PayloadSize, "payloadSize"],
-	[Uf2FieldKind.Data, "payloadData"],
-	[Uf2FieldKind.Padding, "payloadData"],
-	[Uf2FieldKind.FileSizeOrFamilyId, "family"],
-	[Uf2FieldKind.Flags, "flags"],
-]);
+const INSPECTOR_ROW_FOR_KIND: Partial<Record<Uf2FieldKind, InspectorRow>> = {
+	[Uf2FieldKind.BlockNo]: "blockNo",
+	[Uf2FieldKind.NumBlocks]: "numBlocks",
+	[Uf2FieldKind.TargetAddr]: "addr",
+	[Uf2FieldKind.PayloadSize]: "payloadSize",
+	[Uf2FieldKind.Data]: "payloadData",
+	[Uf2FieldKind.Padding]: "payloadData",
+	[Uf2FieldKind.FileSizeOrFamilyId]: "family",
+	[Uf2FieldKind.Flags]: "flags",
+};
 
 /**
  * UF2 block fields rendered as `<dt>/<dd>` pairs, intended to live inside the
@@ -46,10 +46,10 @@ const INSPECTOR_ROW_FOR_KIND = new Map<number, InspectorRow>([
  */
 export const Uf2InspectorRows: React.FC<{
 	result: Uf2ParseResult;
-	hoveredFieldKind?: number;
+	hoveredFieldKind?: Uf2FieldKind;
 }> = ({ result, hoveredFieldKind }) => {
 	const hoveredRow: InspectorRow | undefined =
-		hoveredFieldKind !== undefined ? INSPECTOR_ROW_FOR_KIND.get(hoveredFieldKind) : undefined;
+		hoveredFieldKind !== undefined ? INSPECTOR_ROW_FOR_KIND[hoveredFieldKind] : undefined;
 
 	if (!result.ok) {
 		return (

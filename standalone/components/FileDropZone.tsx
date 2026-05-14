@@ -126,7 +126,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 							href="?uf2FileUrl=https://raw.githubusercontent.com/carlosperate/vscode-uf2-editor/main/tests/uf2_files/demo.uf2"
 							onClick={event => event.stopPropagation()}
 						>
-							Demo mode
+							Load demo file
 						</a>
 					</div>
 				</div>

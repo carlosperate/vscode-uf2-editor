@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { RecoilRoot } from "recoil";
 import { EditorRoot } from "../media/editor/EditorRoot";
 import { bumpWebviewSession } from "../media/editor/state";
@@ -19,6 +19,12 @@ export interface StandaloneAppProps {
 	initializeMessaging?: InitializeMessagingFn;
 	renderViewer?: () => React.ReactNode;
 }
+
+const defaultRenderViewer = (): React.ReactNode => (
+	<RecoilRoot>
+		<EditorRoot />
+	</RecoilRoot>
+);
 
 type UrlFetchState =
 	| { kind: "idle" }
@@ -73,16 +79,7 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 	const [file, setFile] = useState<File | null>(null);
 	const [urlFetch, setUrlFetch] = useState<UrlFetchState>({ kind: "idle" });
 
-	const viewer = useMemo(
-		() =>
-			renderViewer ??
-			(() => (
-				<RecoilRoot>
-					<EditorRoot />
-				</RecoilRoot>
-			)),
-		[renderViewer],
-	);
+	const viewer = renderViewer ?? defaultRenderViewer;
 
 	const handleFileSelect = useCallback(
 		(selectedFile: File) => {

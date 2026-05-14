@@ -75,9 +75,10 @@ export class MockMessageHandler {
 
 		const target = new Uint8Array(message.bytes);
 		const bytesRead = await this.accessor.readInto(message.offset, target);
-		const payload =
-			bytesRead === target.byteLength ? target : target.subarray(0, Math.max(0, bytesRead));
-		const data = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength);
+		// `target` is a freshly-allocated buffer we own, so on a full read we can hand
+		// it back without copying. A short read (EOF) still has to be sliced down.
+		const data =
+			bytesRead === target.byteLength ? target.buffer : target.buffer.slice(0, bytesRead);
 
 		return {
 			data,
