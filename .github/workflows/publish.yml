@@ -12,7 +12,7 @@ on:
 
 jobs:
   publish:
-    name: Publish to VS Code Marketplace
+    name: Publish Extension
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -62,3 +62,9 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: npx --yes @vscode/vsce publish --packagePath "$VSIX_NAME"
+
+      - name: Publish to Open VSX Registry
+        if: github.event_name == 'release' || inputs.dry_run == false
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx --yes ovsx publish dist/*.vsix
