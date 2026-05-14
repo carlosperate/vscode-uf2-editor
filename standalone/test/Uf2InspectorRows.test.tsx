@@ -22,16 +22,16 @@ describe("Uf2InspectorRows", () => {
 		const { getByTestId } = renderRows(
 			<Uf2InspectorRows result={{ ok: false, reason: "bad-magic-start" }} />,
 		);
-		expect(getByTestId("uf2-block-error").textContent).to.match(/bad-magic-start/);
+		expect(getByTestId("uf2-block-error").textContent).to.equal("Invalid UF2 block");
 	});
 
 	it("renders a notice for a trailing partial block without throwing", () => {
 		// A file whose length is not a multiple of 512 has a trailing partial block.
-		// The parser must return too-short; the inspector must show a notice rather than throw.
+		// The parser must return ok:false; the inspector must show a notice rather than throw.
 		const partial = loadFixtureBytes("family_a.uf2").subarray(0, UF2_BLOCK_SIZE - 100);
 		const result = parseBlock(partial, 0);
 		expect(result.ok).to.equal(false);
 		const { getByTestId } = renderRows(<Uf2InspectorRows result={result} />);
-		expect(getByTestId("uf2-block-error").textContent).to.include("too-short");
+		expect(getByTestId("uf2-block-error").textContent).to.equal("Invalid UF2 block");
 	});
 });
