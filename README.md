@@ -9,7 +9,7 @@ To view this extension in action you can test it out in VSCode online via Github
 https://github.dev/carlosperate/vscode-uf2-editor/blob/main/tests/uf2_files/demo.uf2
 
 There is also a standalone UF2 web viewer based on this extension:
-https://carlosperate.github.io/vscode-uf2-editor/
+https://uf2viewer.embeddedlog.com
 
 ## Features
 

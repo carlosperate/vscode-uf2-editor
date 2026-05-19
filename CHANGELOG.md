@@ -1,5 +1,11 @@
 # Release Notes
 
+## v0.1.2 - 2026-05-19
+
+- Automatically publish extension to VSX Registry as well
+- Updated icon with a more modern design
+- Minor code and test improvements
+
 ## v0.1.1 - 2026-05-11
 
 - Updated icon to show a file with the microcontroller inside, as it's more representative for this extension.
