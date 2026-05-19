@@ -8,7 +8,7 @@ on:
       dry_run:
         description: "Package only, do not publish"
         type: boolean
-        default: false
+        default: true
 
 jobs:
   publish:
@@ -27,7 +27,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Verify package.json version matches release tag
+      - name: Verify package.json version matches release tag & generate package name
         if: github.event_name == 'release'
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
@@ -38,18 +38,15 @@ jobs:
             echo "::error::package.json version ($PKG_VERSION) does not match release tag ($TAG_VERSION)"
             exit 1
           fi
+          VSIX_NAME="uf2editor-${GITHUB_REF_NAME:-v$(node -p "require('./package.json').version")}.vsix"
+          echo "VSIX_NAME=$VSIX_NAME" >> "$GITHUB_ENV"
 
       - run: npm run build:extension
-
-      - run: npm run lint
 
       - run: xvfb-run -a npm run test:extension
 
       - name: Package VSIX
-        run: |
-          VSIX_NAME="uf2editor-${GITHUB_REF_NAME:-v$(node -p "require('./package.json').version")}.vsix"
-          npx --yes @vscode/vsce package --out "$VSIX_NAME"
-          echo "VSIX_NAME=$VSIX_NAME" >> "$GITHUB_ENV"
+        run: npx --yes @vscode/vsce package --out "$VSIX_NAME"
 
       - name: Upload VSIX to release
         if: github.event_name == 'release'
@@ -67,4 +64,4 @@ jobs:
         if: github.event_name == 'release' || inputs.dry_run == false
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
-        run: npx --yes ovsx publish dist/*.vsix
+        run: npx --yes ovsx publish --packagePath "$VSIX_NAME"
