@@ -10,6 +10,12 @@ const define = {
 };
 const distDir = path.join(__dirname, "..", "dist-standalone");
 
+// Added to index.html only when ADD_ANALYTICS is set (in CI).
+const analyticsScripts = [
+	`<script data-goatcounter="https://angc.embeddedlog.com/count" async src="//angc.embeddedlog.com/count.js"></script>`,
+	`<script defer src="https://an.embeddedlog.com/script.js" data-website-id="bc1ae519-73b1-42ec-b1eb-c0ccd08d0abf"></script>`,
+];
+
 function ensureDistDir() {
 	if (!fs.existsSync(distDir)) {
 		fs.mkdirSync(distDir, { recursive: true });
@@ -20,7 +26,12 @@ function copyIndexHtml() {
 	ensureDistDir();
 	const src = path.join(__dirname, "index.html");
 	const dest = path.join(distDir, "index.html");
-	fs.copyFileSync(src, dest);
+	let html = fs.readFileSync(src, "utf8");
+	if (process.env.ADD_ANALYTICS) {
+		const scripts = analyticsScripts.map(script => `\t\t${script}\n`).join("");
+		html = html.replace("</body>", `${scripts}\t</body>`);
+	}
+	fs.writeFileSync(dest, html);
 }
 
 function copyStandaloneCss() {

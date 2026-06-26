@@ -21,6 +21,7 @@ build
 .tool-versions
 icon.svg
 dev.md
+assets/**
 standalone/**
 dist-standalone/**
 tests/**

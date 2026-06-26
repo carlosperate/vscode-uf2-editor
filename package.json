@@ -24,7 +24,8 @@
     "hex",
     "binary",
     "microcontroller",
-    "micro:bit"
+    "embedded",
+    "bootloader"
   ],
   "qna": "https://github.com/carlosperate/vscode-uf2-editor/issues",
   "extensionKind": [

@@ -5,7 +5,7 @@ manipulating [UF2](https://github.com/microsoft/uf2) files.
 
 ![VSCode window showing UF2 files with this extension](assets/screenshot.png)
 
-To view this extension in action you can test it out in VSCode online via Github.dev:
+To try this extension without installing it, you can test it out in VSCode online via Github.dev:
 https://github.dev/carlosperate/vscode-uf2-editor/blob/main/tests/uf2_files/demo.uf2
 
 There is also a standalone UF2 web viewer based on this extension:
@@ -49,9 +49,6 @@ We are grateful to Microsoft and all the contributors who built the original
 hex editor extension that made this project possible.
 
 MIT License, see [LICENSE](https://github.com/carlosperate/vscode-uf2-editor/blob/main/LICENSE) file for details.
-
-Original extension work Copyright (c) Microsoft Corporation.
-Updated UF2 support Copyright (c) 2025-2026 Carlos Pereira Atencio.
 
 Fork updates are listed in the [changelog](https://github.com/carlosperate/vscode-uf2-editor/blob/main/CHANGELOG.md)
 and can be viewed in [this GitHub diff](https://github.com/carlosperate/vscode-uf2-editor/compare/7d97ac4003059cdefc8f533a6ad7381fe8ae0435...main).
