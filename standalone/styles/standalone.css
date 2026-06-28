@@ -308,12 +308,14 @@
 	display: inline-flex;
 	align-items: baseline;
 	gap: 10px;
+	min-width: 0; /* allow the pill to shrink so the name can truncate */
 	padding: 4px 10px 4px 8px;
 	background: var(--vscode-editor-background);
 	border: 1px solid var(--vscode-editorWidget-border);
 	border-radius: 7px;
 }
 .sa-pill-dot {
+	flex-shrink: 0;
 	align-self: center;
 	width: 7px;
 	height: 7px;
@@ -327,12 +329,18 @@
 		);
 }
 .sa-pill-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	font-family: var(--vscode-editor-font-family);
 	font-size: 12.5px;
 	font-weight: 600;
 	color: var(--vscode-editor-foreground);
 }
 .sa-pill-meta {
+	flex-shrink: 0;
+	white-space: nowrap;
 	font-family: var(--vscode-editor-font-family);
 	font-size: 11.5px;
 	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
@@ -341,6 +349,8 @@
 	flex: 1;
 }
 .sa-topbar .fdz-btn {
+	flex-shrink: 0;
+	white-space: nowrap;
 	padding: 6px 12px;
 	font-size: 12px;
 }
