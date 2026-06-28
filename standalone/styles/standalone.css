@@ -2,147 +2,264 @@
  * NOT imported from JS — copied to dist and linked from index.html so it
  * bypasses the CSS-modules bundler that hashes class names. */
 
-/* ============================================================
- * File drop zone (empty state)
- * ============================================================ */
-.fdz-stage {
-	box-sizing: border-box;
-	display: grid;
-	place-items: center;
+/* The CSS-modules bundler hashes the `#root` selector in theme.css (it
+ * scopes id selectors), so theme.css's `#root { height: 100vh }` never
+ * matches. Re-declare it here, unhashed, so full-height children resolve. */
+#root {
 	width: 100%;
 	height: 100%;
-	padding: 24px;
 }
-.fdz-zone {
-	position: relative;
+
+/* ============================================================
+ * File entry overlay (empty state)
+ *
+ * Container-query driven so type/spacing scale relative to the
+ * viewer pane, not the window. Font sizes are capped (clamp max
+ * values) so they stop growing on very large displays.
+ * Colours map to VS Code theme tokens so light/dark both work.
+ * ============================================================ */
+
+/* the query container — fills whatever pane it's dropped into */
+.fdz-cq {
+	container-type: inline-size;
 	box-sizing: border-box;
-	display: grid;
-	grid-template-rows: 1fr auto 1fr;
-	width: min(520px, 92vw);
-	aspect-ratio: 1.05 / 1;
-	max-height: calc(100vh - 48px);
-	padding: 40px 44px;
-	background: var(--vscode-editorWidget-background);
-	border: 1.5px dashed var(--vscode-editorWidget-border);
-	border-radius: 18px;
-	color: var(--vscode-editor-foreground);
-	cursor: pointer;
-	overflow: hidden;
-	transition:
-		border-color 180ms ease,
-		background 180ms ease,
-		transform 180ms ease;
-}
-.fdz-zone::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background-image: linear-gradient(to right, currentColor 1px, transparent 1px),
-		linear-gradient(to bottom, currentColor 1px, transparent 1px);
-	background-size: 16px 16px;
-	opacity: 0.05;
-	-webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-	mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-	pointer-events: none;
-}
-.fdz-zone:hover {
-	border-color: var(--vscode-focusBorder);
-}
-.fdz-zone.fdz-dragging {
-	border-color: var(--vscode-focusBorder);
-	background: var(--vscode-editor-hoverHighlightBackground);
-	transform: scale(1.01);
-}
-.fdz-content {
-	grid-row: 2;
-	text-align: center;
-	position: relative;
-}
-.fdz-mark {
-	display: grid;
-	place-items: center;
-	width: 56px;
-	height: 56px;
-	margin: 0 auto 22px;
+	height: 100%;
+	min-height: 100%;
 	background: var(--vscode-editor-background);
-	border: 1px solid var(--vscode-editorWidget-border);
-	border-radius: 14px;
-	font-family: var(--vscode-editor-font-family);
-	font-size: 13px;
-	font-weight: 600;
-	letter-spacing: 0.04em;
-	color: var(--vscode-descriptionForeground, var(--vscode-editor-foreground));
-}
-.fdz-mark .fdz-mark-uf {
 	color: var(--vscode-editor-foreground);
-	font-weight: 700;
+	font-family: var(--vscode-font-family);
+
+	/* local palette mapped to theme tokens */
+	--fdz-ink: var(--vscode-editor-foreground);
+	--fdz-ink-2: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+	--fdz-ink-3: var(--vscode-disabledForeground, var(--vscode-descriptionForeground));
+	--fdz-rule: var(--vscode-editorWidget-border);
+	--fdz-paper: var(--vscode-editor-background);
+	--fdz-elev: var(--vscode-editorWidget-background);
+	--fdz-mono: var(--vscode-editor-font-family);
 }
-.fdz-title {
-	margin: 0 0 8px;
-	font-size: 28px;
-	font-weight: 600;
-	letter-spacing: -0.01em;
-	color: var(--vscode-editor-foreground);
+
+.fdz-overlay {
+	box-sizing: border-box;
+	min-height: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	transition: background 160ms ease;
 }
-.fdz-sub {
-	margin: 0 0 14px;
-	font-size: 17px;
-	line-height: 1.5;
-	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+
+.fdz-col-left,
+.fdz-col-right {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	padding: clamp(40px, 6cqh, 80px) clamp(32px, 4cqi, 72px);
 }
-.fdz-sub code {
-	padding: 1px 5px;
-	background: var(--vscode-editor-background);
-	border: 1px solid var(--vscode-editorWidget-border);
-	border-radius: 4px;
-	font-family: var(--vscode-editor-font-family);
-	font-size: 0.92em;
-	color: var(--vscode-editor-foreground);
+.fdz-col-left {
+	justify-content: flex-end;
 }
-.fdz-explainer {
-	max-width: 380px;
-	margin: 0 auto 24px;
-	padding-top: 12px;
-	border-top: 1px solid var(--vscode-editorWidget-border);
-	font-size: 12px;
-	line-height: 1.5;
-	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+.fdz-col-right {
+	justify-content: flex-start;
+	background: var(--fdz-elev);
+	border-left: 1px solid var(--fdz-rule);
+	transition: background 160ms ease;
 }
-.fdz-explainer strong {
-	font-weight: 600;
-	color: var(--vscode-editor-foreground);
-	letter-spacing: 0.01em;
-}
-.fdz-actions {
+.fdz-col-left .fdz-inner {
+	width: 100%;
+	max-width: 480px;
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: clamp(20px, 1.7cqi, 28px);
+}
+.fdz-col-right .fdz-inner {
+	width: 100%;
+	max-width: 430px;
+}
+
+.fdz-h1 {
+	margin: 0;
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.05;
+	color: var(--fdz-ink);
+	font-size: clamp(26px, 2.4cqi, 36px);
+}
+.fdz-lede {
+	margin: 0;
+	line-height: 1.6;
+	color: var(--fdz-ink-2);
+	font-size: clamp(14px, 1.05cqi, 15px);
+}
+.fdz-lede b {
+	color: var(--fdz-ink);
+	font-weight: 600;
+}
+
+.fdz-colstack {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(12px, 1.2cqi, 16px);
+}
+.fdz-drop {
+	margin: 0;
+	line-height: 1.5;
+	color: var(--fdz-ink-3);
+	font-size: clamp(12px, 0.85cqi, 13px);
+}
+.fdz-drop kbd {
+	display: inline-block;
+	margin: 0 1px;
+	padding: 1px 6px;
+	background: var(--fdz-paper);
+	border: 1px solid var(--fdz-rule);
+	border-bottom-width: 2px;
+	border-radius: 4px;
+	font-family: var(--fdz-mono);
+	font-size: 0.85em;
+	color: var(--fdz-ink-2);
+}
+
+/* right column — illustrative 32-byte header field map */
+.fdz-righthead {
+	margin-bottom: clamp(14px, 1.3cqi, 20px);
+	font-family: var(--fdz-mono);
+	font-size: clamp(10px, 0.7cqi, 11.5px);
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--fdz-ink-3);
+}
+.fdz-fmap {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(9px, 0.85cqi, 12px);
+}
+.fdz-field {
+	display: flex;
 	align-items: center;
+	gap: clamp(12px, 1.1cqi, 16px);
+
+	/* per-field accent (overridden below); maps to terminal ANSI
+	 * tokens so it adapts to the active light/dark theme */
+	--fdz-c: var(--vscode-editor-foreground);
+}
+.fdz-field .fdz-nm {
+	flex-shrink: 0;
+	width: clamp(70px, 6cqi, 90px);
+	font-family: var(--fdz-mono);
+	font-size: clamp(9.5px, 0.72cqi, 11.5px);
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, var(--fdz-c) 80%, var(--fdz-ink));
+}
+.fdz-field .fdz-bytes {
+	display: flex;
+	padding: clamp(6px, 0.6cqi, 8px);
+	border-radius: 7px;
+	font-family: var(--fdz-mono);
+	font-size: clamp(11.5px, 0.85cqi, 14px);
+	background: color-mix(in srgb, var(--fdz-c) 18%, var(--fdz-elev));
+}
+.fdz-field .fdz-bytes b {
+	width: clamp(20px, 1.6cqi, 26px);
+	text-align: center;
+	font-weight: 400;
+	color: var(--fdz-ink);
+}
+.fdz-field .fdz-bytes b.fdz-z {
+	color: color-mix(in srgb, var(--fdz-ink) 42%, transparent);
+}
+.fdz-field-magic {
+	--fdz-c: var(--vscode-terminal-ansiRed);
+}
+.fdz-field-flags {
+	--fdz-c: var(--vscode-terminal-ansiBlue);
+}
+.fdz-field-addr {
+	--fdz-c: var(--vscode-terminal-ansiGreen);
+}
+.fdz-field-payload {
+	--fdz-c: var(--vscode-terminal-ansiYellow);
+}
+.fdz-field-family {
+	--fdz-c: var(--vscode-terminal-ansiMagenta);
+}
+
+/* drag-over highlight */
+.fdz-overlay.fdz-dragging {
+	outline: 2px solid var(--vscode-focusBorder);
+	outline-offset: -6px;
+}
+.fdz-overlay.fdz-dragging .fdz-col-right {
+	background: color-mix(in srgb, var(--vscode-focusBorder) 12%, var(--fdz-elev));
+}
+
+/* narrow panes: stack into two stacked halves. Both rows fill the height
+ * (1fr each) so the elevated illustration row reaches the bottom edge, with
+ * the text centred in the top half and the field map in the bottom half. */
+@container (max-width: 880px) {
+	.fdz-overlay {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	.fdz-col-left {
+		justify-content: center;
+		padding: clamp(32px, 7cqh, 72px) 32px 24px;
+	}
+	.fdz-col-left .fdz-inner {
+		max-width: 560px;
+	}
+	.fdz-col-right {
+		justify-content: center;
+		border-left: none;
+		border-top: 1px solid var(--fdz-rule);
+		padding: 24px 32px clamp(32px, 7cqh, 72px);
+	}
+	.fdz-col-right .fdz-inner {
+		max-width: 560px;
+	}
+}
+@container (max-width: 520px) {
+	.fdz-field .fdz-nm {
+		width: 64px;
+	}
+}
+
+/* ============================================================
+ * Buttons (shared by entry, URL cards, and topbar)
+ * ============================================================ */
+.fdz-actions {
+	display: flex;
+	align-items: center;
+	gap: clamp(12px, 1.5cqi, 18px);
+	flex-wrap: wrap;
 }
 .fdz-btn {
 	box-sizing: border-box;
 	display: inline-block;
-	padding: 8px 14px;
+	padding: 0.72em 1.25em;
 	background: var(--vscode-button-secondaryBackground);
 	border: 1px solid var(--vscode-editorWidget-border);
-	border-radius: 8px;
+	border-radius: 7px;
 	color: var(--vscode-button-secondaryForeground);
 	font-family: inherit;
-	font-size: 13px;
+	font-size: clamp(13px, 0.9cqi, 14px);
 	font-weight: 500;
 	cursor: pointer;
 	text-decoration: none;
 	transition:
 		background 140ms ease,
 		border-color 140ms ease,
-		color 140ms ease;
+		color 140ms ease,
+		transform 40ms ease;
 }
 .fdz-btn:hover {
 	border-color: var(--vscode-focusBorder);
 }
+.fdz-btn:active {
+	transform: translateY(1px);
+}
 .fdz-btn.fdz-btn-primary {
-	padding: 8px 24px;
-	font-size: 16px;
 	background: var(--vscode-button-background);
 	border-color: var(--vscode-button-background);
 	color: var(--vscode-button-foreground);
@@ -153,38 +270,20 @@
 }
 .fdz-btn.fdz-btn-ghost {
 	background: transparent;
-	border: 1px solid #bbb;
-	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
-	font-size: 13px;
+	border: none;
+	padding: 0.72em 0.4em;
+	color: var(--fdz-ink-2, var(--vscode-descriptionForeground));
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	text-decoration-color: var(--vscode-editorWidget-border);
 }
 .fdz-btn.fdz-btn-ghost:hover {
-	border-color: #777;
 	color: var(--vscode-editor-foreground);
+	text-decoration-color: currentColor;
 }
 .fdz-btn:focus-visible {
 	outline: 2px solid var(--vscode-focusBorder);
 	outline-offset: 2px;
-}
-.fdz-hint {
-	grid-row: 3;
-	align-self: end;
-	text-align: center;
-	font-family: var(--vscode-editor-font-family);
-	font-size: 11px;
-	letter-spacing: 0.02em;
-	color: var(--vscode-disabledForeground, var(--vscode-editorLineNumber-foreground));
-}
-.fdz-hint kbd {
-	display: inline-block;
-	margin: 0 2px;
-	padding: 1px 6px;
-	background: var(--vscode-editor-background);
-	border: 1px solid var(--vscode-editorWidget-border);
-	border-bottom-width: 2px;
-	border-radius: 4px;
-	font-family: var(--vscode-editor-font-family);
-	font-size: 10.5px;
-	color: var(--vscode-editor-foreground);
 }
 
 /* ============================================================
@@ -249,6 +348,14 @@
 /* ============================================================
  * URL fetch states (loading / error)
  * ============================================================ */
+.fdz-stage {
+	box-sizing: border-box;
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	padding: 24px;
+}
 .sa-url-card {
 	box-sizing: border-box;
 	display: flex;

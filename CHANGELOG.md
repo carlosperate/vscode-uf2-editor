@@ -1,8 +1,12 @@
 # Release Notes
 
+## v0.1.3 - 2026-??-?? (Unreleased)
+
+- Tweaked the standalone web viewer landing page
+
 ## v0.1.2 - 2026-05-19
 
-- Automatically publish extension to VSX Registry as well
+- Automatically publish extension to Open VSX Registry as well
 - Updated icon with a more modern design
 - Minor code and test improvements
 

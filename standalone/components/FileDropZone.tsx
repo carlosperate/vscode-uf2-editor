@@ -4,6 +4,48 @@ export interface FileDropZoneProps {
 	onFileSelect(file: File): void;
 }
 
+const DEMO_HREF =
+	"?uf2FileUrl=https://raw.githubusercontent.com/carlosperate/vscode-uf2-editor/main/tests/uf2_files/demo.uf2";
+
+/** Sample block-0 header used for the illustrative field map on the right. */
+const HEADER_FIELDS: { key: string; label: string; bytes: { hex: string; zero?: boolean }[] }[] = [
+	{
+		key: "magic",
+		label: "magic",
+		bytes: ["55", "46", "32", "0A", "57", "51", "5D", "9E"].map(hex => ({ hex })),
+	},
+	{
+		key: "flags",
+		label: "flags",
+		bytes: [{ hex: "01" }, { hex: "A0" }, { hex: "00", zero: true }, { hex: "00", zero: true }],
+	},
+	{
+		key: "addr",
+		label: "address",
+		bytes: [
+			{ hex: "00", zero: true },
+			{ hex: "00", zero: true },
+			{ hex: "00", zero: true },
+			{ hex: "10" },
+		],
+	},
+	{
+		key: "payload",
+		label: "payload",
+		bytes: [
+			{ hex: "00", zero: true },
+			{ hex: "01" },
+			{ hex: "00", zero: true },
+			{ hex: "00", zero: true },
+		],
+	},
+	{
+		key: "family",
+		label: "family id",
+		bytes: ["10", "0D", "F1", "D5"].map(hex => ({ hex })),
+	},
+];
+
 export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 	const [isDragging, setIsDragging] = useState(false);
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -68,70 +110,64 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 		return () => window.removeEventListener("keydown", onKeyDown);
 	}, [openPicker]);
 
-	const className = `fdz-zone${isDragging ? " fdz-dragging" : ""}`;
-
 	return (
-		<div className="fdz-stage">
+		<div className="fdz-cq">
 			<div
-				className={className}
+				className={`fdz-overlay${isDragging ? " fdz-dragging" : ""}`}
 				data-testid="file-dropzone"
-				onClick={openPicker}
 				onDragOver={onDragOver}
 				onDragLeave={onDragLeave}
 				onDrop={onDrop}
-				role="button"
-				tabIndex={0}
-				onKeyDown={event => {
-					if (event.key === "Enter" || event.key === " ") {
-						event.preventDefault();
-						openPicker();
-					}
-				}}
 			>
-				<input
-					aria-label="Select file"
-					data-testid="file-input"
-					ref={inputRef}
-					onChange={onInputChange}
-					style={{ display: "none" }}
-					type="file"
-				/>
-				<div />
-				<div className="fdz-content">
-					<div className="fdz-mark">
-						<span className="fdz-mark-uf">UF2</span>
-					</div>
-					<h1 className="fdz-title">UF2 File Viewer</h1>
-					<p className="fdz-sub">
-						Drop a file here or open a <code>.uf2</code> (or any binary) file to inspect its UF2
-						metadata and raw bytes.
-					</p>
-					<p className="fdz-explainer">
-						<strong>UF2</strong> is a binary file format designed for microcontroller boards,
-						particularly suitable for flashing firmware over MSC USB (i.e. a removable flash drive).
-					</p>
-					<div className="fdz-actions">
-						<button
-							className="fdz-btn fdz-btn-primary"
-							onClick={event => {
-								event.stopPropagation();
-								openPicker();
-							}}
-							type="button"
-						>
-							Choose file
-						</button>
-						<a
-							className="fdz-btn fdz-btn-ghost"
-							href="?uf2FileUrl=https://raw.githubusercontent.com/carlosperate/vscode-uf2-editor/main/tests/uf2_files/demo.uf2"
-							onClick={event => event.stopPropagation()}
-						>
-							Load demo file
-						</a>
+				<div className="fdz-col-left">
+					<div className="fdz-inner">
+						<h1 className="fdz-h1">UF2 File Viewer</h1>
+						<p className="fdz-lede">
+							<b>UF2</b> is a binary format for designed for flashing microcontrollers over MSC USB
+							(mass storage, i.e. a USB drive). This viewer decodes their <b>512-byte blocks</b>,
+							its header fields, content and raw bytes for inspection.
+						</p>
+						<div className="fdz-colstack">
+							<div className="fdz-actions">
+								<button className="fdz-btn fdz-btn-primary" onClick={openPicker} type="button">
+									Open file…
+								</button>
+								<a className="fdz-btn fdz-btn-ghost" href={DEMO_HREF}>
+									Load demo image
+								</a>
+							</div>
+							<div className="fdz-drop">
+								Drop a file here, or anywhere on the window. Press <kbd>O</kbd> to browse.
+							</div>
+						</div>
+						<input
+							aria-label="Select file"
+							data-testid="file-input"
+							ref={inputRef}
+							onChange={onInputChange}
+							style={{ display: "none" }}
+							type="file"
+						/>
 					</div>
 				</div>
-				<div className="fdz-hint">
-					Press <kbd>O</kbd> to open
+				<div className="fdz-col-right">
+					<div className="fdz-inner">
+						<div className="fdz-righthead">block 0 · 32-byte header</div>
+						<div className="fdz-fmap">
+							{HEADER_FIELDS.map(field => (
+								<div className={`fdz-field fdz-field-${field.key}`} key={field.key}>
+									<div className="fdz-nm">{field.label}</div>
+									<div className="fdz-bytes">
+										{field.bytes.map((byte, index) => (
+											<b className={byte.zero ? "fdz-z" : undefined} key={index}>
+												{byte.hex}
+											</b>
+										))}
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
