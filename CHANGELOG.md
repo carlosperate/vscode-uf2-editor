@@ -3,6 +3,8 @@
 ## v0.1.3 - 2026-??-?? (Unreleased)
 
 - Tweaked the standalone web viewer landing page
+- Enable horizontal scrolling, and vertical touch scrolling on mobile devices
+- Other small fixes to the standalone web viewer on mobile resolutions
 
 ## v0.1.2 - 2026-05-19
 

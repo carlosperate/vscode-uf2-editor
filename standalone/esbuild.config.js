@@ -12,6 +12,7 @@ const distDir = path.join(__dirname, "..", "dist-standalone");
 
 // Added to index.html only when ADD_ANALYTICS is set (in CI).
 const analyticsScripts = [
+	`<script>window.goatcounter = { path: function(p) { return location.host + p } }</script>`,
 	`<script data-goatcounter="https://angc.embeddedlog.com/count" async src="//angc.embeddedlog.com/count.js"></script>`,
 	`<script defer src="https://an.embeddedlog.com/script.js" data-website-id="bc1ae519-73b1-42ec-b1eb-c0ccd08d0abf"></script>`,
 ];
@@ -34,11 +35,20 @@ function copyIndexHtml() {
 	fs.writeFileSync(dest, html);
 }
 
-function copyStandaloneCss() {
+function copyChromeCss() {
 	ensureDistDir();
-	const src = path.join(__dirname, "styles", "standalone.css");
+	const src = path.join(__dirname, "styles", "standalone-chrome.css");
 	const dest = path.join(distDir, "standalone-chrome.css");
 	fs.copyFileSync(src, dest);
+}
+
+// Copy assets/ (favicons) to the site root.
+function copyAssets() {
+	ensureDistDir();
+	const assetsDir = path.join(__dirname, "..", "assets");
+	for (const file of fs.readdirSync(assetsDir)) {
+		fs.copyFileSync(path.join(assetsDir, file), path.join(distDir, file));
+	}
 }
 
 const copyPlugin = {
@@ -49,7 +59,8 @@ const copyPlugin = {
 				return;
 			}
 			copyIndexHtml();
-			copyStandaloneCss();
+			copyChromeCss();
+			copyAssets();
 			if (watch) {
 				console.log("Standalone build updated");
 			}
@@ -79,9 +90,9 @@ async function build() {
 	if (watch) {
 		await context.rebuild();
 		await context.watch();
-		const cssFile = path.join(__dirname, "styles", "standalone.css");
+		const cssFile = path.join(__dirname, "styles", "standalone-chrome.css");
 		fs.watch(cssFile, () => {
-			copyStandaloneCss();
+			copyChromeCss();
 			console.log("Standalone build updated");
 		});
 		console.log("Watching standalone viewer...");

@@ -4,6 +4,51 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>UF2 File Viewer</title>
+		<meta
+			name="description"
+			content="Online UF2 file viewer. Open a .uf2 firmware file to decode its 512-byte blocks, header fields, and raw bytes. Entirely in your browser."
+		/>
+		<link rel="canonical" href="https://uf2viewer.embeddedlog.com" />
+		<meta name="theme-color" content="#0d1117" />
+		<link rel="icon" type="image/x-icon" href="./favicon.ico" />
+		<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
+		<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="UF2 File Viewer" />
+		<meta property="og:title" content="UF2 File Viewer" />
+		<meta
+			property="og:description"
+			content="Online UF2 file viewer. Open a .uf2 firmware image to decode its 512-byte blocks, header fields, and raw bytes. Entirely in your browser."
+		/>
+		<meta property="og:url" content="https://uf2viewer.embeddedlog.com" />
+		<meta property="og:image" content="https://uf2viewer.embeddedlog.com/web-screenshot.png" />
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="UF2 File Viewer" />
+		<meta
+			name="twitter:description"
+			content="Online UF2 file viewer. Open a .uf2 firmware image to decode its 512-byte blocks, header fields, and raw bytes. Entirely in your browser."
+		/>
+		<meta name="twitter:image" content="https://uf2viewer.embeddedlog.com/web-screenshot.png" />
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "UF2 File Viewer",
+				"url": "https://uf2viewer.embeddedlog.com",
+				"description": "Online UF2 file viewer. Open a .uf2 firmware image to decode its 512-byte blocks, header fields, and raw bytes. Entirely in your browser.",
+				"applicationCategory": "DeveloperApplication",
+				"operatingSystem": "Any (web browser)",
+				"browserRequirements": "Requires JavaScript and a modern web browser.",
+				"offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+			}
+		</script>
+
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -14,7 +59,19 @@
 		<link rel="stylesheet" href="./standalone-chrome.css" />
 	</head>
 	<body>
-		<div id="root"></div>
+		<div id="root">
+			<noscript>
+				<main>
+					<h1>UF2 File Viewer</h1>
+					UF2 (USB Flashing Format) is a binary file format designed for flashing microcontrollers
+					over USB mass storage (a USB drive). This online viewer decodes a <code>.uf2</code> file
+					into its 512-byte blocks and shows each header field (magic numbers, flags, target
+					address, payload size and family ID) alongside the raw bytes.
+					<p></p>
+					This tool requires JavaScript. Please enable JavaScript to open and inspect a UF2 file.
+				</main>
+			</noscript>
+		</div>
 		<script src="./standalone.js" type="module"></script>
 	</body>
 </html>
