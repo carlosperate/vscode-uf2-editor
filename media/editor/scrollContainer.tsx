@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { Range } from "../../shared/util/range";
-import { DataDisplay } from "./dataDisplay";
+import { DataDisplay, DataHeader } from "./dataDisplay";
 import _style from "./scrollContainer.css";
 import * as select from "./state";
 import { throwOnUndefinedAccessInDev } from "./util";
@@ -85,7 +85,17 @@ export const ScrollContainer: React.FC = () => {
 			scrollEnd={dimension.rowPxHeight * (Math.ceil(bounds.end / columnWidth) + 1) + extraScroll}
 			onScroll={onScroll}
 		>
-			<DataDisplay />
+			{/*
+			 * Horizontal scroller. The header and the data rows live together in
+			 * this one natively-scrolling element so they pan left/right in lockstep
+			 * (the header row, being in normal flow, also sets the scroll width). The
+			 * vertical scrollbar is rendered by VirtualScrollContainer *outside* this
+			 * element, so it stays pinned to the right edge instead of scrolling away.
+			 */}
+			<div className={style.hScroll}>
+				<DataHeader />
+				<DataDisplay />
+			</div>
 		</VirtualScrollContainer>
 	);
 };

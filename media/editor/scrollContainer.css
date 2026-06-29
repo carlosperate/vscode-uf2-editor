@@ -2,3 +2,12 @@
 	flex-grow: 1;
 	flex-basis: 0;
 }
+
+/* Native horizontal scroller wrapping the header + data rows. Fills the height
+ * of the virtual scroll viewport; vertical paging is handled virtually (so
+ * overflow-y is hidden), while overflow-x lets wide rows be scrolled into view. */
+.h-scroll {
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: hidden;
+}

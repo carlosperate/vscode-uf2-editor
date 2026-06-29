@@ -1,6 +1,5 @@
 import React, { Suspense, useLayoutEffect, useMemo } from "react";
 import { RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { DataHeader } from "./dataDisplay";
 import { DataDisplayContext, DisplayContext } from "./dataDisplayContext";
 import { FindWidget } from "./findWidget";
 import _style from "./hexEdit.css";
@@ -74,7 +73,6 @@ const Editor: React.FC = () => {
 			>
 				<FindWidget />
 				<SettingsGear />
-				<DataHeader />
 				<ScrollContainer />
 				<ReadonlyWarning />
 			</div>

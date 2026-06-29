@@ -64,8 +64,18 @@ const Byte: React.FC<{ value: number }> = ({ value }) => (
 // single character so can be narrower--by this constant multiplier.
 const textCellWidth = 0.7;
 
-const DataCellGroup: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => (
-	<div className={style.dataCellGroup} {...props}>
+// Minimum width (px) of the data inspector column. It normally grows to fill the
+// space left of the columns, but on narrow panes that space is zero; this floor
+// keeps the panel readable and, since it then contributes to the row width, makes
+// it reachable by horizontal scrolling instead of being clipped.
+const dataInspectorMinWidth = 280;
+
+const DataCellGroup: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+	children,
+	className,
+	...props
+}) => (
+	<div className={clsx(style.dataCellGroup, className)} {...props}>
 		{children}
 	</div>
 );
@@ -81,7 +91,11 @@ export const DataHeader: React.FC = () => {
 
 	return (
 		<div className={style.header}>
-			<DataCellGroup style={{ visibility: "hidden" }} aria-hidden="true">
+			<DataCellGroup
+				className={style.addressGroup}
+				style={{ visibility: "hidden" }}
+				aria-hidden="true"
+			>
 				<Address>00000000</Address>
 			</DataCellGroup>
 			<DataCellGroup>
@@ -101,7 +115,7 @@ export const DataHeader: React.FC = () => {
 					{strings.decodedText}
 				</DataCellGroup>
 			)}
-			<DataCellGroup style={{ position: "relative", flexGrow: 1 }}>
+			<DataCellGroup style={{ position: "relative", flexGrow: 1, minWidth: dataInspectorMinWidth }}>
 				UF2 Data Inspector
 				<div className={style.dataInspectorWrap}>
 					<DataInspector />
@@ -396,9 +410,14 @@ const DataRows: React.FC = () => {
 	}
 
 	return (
-		<div onMouseMove={isUf2 ? onMouseMove : undefined} onMouseLeave={isUf2 ? onMouseLeave : undefined}>
+		<div
+			onMouseMove={isUf2 ? onMouseMove : undefined}
+			onMouseLeave={isUf2 ? onMouseLeave : undefined}
+		>
 			{rows}
-			{isUf2 && <div ref={tooltipRef} className={style.uf2FieldTooltip} style={{ display: "none" }} />}
+			{isUf2 && (
+				<div ref={tooltipRef} className={style.uf2FieldTooltip} style={{ display: "none" }} />
+			)}
 		</div>
 	);
 };
@@ -469,7 +488,7 @@ const generateRows = (
 				className={style.dataRow}
 				style={{ top: `${row++ * props.dimensions.rowPxHeight}px` }}
 			>
-				<DataCellGroup>
+				<DataCellGroup className={style.addressGroup}>
 					<Address>{i.toString(16).padStart(8, "0")}</Address>
 				</DataCellGroup>
 				{fn(i, i === lastRowIndex)}
@@ -501,7 +520,10 @@ const DataPageContents: React.FC<IDataPageProps> = props => {
 		const blockStart = Math.floor(absoluteOffset / UF2_BLOCK_SIZE) * UF2_BLOCK_SIZE;
 		const psIdx = blockStart - props.pageStart + 16;
 		if (psIdx < 0 || psIdx + 4 > data.byteLength) return undefined;
-		return ((data[psIdx] | (data[psIdx + 1] << 8) | (data[psIdx + 2] << 16) | (data[psIdx + 3] << 24)) >>> 0);
+		return (
+			(data[psIdx] | (data[psIdx + 1] << 8) | (data[psIdx + 2] << 16) | (data[psIdx + 3] << 24)) >>>
+			0
+		);
 	};
 
 	return (
@@ -771,7 +793,16 @@ const DataRowContents: React.FC<{
 	decorators: HexDecorator[];
 	isUf2: boolean;
 	blockPayloadSize: number | undefined;
-}> = ({ offset, width, showDecodedText, rawBytes, isRowWithInsertDataCell, decorators, isUf2, blockPayloadSize }) => {
+}> = ({
+	offset,
+	width,
+	showDecodedText,
+	rawBytes,
+	isRowWithInsertDataCell,
+	decorators,
+	isUf2,
+	blockPayloadSize,
+}) => {
 	let memoValue = "";
 	const ctx = useDisplayContext();
 	for (const byte of rawBytes) {
@@ -802,12 +833,15 @@ const DataRowContents: React.FC<{
 			// data region. Block boundaries are visible from the repeating
 			// magic-header colour. For non-UF2 files, fall back to the
 			// alternating-block tint.
-			const fieldKind = isUf2 ? uf2FieldKindForOffset(boffset % UF2_BLOCK_SIZE, blockPayloadSize) : undefined;
-			const fieldClass = fieldKind !== undefined
-				? UF2_FIELD_STYLES[fieldKind]
-				: Math.floor(boffset / UF2_BLOCK_SIZE) % 2 === 1
-					? style.dataCellAlternateBlock
-					: undefined;
+			const fieldKind = isUf2
+				? uf2FieldKindForOffset(boffset % UF2_BLOCK_SIZE, blockPayloadSize)
+				: undefined;
+			const fieldClass =
+				fieldKind !== undefined
+					? UF2_FIELD_STYLES[fieldKind]
+					: Math.floor(boffset / UF2_BLOCK_SIZE) % 2 === 1
+						? style.dataCellAlternateBlock
+						: undefined;
 
 			if (value === undefined) {
 				if (isRowWithInsertDataCell && !ctx.isReadonly) {
@@ -832,7 +866,10 @@ const DataRowContents: React.FC<{
 			bytes.push(
 				<DataCell
 					key={i}
-					className={clsx(decorator !== undefined && HexDecoratorStyles[decorator.type], fieldClass)}
+					className={clsx(
+						decorator !== undefined && HexDecoratorStyles[decorator.type],
+						fieldClass,
+					)}
 					uf2FieldKind={fieldKind}
 					offset={boffset}
 					isChar={false}

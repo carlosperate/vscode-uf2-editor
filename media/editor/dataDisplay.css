@@ -13,6 +13,16 @@
 	line-height: var(--cell-size);
 }
 
+/* Keep the address gutter pinned to the left while the rest of the row pans
+ * horizontally, so the offset stays visible. The opaque background hides byte
+ * cells sliding underneath it. */
+.address-group {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	background: var(--vscode-editor-background);
+}
+
 .data-cell-group {
 	padding: 0 calc(var(--cell-size) / 4);
 	display: inline-flex;
@@ -92,9 +102,13 @@
 	background: var(--vscode-minimapGutter-modifiedBackground);
 }
 
+/* Anchor for the absolutely-positioned data rows. It flows directly under the
+ * (in-flow) header inside the horizontal scroller and has no height of its own;
+ * the rows are placed by `top`. `relative` (not `sticky`) is important: a sticky
+ * box would cling to the scroller's left edge and the rows wouldn't pan
+ * horizontally. */
 .data-display {
-	position: sticky;
-	inset: 0;
+	position: relative;
 	height: 0px;
 }
 

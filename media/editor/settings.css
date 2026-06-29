@@ -2,6 +2,9 @@
 	position: absolute;
 	top: 0;
 	left: 0;
+	/* Above the data rows + sticky address gutter (which paint in the positioned
+	 * layer), so the gear stays clickable. Matches FindWidget's overlay z-index. */
+	z-index: 2;
 }
 
 .content {
