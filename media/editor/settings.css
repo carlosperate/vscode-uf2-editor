@@ -5,6 +5,19 @@
 	/* Above the data rows + sticky address gutter (which paint in the positioned
 	 * layer), so the gear stays clickable. Matches FindWidget's overlay z-index. */
 	z-index: 2;
+	/* Opaque backing so horizontally-scrolled header text doesn't show through the
+	 * (otherwise transparent) cog. */
+	background-color: var(--vscode-editor-background);
+}
+
+/* Preserve the hover tint, but composite it over the opaque background so the
+ * cog stays readable while hovered over scrolled content. */
+.gear:hover {
+	background: linear-gradient(
+			var(--vscode-toolbar-hoverBackground),
+			var(--vscode-toolbar-hoverBackground)
+		),
+		var(--vscode-editor-background);
 }
 
 .content {
