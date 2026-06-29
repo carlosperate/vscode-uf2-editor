@@ -80,6 +80,34 @@ export const VirtualScrollContainer: React.FC<{
 		}
 	};
 
+	// Touch scrolling. The vertical axis is virtual (not a native overflow), so
+	// touch drags never produce the wheel events `onWheel` relies on; translate a
+	// vertical finger drag into the same `onScroll`. The horizontal axis is a real
+	// overflow handled natively by the browser, so we leave it alone. We capture
+	// the scrollTop at touch-start and apply the absolute delta from there, so a
+	// burst of touchmove events between renders stays accurate.
+	const touchOrigin = useRef<{ y: number; scrollTop: number }>();
+
+	const onTouchStart = (evt: React.TouchEvent) => {
+		const touch = evt.touches[0];
+		if (touch) {
+			touchOrigin.current = { y: touch.clientY, scrollTop };
+		}
+	};
+
+	const onTouchMove = (evt: React.TouchEvent) => {
+		const origin = touchOrigin.current;
+		const touch = evt.touches[0];
+		if (origin && touch) {
+			// Dragging the finger up (clientY decreases) scrolls the content down.
+			onScroll(clampScroll(origin.scrollTop + (origin.y - touch.clientY)));
+		}
+	};
+
+	const onTouchEnd = () => {
+		touchOrigin.current = undefined;
+	};
+
 	const onHandleMouseDown = (evt: React.MouseEvent) => {
 		if (evt.defaultPrevented) {
 			return;
@@ -135,7 +163,13 @@ export const VirtualScrollContainer: React.FC<{
 	}, [drag, scrollHeight, size.height]);
 
 	return (
-		<div className={clsx(style.container, className)} onWheel={onWheel}>
+		<div
+			className={clsx(style.container, className)}
+			onWheel={onWheel}
+			onTouchStart={onTouchStart}
+			onTouchMove={onTouchMove}
+			onTouchEnd={onTouchEnd}
+		>
 			{children}
 			<div
 				style={{

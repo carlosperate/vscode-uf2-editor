@@ -10,4 +10,7 @@
 	height: 100%;
 	overflow-x: auto;
 	overflow-y: hidden;
+	/* Let the browser pan horizontally (native overflow-x); vertical drags are
+	 * delivered to JS, which drives the virtual vertical scroll. */
+	touch-action: pan-x;
 }
