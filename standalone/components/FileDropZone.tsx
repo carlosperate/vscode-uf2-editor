@@ -137,7 +137,10 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 								</a>
 							</div>
 							<div className="fdz-drop">
-								Drop a file here, or anywhere on the window. Press <kbd>O</kbd> to browse.
+								Drop a file here, or anywhere on the window.{" "}
+								<span className="fdz-kbd-hint">
+									Press <kbd>O</kbd> to browse.
+								</span>
 							</div>
 						</div>
 						<input

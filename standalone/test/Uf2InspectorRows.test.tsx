@@ -18,6 +18,18 @@ describe("Uf2InspectorRows", () => {
 		expect(getByTestId("uf2-block-target-addr").tagName).to.equal("DD");
 	});
 
+	it("shows the (0-based) block number and total as separate rows, not a fraction", () => {
+		const bytes = loadFixtureBytes("family_a.uf2");
+		// The last block is the one that read confusingly as "255 / 256": its
+		// 0-based blockNo (255) must show distinctly from the total (256).
+		const lastOffset = bytes.byteLength - UF2_BLOCK_SIZE;
+		const lastBlock = parseBlock(bytes, lastOffset);
+		const { getByTestId } = renderRows(<Uf2InspectorRows result={lastBlock} />);
+
+		expect(getByTestId("uf2-block-no").textContent).to.equal("255");
+		expect(getByTestId("uf2-num-blocks").textContent).to.equal("256");
+	});
+
 	it("renders an inline notice when the block fails to parse", () => {
 		const { getByTestId } = renderRows(
 			<Uf2InspectorRows result={{ ok: false, reason: "bad-magic-start" }} />,

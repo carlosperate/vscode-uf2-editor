@@ -62,10 +62,12 @@ export const Uf2InspectorRows: React.FC<{
 
 	return (
 		<>
-			<dt className={clsx(styles.fieldBlockNo, (hoveredRow === "blockNo" || hoveredRow === "numBlocks") && styles.rowHighlighted)}>Block</dt>
-			<dd>
+			<dt className={clsx(styles.fieldBlockNo, hoveredRow === "blockNo" && styles.rowHighlighted)}>Block Number</dt>
+			<dd data-testid="uf2-block-no">
 				<span className={clsx(hoveredRow === "blockNo" && styles.valueHighlighted)}>{result.blockNo}</span>
-				{" / "}
+			</dd>
+			<dt className={clsx(styles.fieldNumBlocks, hoveredRow === "numBlocks" && styles.rowHighlighted)}>Blocks Total</dt>
+			<dd data-testid="uf2-num-blocks">
 				<span className={clsx(hoveredRow === "numBlocks" && styles.valueHighlighted)}>{result.numBlocks}</span>
 			</dd>
 			<dt className={clsx(styles.fieldTargetAddr, hoveredRow === "addr" && styles.rowHighlighted)}>Address</dt>

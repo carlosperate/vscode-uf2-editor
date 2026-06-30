@@ -223,6 +223,10 @@
 	.fdz-field .fdz-nm {
 		width: 64px;
 	}
+	/* No physical keyboard on small/touch screens — hide the "Press O" hint. */
+	.fdz-drop .fdz-kbd-hint {
+		display: none;
+	}
 }
 
 /* ============================================================
