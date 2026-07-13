@@ -1,5 +1,6 @@
 import React from "react";
 import { Uf2ParseResult } from "../../../shared/uf2/block";
+import { getUf2Family } from "../../../shared/uf2/families";
 import { Uf2FieldKind } from "../../../shared/uf2/fieldKinds";
 import { Uf2Flag, hasFlag } from "../../../shared/uf2/flags";
 import _styles from "./uf2InspectorRows.css";
@@ -60,6 +61,10 @@ export const Uf2InspectorRows: React.FC<{
 		);
 	}
 
+	const family = hasFlag(result.flags, Uf2Flag.FamilyIdPresent)
+		? getUf2Family(result.fileSizeOrFamilyId)
+		: undefined;
+
 	return (
 		<>
 			<dt className={clsx(styles.fieldBlockNo, hoveredRow === "blockNo" && styles.rowHighlighted)}>Block Number</dt>
@@ -77,14 +82,21 @@ export const Uf2InspectorRows: React.FC<{
 				<span className={clsx(hoveredRow === "payloadSize" && styles.valueHighlighted)}>{result.payloadSize}</span>
 				{" bytes"}
 			</dd>
+			<dt className={clsx(styles.fieldFlags, hoveredRow === "flags" && styles.rowHighlighted)}>Flags</dt>
+			<dd>{formatFlags(result.flags)}</dd>
 			{hasFlag(result.flags, Uf2Flag.FamilyIdPresent) && (
 				<>
 					<dt className={clsx(styles.fieldFileFamily, hoveredRow === "family" && styles.rowHighlighted)}>Family ID</dt>
-					<dd data-testid="uf2-block-family-id">{hex(result.fileSizeOrFamilyId)}</dd>
+					<dd data-testid="uf2-block-family-id">
+						{hex(result.fileSizeOrFamilyId)}
+						{family && (
+							<div className={styles.familyName} title={family.description} data-testid="uf2-block-family-name">
+								{family.shortName}
+							</div>
+						)}
+					</dd>
 				</>
 			)}
-			<dt className={clsx(styles.fieldFlags, hoveredRow === "flags" && styles.rowHighlighted)}>Flags</dt>
-			<dd>{formatFlags(result.flags)}</dd>
 		</>
 	);
 };

@@ -30,6 +30,27 @@ describe("Uf2InspectorRows", () => {
 		expect(getByTestId("uf2-num-blocks").textContent).to.equal("256");
 	});
 
+	it("shows the family short name under the ID, with the description on hover", () => {
+		const block = parseBlock(loadFixtureBytes("family_a.uf2"), 0);
+		if (!block.ok) throw new Error("fixture block failed to parse");
+		// The fixtures all use made-up family IDs; substitute a real one (RP2040).
+		const rp2040 = { ...block, fileSizeOrFamilyId: 0xe48bff56 };
+		const { getByTestId } = renderRows(<Uf2InspectorRows result={rp2040} />);
+
+		const name = getByTestId("uf2-block-family-name");
+		expect(name.textContent).to.equal("RP2040");
+		expect(name.title).to.equal("Raspberry Pi RP2040");
+		expect(getByTestId("uf2-block-family-id").textContent).to.contain("0xE48BFF56");
+	});
+
+	it("omits the family name line for an unknown family ID", () => {
+		const block = parseBlock(loadFixtureBytes("family_a.uf2"), 0);
+		const { getByTestId, queryByTestId } = renderRows(<Uf2InspectorRows result={block} />);
+
+		expect(getByTestId("uf2-block-family-id").textContent).to.equal("0xAAAAAAAA");
+		expect(queryByTestId("uf2-block-family-name")).to.equal(null);
+	});
+
 	it("renders an inline notice when the block fails to parse", () => {
 		const { getByTestId } = renderRows(
 			<Uf2InspectorRows result={{ ok: false, reason: "bad-magic-start" }} />,

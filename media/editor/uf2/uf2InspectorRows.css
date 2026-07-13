@@ -29,6 +29,20 @@
     background: color-mix(in srgb, var(--field-ansi) 20%, transparent);
 }
 
+/* The Family ID value can be two lines (ID + family name); the inspector grid
+ * centers items, which would float the label mid-row. Stretch it instead so the
+ * label text sits on the first line and the field border spans the whole row. */
+.field-file-family {
+    align-self: stretch;
+}
+
+/* Second line under the Family ID value: known family short name; the full
+ * description is shown on hover via the title attribute. */
+.family-name {
+    opacity: 0.8;
+    cursor: help;
+}
+
 /* Highlight a specific value span inside a <dd> (e.g. blockNo vs numBlocks). */
 .value-highlighted {
     background: rgba(128, 128, 128, 0.30);

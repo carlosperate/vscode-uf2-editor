@@ -104,7 +104,7 @@ def make_extension_tags(src: bytes) -> bytes:
     return bytes(out)
 
 
-DEMO_FAMILY_ID = 0xD5F10D10
+DEMO_FAMILY_ID = 0x57755A57  # STM32F4, a real family so the inspector shows its name
 
 
 def make_demo(out_path: Path) -> None:
@@ -146,7 +146,8 @@ def make_demo(out_path: Path) -> None:
             "  EXTENSION_TAGS"
             "               \n"
             "Family ID:     \n"
-            "  0xD5F10D10.  \n"
+            "  0x57755A57   \n"
+            "  = STM32F4    \n"
             "               \n"
             "---------------\n"
             "Block 2 of 3.\n"
