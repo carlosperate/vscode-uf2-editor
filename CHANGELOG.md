@@ -1,9 +1,14 @@
 # Release Notes
 
-## v0.1.3 - 2026-??-?? (Unreleased)
+## v0.2.0 - 2026-07-13
 
-- Tweaked the standalone web viewer landing page
+- Data Inspector shows the family short name under the Family ID for known families
+  (from the official [uf2families.json](https://github.com/microsoft/uf2/blob/master/utils/uf2families.json)),
+  with the full description shown on hover
+- Block number and total blocks are now shown as separate rows in the Data Inspector
+  (the 0-based block number rendered as a fraction was confusing)
 - Enable horizontal scrolling, and vertical touch scrolling on mobile devices
+- Tweaked the standalone web viewer landing page & improve SEO
 - Other small fixes to the standalone web viewer on mobile resolutions
 
 ## v0.1.2 - 2026-05-19
