@@ -44,8 +44,7 @@
 				"description": "Online UF2 file viewer. Open a .uf2 firmware image to decode its 512-byte blocks, header fields, and raw bytes. Entirely in your browser.",
 				"applicationCategory": "DeveloperApplication",
 				"operatingSystem": "Any (web browser)",
-				"browserRequirements": "Requires JavaScript and a modern web browser.",
-				"offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+				"browserRequirements": "Requires JavaScript and a modern web browser."
 			}
 		</script>
 
@@ -60,17 +59,27 @@
 	</head>
 	<body>
 		<div id="root">
-			<noscript>
-				<main>
-					<h1>UF2 File Viewer</h1>
-					UF2 (USB Flashing Format) is a binary file format designed for flashing microcontrollers
-					over USB mass storage (a USB drive). This online viewer decodes a <code>.uf2</code> file
-					into its 512-byte blocks and shows each header field (magic numbers, flags, target
-					address, payload size and family ID) alongside the raw bytes.
-					<p></p>
-					This tool requires JavaScript. Please enable JavaScript to open and inspect a UF2 file.
-				</main>
-			</noscript>
+			<!-- Static content for crawlers and the pre-JS/no-JS state. React
+			     replaces #root's contents once the app mounts. -->
+			<main class="sa-intro">
+				<h1>UF2 File Viewer</h1>
+				<p>
+					<strong>UF2 (USB Flashing Format)</strong> is a binary file format designed for flashing
+					microcontrollers over USB mass storage (a USB drive). This online viewer decodes a
+					<code>.uf2</code> firmware file into its 512-byte blocks and shows every header field
+					(magic numbers, flags, target address, payload size and family ID) alongside the raw
+					bytes.
+				</p>
+				<p>
+					Everything runs in your browser: files are read locally and never uploaded to a server.
+					Open a <code>.uf2</code> file to inspect its blocks, header fields and content.
+				</p>
+				<noscript>
+					<p>
+						This tool requires JavaScript. Please enable JavaScript to open and inspect a UF2 file.
+					</p>
+				</noscript>
+			</main>
 		</div>
 		<script src="./standalone.js" type="module"></script>
 	</body>

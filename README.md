@@ -8,8 +8,7 @@ manipulating [UF2](https://github.com/microsoft/uf2) files.
 To try this extension without installing it, you can test it out in VSCode online via Github.dev:
 https://github.dev/carlosperate/vscode-uf2-editor/blob/main/tests/uf2_files/demo.uf2
 
-There is also a standalone UF2 web viewer based on this extension:
-https://uf2viewer.embeddedlog.com
+There is also a standalone [UF2 Web Viewer](https://uf2viewer.embeddedlog.com) based on this extension.
 
 ## Features
 

@@ -10,6 +10,35 @@
 	height: 100%;
 }
 
+/* Static intro shown in the raw HTML for crawlers and before the JS app
+ * mounts (or when JavaScript is disabled). React replaces #root's contents
+ * on mount, so this is transient for JS users. The VS Code theme tokens the
+ * .fdz-* styles rely on aren't injected until the app loads, so this block
+ * is styled self-sufficiently for a light background. */
+.sa-intro {
+	box-sizing: border-box;
+	max-width: 640px;
+	margin: 0 auto;
+	padding: clamp(32px, 6vw, 72px) 24px;
+	font-family: var(--vscode-font-family, "Inter", system-ui, sans-serif);
+	color: #24292f;
+	line-height: 1.6;
+}
+.sa-intro h1 {
+	margin: 0 0 0.6em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	font-size: clamp(26px, 5vw, 34px);
+}
+.sa-intro p {
+	margin: 0 0 1em;
+	font-size: 16px;
+}
+.sa-intro code {
+	font-family: "JetBrains Mono", ui-monospace, monospace;
+	font-size: 0.9em;
+}
+
 /* ============================================================
  * File entry overlay (empty state)
  *
