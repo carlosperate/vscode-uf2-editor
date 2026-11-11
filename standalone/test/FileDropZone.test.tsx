@@ -41,7 +41,7 @@ describe("FileDropZone", () => {
 	it("renders the default heading and description", () => {
 		const { getByRole, getByText } = render(<FileDropZone onFileSelect={() => {}} />);
 		expect(getByRole("heading", { level: 1 }).textContent).to.match(/UF2/);
-		expect(getByText(/Drop a file here/)).to.exist;
+		expect(getByText(/drop a file anywhere/i)).to.exist;
 	});
 
 	it("calls onFileSelect when a file is chosen via the input", () => {

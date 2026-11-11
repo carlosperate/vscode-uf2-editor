@@ -4,47 +4,28 @@ export interface FileDropZoneProps {
 	onFileSelect(file: File): void;
 }
 
+const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+
 const DEMO_HREF =
 	"?uf2FileUrl=https://raw.githubusercontent.com/carlosperate/vscode-uf2-editor/main/tests/uf2_files/demo.uf2";
 
-/** Sample block-0 header used for the illustrative field map on the right. */
-const HEADER_FIELDS: { key: string; label: string; bytes: { hex: string; zero?: boolean }[] }[] = [
-	{
-		key: "magic",
-		label: "magic",
-		bytes: ["55", "46", "32", "0A", "57", "51", "5D", "9E"].map(hex => ({ hex })),
-	},
-	{
-		key: "flags",
-		label: "flags",
-		bytes: [{ hex: "01" }, { hex: "A0" }, { hex: "00", zero: true }, { hex: "00", zero: true }],
-	},
-	{
-		key: "addr",
-		label: "address",
-		bytes: [
-			{ hex: "00", zero: true },
-			{ hex: "00", zero: true },
-			{ hex: "00", zero: true },
-			{ hex: "10" },
-		],
-	},
-	{
-		key: "payload",
-		label: "payload",
-		bytes: [
-			{ hex: "00", zero: true },
-			{ hex: "01" },
-			{ hex: "00", zero: true },
-			{ hex: "00", zero: true },
-		],
-	},
-	{
-		key: "family",
-		label: "family id",
-		bytes: ["10", "0D", "F1", "D5"].map(hex => ({ hex })),
-	},
-];
+/** Block 0 header of the demo file, decoded as the viewer's inspector shows it. */
+const HEADER_ROWS: { key: string; offset: string; label: string; value: string; note?: string }[] =
+	[
+		{ key: "magic", offset: "0x00", label: "Magic", value: "0x0A324655 0x9E5D5157" },
+		{
+			key: "flags",
+			offset: "0x08",
+			label: "Flags",
+			value: "0x0000A001",
+			note: "not main flash, familyID, ext tags",
+		},
+		{ key: "addr", offset: "0x0C", label: "Address", value: "0x10000000" },
+		{ key: "payload", offset: "0x10", label: "Payload", value: "256 bytes" },
+		{ key: "blockno", offset: "0x14", label: "Block Number", value: "0" },
+		{ key: "numblocks", offset: "0x18", label: "Blocks Total", value: "3" },
+		{ key: "family", offset: "0x1C", label: "Family ID", value: "0x57755A57", note: "STM32F4" },
+	];
 
 export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 	const [isDragging, setIsDragging] = useState(false);
@@ -93,15 +74,10 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 	);
 
 	useEffect(() => {
+		// Needs a modifier: a bare letter shortcut fires by accident for speech-input users (WCAG 2.1.4).
 		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.metaKey || event.ctrlKey || event.altKey) {
-				return;
-			}
-			const target = event.target as HTMLElement | null;
-			if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
-				return;
-			}
-			if (event.key === "o" || event.key === "O") {
+			const modifier = IS_MAC ? event.metaKey : event.ctrlKey;
+			if (modifier && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "o") {
 				event.preventDefault();
 				openPicker();
 			}
@@ -111,35 +87,36 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 	}, [openPicker]);
 
 	return (
-		<div className="fdz-cq">
+		<main className="sa-cq">
 			<div
-				className={`fdz-overlay${isDragging ? " fdz-dragging" : ""}`}
+				className={`sa-overlay${isDragging ? " sa-dragging" : ""}`}
 				data-testid="file-dropzone"
 				onDragOver={onDragOver}
 				onDragLeave={onDragLeave}
 				onDrop={onDrop}
 			>
-				<div className="fdz-col-left">
-					<div className="fdz-inner">
-						<h1 className="fdz-h1">UF2 File Viewer</h1>
-						<p className="fdz-lede">
-							<b>UF2</b> is a binary format for designed for flashing microcontrollers over MSC USB
-							(mass storage, i.e. a USB drive). This viewer decodes their <b>512-byte blocks</b>,
-							its header fields, content and raw bytes for inspection.
+				<div className="sa-col-left">
+					<div className="sa-inner">
+						<h1 className="sa-h1">UF2 File Viewer</h1>
+						<p className="sa-lede">
+							<b>UF2</b> (USB Flashing Format) is a file format for flashing microcontrollers over
+							USB mass storage, where the board is mounted as a USB drive. This viewer decodes .uf2
+							files to analyse their <b>512-byte blocks</b>, showing every metadata field next to
+							its raw data. Files are decoded in your browser and never uploaded anywhere.
 						</p>
-						<div className="fdz-colstack">
-							<div className="fdz-actions">
-								<button className="fdz-btn fdz-btn-primary" onClick={openPicker} type="button">
+						<div className="sa-colstack">
+							<div className="sa-actions">
+								<button className="sa-btn sa-btn-primary" onClick={openPicker} type="button">
 									Open file…
 								</button>
-								<a className="fdz-btn fdz-btn-ghost" href={DEMO_HREF}>
+								<a className="sa-btn sa-btn-ghost" href={DEMO_HREF}>
 									Load demo image
 								</a>
 							</div>
-							<div className="fdz-drop">
-								Drop a file here, or anywhere on the window.{" "}
-								<span className="fdz-kbd-hint">
-									Press <kbd>O</kbd> to browse.
+							<div className="sa-drop">
+								You can also drop a file anywhere on this page.{" "}
+								<span className="sa-kbd-hint">
+									Press {IS_MAC ? <kbd>⌘O</kbd> : <kbd>Ctrl+O</kbd>} to browse.
 								</span>
 							</div>
 						</div>
@@ -153,26 +130,35 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({ onFileSelect }) => {
 						/>
 					</div>
 				</div>
-				<div className="fdz-col-right">
-					<div className="fdz-inner">
-						<div className="fdz-righthead">block 0 · 32-byte header</div>
-						<div className="fdz-fmap">
-							{HEADER_FIELDS.map(field => (
-								<div className={`fdz-field fdz-field-${field.key}`} key={field.key}>
-									<div className="fdz-nm">{field.label}</div>
-									<div className="fdz-bytes">
-										{field.bytes.map((byte, index) => (
-											<b className={byte.zero ? "fdz-z" : undefined} key={index}>
-												{byte.hex}
-											</b>
-										))}
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
+				<div className="sa-col-right">
+					<figure className="sa-inner sa-tablefig">
+						<table className="sa-htable">
+							<thead>
+								<tr>
+									<th>Offset</th>
+									<th>Field</th>
+									<th>Value</th>
+								</tr>
+							</thead>
+							<tbody>
+								{HEADER_ROWS.map(row => (
+									<tr className={`sa-field-${row.key}`} key={row.key}>
+										<td className="sa-off">{row.offset}</td>
+										<td className="sa-fld">
+											<span className="sa-swatch" aria-hidden="true" />
+											{row.label}
+										</td>
+										<td className="sa-val">
+											{row.value}
+											{row.note && <span className="sa-note">{row.note}</span>}
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</figure>
 				</div>
 			</div>
-		</div>
+		</main>
 	);
 };

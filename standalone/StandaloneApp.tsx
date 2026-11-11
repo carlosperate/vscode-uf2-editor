@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RecoilRoot } from "recoil";
 import { EditorRoot } from "../media/editor/EditorRoot";
 import { bumpWebviewSession } from "../media/editor/state";
@@ -56,6 +56,15 @@ const fileNameFromUrl = (rawUrl: string): string => {
 	return "file.uf2";
 };
 
+// Drops ?uf2FileUrl so a reload doesn't reopen a file the user has moved away from.
+const clearFileUrlParam = (): void => {
+	const url = new URL(window.location.href);
+	if (url.searchParams.has("uf2FileUrl")) {
+		url.searchParams.delete("uf2FileUrl");
+		window.history.replaceState(null, "", url);
+	}
+};
+
 const TOPBAR_HEIGHT = 48;
 
 const viewerWrapStyle: React.CSSProperties = {
@@ -93,9 +102,24 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 
 	const closeFile = useCallback(() => {
 		resetVsCodeApiMock();
+		clearFileUrlParam();
 		setFile(null);
 		setUrlFetch({ kind: "idle" });
 	}, []);
+
+	const pickerRef = useRef<HTMLInputElement | null>(null);
+	const onPickAnother = useCallback(
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const picked = event.target.files?.[0];
+			// Reset so picking the same file again still fires a change event.
+			event.target.value = "";
+			if (picked) {
+				clearFileUrlParam();
+				handleFileSelect(picked);
+			}
+		},
+		[handleFileSelect],
+	);
 
 	useEffect(() => {
 		const rawUrl = new URLSearchParams(window.location.search).get("uf2FileUrl");
@@ -108,7 +132,9 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 			try {
 				const response = await fetch(rawUrl);
 				if (!response.ok) {
-					throw new Error(`HTTP ${response.status} ${response.statusText}`);
+					throw new Error(
+						`The server replied with HTTP ${response.status} ${response.statusText}. Check the link points to a .uf2 file that exists.`,
+					);
 				}
 				const blob = await response.blob();
 				if (cancelled) {
@@ -123,7 +149,13 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 				if (cancelled) {
 					return;
 				}
-				const message = err instanceof Error ? err.message : String(err);
+				// Browsers report both network failures and CORS blocks as a bare TypeError.
+				const message =
+					err instanceof TypeError
+						? "The download didn't go through. The server may be offline, or it may not allow other websites to read its files (CORS). Download the file and open it from your computer instead."
+						: err instanceof Error
+							? err.message
+							: String(err);
 				setUrlFetch({ kind: "error", url: rawUrl, message });
 			}
 		})();
@@ -132,45 +164,28 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 		};
 	}, []); // intentionally empty: fetch runs once on mount; handleFileSelect is stable
 
-	useEffect(() => {
-		if (!file) {
-			return;
-		}
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape" && !event.metaKey && !event.ctrlKey && !event.altKey) {
-				const target = event.target as HTMLElement | null;
-				if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
-					return;
-				}
-				closeFile();
-			}
-		};
-		window.addEventListener("keydown", onKeyDown);
-		return () => window.removeEventListener("keydown", onKeyDown);
-	}, [file, closeFile]);
-
 	if (urlFetch.kind === "loading") {
 		return (
-			<div className="fdz-stage">
-				<div className="sa-url-card" data-testid="url-loading">
+			<main className="sa-stage">
+				<div className="sa-url-card" data-testid="url-loading" role="status">
 					<div className="sa-url-spinner" aria-hidden="true" />
-					<p className="sa-url-title">Loading file…</p>
+					<h1 className="sa-url-title">Loading file…</h1>
 					<p className="sa-url-sub sa-url-url">{urlFetch.url}</p>
 				</div>
-			</div>
+			</main>
 		);
 	}
 
 	if (urlFetch.kind === "error") {
 		return (
-			<div className="fdz-stage">
-				<div className="sa-url-card" data-testid="url-error">
-					<p className="sa-url-title sa-url-error-title">Failed to load file</p>
+			<main className="sa-stage">
+				<div className="sa-url-card" data-testid="url-error" role="alert">
+					<h1 className="sa-url-title sa-url-error-title">Failed to load file</h1>
 					<p className="sa-url-sub sa-url-url">{urlFetch.url}</p>
 					<p className="sa-url-sub sa-url-error-msg">{urlFetch.message}</p>
-					<div className="fdz-actions" style={{ marginTop: 18 }}>
+					<div className="sa-actions sa-url-actions">
 						<button
-							className="fdz-btn fdz-btn-primary"
+							className="sa-btn sa-btn-primary"
 							onClick={() => setUrlFetch({ kind: "idle" })}
 							type="button"
 						>
@@ -178,7 +193,7 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 						</button>
 					</div>
 				</div>
-			</div>
+			</main>
 		);
 	}
 
@@ -188,24 +203,45 @@ export const StandaloneApp: React.FC<StandaloneAppProps> = ({
 
 	return (
 		<div data-testid="standalone-viewer" style={viewerWrapStyle}>
-			<div className="sa-topbar">
-				<div className="sa-pill">
-					<span className="sa-pill-dot" />
-					<span className="sa-pill-name">{file.name}</span>
-					<span className="sa-pill-meta">{formatBytes(file.size)}</span>
+			<header className="sa-topbar">
+				<button
+					className="sa-btn sa-btn-quiet sa-btn-compact"
+					onClick={closeFile}
+					title="Back to the start page"
+					type="button"
+				>
+					<svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+						<path d="M7.35 2.65l.7.7L3.91 7.5H14v1H3.91l4.14 4.15-.7.7L2 8z" />
+					</svg>
+					Back
+				</button>
+				<div className="sa-file">
+					<span className="sa-file-name">{file.name}</span>
+					<span className="sa-file-size">{formatBytes(file.size)}</span>
 				</div>
 				<div className="sa-spacer" />
-				<button className="fdz-btn" onClick={closeFile} type="button">
-					Choose another file
+				<button
+					className="sa-btn sa-btn-primary sa-btn-compact"
+					onClick={() => pickerRef.current?.click()}
+					type="button"
+				>
+					Open file…
 				</button>
-			</div>
-			<div
+				<input
+					aria-label="Open a different file"
+					onChange={onPickAnother}
+					ref={pickerRef}
+					style={{ display: "none" }}
+					type="file"
+				/>
+			</header>
+			<main
 				data-testid="standalone-viewer-root"
 				key={`${file.name}-${file.size}-${file.lastModified}`}
 				style={editorSlotStyle}
 			>
 				{viewer()}
-			</div>
+			</main>
 		</div>
 	);
 };

@@ -1,4 +1,4 @@
-/* Raw global CSS for the standalone-only chrome (drop zone + topbar).
+/* Raw global CSS for the standalone shell (start page, top bar, URL cards).
  * NOT imported from JS — copied to dist and linked from index.html so it
  * bypasses the CSS-modules bundler that hashes class names. */
 
@@ -10,273 +10,310 @@
 	height: 100%;
 }
 
-/* Static intro shown in the raw HTML for crawlers and before the JS app
- * mounts (or when JavaScript is disabled). React replaces #root's contents
- * on mount, so this is transient for JS users. The VS Code theme tokens the
- * .fdz-* styles rely on aren't injected until the app loads, so this block
- * is styled self-sufficiently for a light background. */
+/* Reddit Sans and Reddit Mono (SIL OFL, see fonts/OFL.txt), bundled so the
+ * shell looks the same on every OS without a third-party font request. */
+@font-face {
+	font-family: "Reddit Mono";
+	font-style: normal;
+	font-weight: 200 900;
+	font-display: swap;
+	src: url("./fonts/reddit-mono-latin-ext.woff2") format("woff2");
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+	font-family: "Reddit Mono";
+	font-style: normal;
+	font-weight: 200 900;
+	font-display: swap;
+	src: url("./fonts/reddit-mono-latin.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: "Reddit Sans";
+	font-style: normal;
+	font-weight: 200 900;
+	font-display: swap;
+	src: url("./fonts/reddit-sans-latin-ext.woff2") format("woff2");
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+	font-family: "Reddit Sans";
+	font-style: normal;
+	font-weight: 200 900;
+	font-display: swap;
+	src: url("./fonts/reddit-sans-latin.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Shell tokens, mapped to the theme. Change them here and every shell surface follows. */
+:root {
+	--sa-ink: var(--vscode-editor-foreground);
+	--sa-ink-2: var(--vscode-descriptionForeground);
+	--sa-rule: var(--vscode-editorWidget-border);
+	--sa-paper: var(--vscode-editor-background);
+	--sa-elev: var(--vscode-editorWidget-background);
+	--sa-mono: var(--vscode-editor-font-family);
+	--sa-radius: 7px;
+}
+
+/* Static intro in the raw HTML for crawlers and no-JS visitors; React replaces
+ * it on mount. Text colour is inherited from body, which theme.css sets per theme. */
 .sa-intro {
 	box-sizing: border-box;
 	max-width: 640px;
 	margin: 0 auto;
-	padding: clamp(32px, 6vw, 72px) 24px;
-	font-family: var(--vscode-font-family, "Inter", system-ui, sans-serif);
-	color: #24292f;
+	padding: 56px 24px;
+	font-family: var(--vscode-font-family);
 	line-height: 1.6;
 }
 .sa-intro h1 {
 	margin: 0 0 0.6em;
 	font-weight: 600;
 	letter-spacing: -0.02em;
-	font-size: clamp(26px, 5vw, 34px);
+	font-size: 30px;
 }
 .sa-intro p {
 	margin: 0 0 1em;
 	font-size: 16px;
 }
 .sa-intro code {
-	font-family: "JetBrains Mono", ui-monospace, monospace;
+	font-family: var(--vscode-editor-font-family);
 	font-size: 0.9em;
 }
 
-/* ============================================================
- * File entry overlay (empty state)
- *
- * Container-query driven so type/spacing scale relative to the
- * viewer pane, not the window. Font sizes are capped (clamp max
- * values) so they stop growing on very large displays.
- * Colours map to VS Code theme tokens so light/dark both work.
- * ============================================================ */
-
-/* the query container — fills whatever pane it's dropped into */
-.fdz-cq {
+/* Start page. Fixed type sizes; container queries only change the layout. */
+.sa-cq {
 	container-type: inline-size;
 	box-sizing: border-box;
 	height: 100%;
-	min-height: 100%;
+	/* The page itself never scrolls (theme.css), so short or zoomed windows scroll here. */
+	overflow-y: auto;
+	scrollbar-color: var(--vscode-scrollbarSlider-background) transparent;
 	background: var(--vscode-editor-background);
 	color: var(--vscode-editor-foreground);
 	font-family: var(--vscode-font-family);
-
-	/* local palette mapped to theme tokens */
-	--fdz-ink: var(--vscode-editor-foreground);
-	--fdz-ink-2: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
-	--fdz-ink-3: var(--vscode-disabledForeground, var(--vscode-descriptionForeground));
-	--fdz-rule: var(--vscode-editorWidget-border);
-	--fdz-paper: var(--vscode-editor-background);
-	--fdz-elev: var(--vscode-editorWidget-background);
-	--fdz-mono: var(--vscode-editor-font-family);
 }
 
-.fdz-overlay {
+.sa-overlay {
 	box-sizing: border-box;
 	min-height: 100%;
-	height: 100%;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	transition: background 160ms ease;
 }
 
-.fdz-col-left,
-.fdz-col-right {
+.sa-col-left,
+.sa-col-right {
 	box-sizing: border-box;
 	display: flex;
 	align-items: center;
-	padding: clamp(40px, 6cqh, 80px) clamp(32px, 4cqi, 72px);
+	padding: 64px 56px;
 }
-.fdz-col-left {
+.sa-col-left {
 	justify-content: flex-end;
 }
-.fdz-col-right {
+.sa-col-right {
 	justify-content: flex-start;
-	background: var(--fdz-elev);
-	border-left: 1px solid var(--fdz-rule);
+	background: var(--sa-elev);
+	border-left: 1px solid var(--sa-rule);
 	transition: background 160ms ease;
 }
-.fdz-col-left .fdz-inner {
+.sa-col-left .sa-inner {
 	width: 100%;
 	max-width: 480px;
 	display: flex;
 	flex-direction: column;
-	gap: clamp(20px, 1.7cqi, 28px);
+	gap: 24px;
 }
-.fdz-col-right .fdz-inner {
+.sa-col-right .sa-inner {
 	width: 100%;
 	max-width: 430px;
 }
 
-.fdz-h1 {
+.sa-h1 {
 	margin: 0;
 	font-weight: 600;
 	letter-spacing: -0.025em;
 	line-height: 1.05;
-	color: var(--fdz-ink);
-	font-size: clamp(26px, 2.4cqi, 36px);
+	color: var(--sa-ink);
+	font-size: 30px;
 }
-.fdz-lede {
+.sa-lede {
 	margin: 0;
 	line-height: 1.6;
-	color: var(--fdz-ink-2);
-	font-size: clamp(14px, 1.05cqi, 15px);
+	color: var(--sa-ink-2);
+	font-size: 15px;
 }
-.fdz-lede b {
-	color: var(--fdz-ink);
+.sa-lede b {
+	color: var(--sa-ink);
 	font-weight: 600;
 }
 
-.fdz-colstack {
+.sa-colstack {
 	display: flex;
 	flex-direction: column;
-	gap: clamp(12px, 1.2cqi, 16px);
+	gap: 14px;
 }
-.fdz-drop {
+.sa-drop {
 	margin: 0;
 	line-height: 1.5;
-	color: var(--fdz-ink-3);
-	font-size: clamp(12px, 0.85cqi, 13px);
+	color: var(--sa-ink-2);
+	font-size: 13px;
 }
-.fdz-drop kbd {
+.sa-drop kbd {
 	display: inline-block;
 	margin: 0 1px;
 	padding: 1px 6px;
-	background: var(--fdz-paper);
-	border: 1px solid var(--fdz-rule);
+	background: var(--sa-paper);
+	border: 1px solid var(--sa-rule);
 	border-bottom-width: 2px;
 	border-radius: 4px;
-	font-family: var(--fdz-mono);
-	font-size: 0.85em;
-	color: var(--fdz-ink-2);
+	/* Sans, not mono: the mono font has no ⌘ glyph. */
+	font-family: inherit;
+	font-size: 0.9em;
+	color: var(--sa-ink-2);
 }
 
-/* right column — illustrative 32-byte header field map */
-.fdz-righthead {
-	margin-bottom: clamp(14px, 1.3cqi, 20px);
-	font-family: var(--fdz-mono);
-	font-size: clamp(10px, 0.7cqi, 11.5px);
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--fdz-ink-3);
+.sa-col-right figure {
+	margin: 0;
 }
-.fdz-fmap {
-	display: flex;
-	flex-direction: column;
-	gap: clamp(9px, 0.85cqi, 12px);
+/* Right column: the header decoded, one row per field, like the viewer's inspector */
+.sa-htable {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
 }
-.fdz-field {
-	display: flex;
-	align-items: center;
-	gap: clamp(12px, 1.1cqi, 16px);
-
-	/* per-field accent (overridden below); maps to terminal ANSI
-	 * tokens so it adapts to the active light/dark theme */
-	--fdz-c: var(--vscode-editor-foreground);
+.sa-htable th {
+	padding: 0 12px 8px 0;
+	border-bottom: 1px solid var(--sa-rule);
+	text-align: left;
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--sa-ink-2);
 }
-.fdz-field .fdz-nm {
-	flex-shrink: 0;
-	width: clamp(70px, 6cqi, 90px);
-	font-family: var(--fdz-mono);
-	font-size: clamp(9.5px, 0.72cqi, 11.5px);
-	font-weight: 600;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: color-mix(in srgb, var(--fdz-c) 80%, var(--fdz-ink));
+.sa-htable td {
+	padding: 9px 12px 9px 0;
+	border-bottom: 1px solid var(--sa-rule);
+	vertical-align: top;
+	color: var(--sa-ink);
 }
-.fdz-field .fdz-bytes {
-	display: flex;
-	padding: clamp(6px, 0.6cqi, 8px);
-	border-radius: 7px;
-	font-family: var(--fdz-mono);
-	font-size: clamp(11.5px, 0.85cqi, 14px);
-	background: color-mix(in srgb, var(--fdz-c) 18%, var(--fdz-elev));
+.sa-htable .sa-off {
+	font-family: var(--sa-mono);
+	font-variant-numeric: tabular-nums;
+	color: var(--sa-ink-2);
 }
-.fdz-field .fdz-bytes b {
-	width: clamp(20px, 1.6cqi, 26px);
-	text-align: center;
-	font-weight: 400;
-	color: var(--fdz-ink);
+.sa-htable .sa-fld {
+	white-space: nowrap;
 }
-.fdz-field .fdz-bytes b.fdz-z {
-	color: color-mix(in srgb, var(--fdz-ink) 42%, transparent);
+.sa-swatch {
+	display: inline-block;
+	width: 9px;
+	height: 9px;
+	margin-right: 8px;
+	border-radius: 2px;
+	background: color-mix(in srgb, var(--sa-c) 75%, var(--sa-ink));
 }
-.fdz-field-magic {
-	--fdz-c: var(--vscode-terminal-ansiRed);
+.sa-htable .sa-val {
+	font-family: var(--sa-mono);
 }
-.fdz-field-flags {
-	--fdz-c: var(--vscode-terminal-ansiBlue);
+.sa-note {
+	display: block;
+	margin-top: 2px;
+	font-family: var(--vscode-font-family);
+	font-size: 12px;
+	color: var(--sa-ink-2);
 }
-.fdz-field-addr {
-	--fdz-c: var(--vscode-terminal-ansiGreen);
+/* Same hue per field as the viewer's .uf2-field-* washes (dataDisplay.css). */
+.sa-field-magic {
+	--sa-c: var(--vscode-terminal-ansiMagenta);
 }
-.fdz-field-payload {
-	--fdz-c: var(--vscode-terminal-ansiYellow);
+.sa-field-flags {
+	--sa-c: var(--vscode-terminal-ansiYellow);
 }
-.fdz-field-family {
-	--fdz-c: var(--vscode-terminal-ansiMagenta);
+.sa-field-addr {
+	--sa-c: var(--vscode-terminal-ansiCyan);
+}
+.sa-field-payload {
+	--sa-c: var(--vscode-terminal-ansiRed);
+}
+.sa-field-blockno {
+	--sa-c: var(--vscode-terminal-ansiBlue);
+}
+.sa-field-numblocks {
+	--sa-c: var(--vscode-terminal-ansiBrightGreen);
+}
+.sa-field-family {
+	--sa-c: var(--vscode-terminal-ansiBrightMagenta);
 }
 
 /* drag-over highlight */
-.fdz-overlay.fdz-dragging {
+.sa-overlay.sa-dragging {
 	outline: 2px solid var(--vscode-focusBorder);
 	outline-offset: -6px;
 }
-.fdz-overlay.fdz-dragging .fdz-col-right {
-	background: color-mix(in srgb, var(--vscode-focusBorder) 12%, var(--fdz-elev));
+.sa-overlay.sa-dragging .sa-col-right {
+	background: color-mix(in srgb, var(--vscode-focusBorder) 12%, var(--sa-elev));
 }
 
 /* narrow panes: stack into two stacked halves. Both rows fill the height
  * (1fr each) so the elevated illustration row reaches the bottom edge, with
  * the text centred in the top half and the field map in the bottom half. */
 @container (max-width: 880px) {
-	.fdz-overlay {
-		grid-template-columns: 1fr;
+	.sa-overlay {
+		grid-template-columns: minmax(0, 1fr);
 		grid-template-rows: 1fr 1fr;
 	}
-	.fdz-col-left {
+	.sa-col-left {
 		justify-content: center;
-		padding: clamp(32px, 7cqh, 72px) 32px 24px;
+		padding: 48px 32px 24px;
 	}
-	.fdz-col-left .fdz-inner {
+	.sa-col-left .sa-inner {
 		max-width: 560px;
 	}
-	.fdz-col-right {
+	.sa-col-right {
 		justify-content: center;
 		border-left: none;
-		border-top: 1px solid var(--fdz-rule);
-		padding: 24px 32px clamp(32px, 7cqh, 72px);
+		border-top: 1px solid var(--sa-rule);
+		padding: 24px 32px 48px;
 	}
-	.fdz-col-right .fdz-inner {
+	.sa-col-right .sa-inner {
 		max-width: 560px;
 	}
 }
 @container (max-width: 520px) {
-	.fdz-field .fdz-nm {
-		width: 64px;
+	.sa-h1 {
+		font-size: 26px;
+	}
+	.sa-htable {
+		font-size: 12.5px;
+	}
+	.sa-htable td,
+	.sa-htable th {
+		padding-right: 8px;
 	}
 	/* No physical keyboard on small/touch screens — hide the "Press O" hint. */
-	.fdz-drop .fdz-kbd-hint {
+	.sa-drop .sa-kbd-hint {
 		display: none;
 	}
 }
 
-/* ============================================================
- * Buttons (shared by entry, URL cards, and topbar)
- * ============================================================ */
-.fdz-actions {
+/* Buttons. Every button is .sa-btn plus variants; no per-screen overrides. */
+.sa-actions {
 	display: flex;
 	align-items: center;
-	gap: clamp(12px, 1.5cqi, 18px);
+	gap: 16px;
 	flex-wrap: wrap;
 }
-.fdz-btn {
+.sa-btn {
 	box-sizing: border-box;
 	display: inline-block;
 	padding: 0.72em 1.25em;
 	background: var(--vscode-button-secondaryBackground);
-	border: 1px solid var(--vscode-editorWidget-border);
-	border-radius: 7px;
+	border: 1px solid var(--sa-rule);
+	border-radius: var(--sa-radius);
 	color: var(--vscode-button-secondaryForeground);
 	font-family: inherit;
-	font-size: clamp(13px, 0.9cqi, 14px);
+	font-size: 14px;
 	font-weight: 500;
 	cursor: pointer;
 	text-decoration: none;
@@ -286,42 +323,59 @@
 		color 140ms ease,
 		transform 40ms ease;
 }
-.fdz-btn:hover {
+.sa-btn:hover {
 	border-color: var(--vscode-focusBorder);
 }
-.fdz-btn:active {
+.sa-btn:active {
 	transform: translateY(1px);
 }
-.fdz-btn.fdz-btn-primary {
+.sa-btn.sa-btn-primary {
 	background: var(--vscode-button-background);
 	border-color: var(--vscode-button-background);
 	color: var(--vscode-button-foreground);
 }
-.fdz-btn.fdz-btn-primary:hover {
+.sa-btn.sa-btn-primary:hover {
 	background: var(--vscode-button-hoverBackground);
 	border-color: var(--vscode-button-hoverBackground);
 }
-.fdz-btn.fdz-btn-ghost {
+.sa-btn.sa-btn-ghost {
 	background: transparent;
 	border: none;
 	padding: 0.72em 0.4em;
-	color: var(--fdz-ink-2, var(--vscode-descriptionForeground));
+	color: var(--sa-ink-2);
 	text-decoration: underline;
 	text-underline-offset: 3px;
-	text-decoration-color: var(--vscode-editorWidget-border);
+	text-decoration-color: var(--sa-rule);
 }
-.fdz-btn.fdz-btn-ghost:hover {
-	color: var(--vscode-editor-foreground);
+.sa-btn.sa-btn-ghost:hover {
+	color: var(--sa-ink);
 	text-decoration-color: currentColor;
 }
-.fdz-btn:focus-visible {
+.sa-btn.sa-btn-quiet {
+	background: transparent;
+	border-color: transparent;
+	/* Not the secondary-button colour: that's white in the light theme. */
+	color: var(--sa-ink);
+}
+.sa-btn.sa-btn-quiet:hover {
+	background: var(--vscode-toolbar-hoverBackground);
+	border-color: transparent;
+}
+.sa-btn.sa-btn-compact {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 32px;
+	padding: 0 12px;
+	white-space: nowrap;
+	font-size: 12.5px;
+}
+.sa-btn:focus-visible {
 	outline: 2px solid var(--vscode-focusBorder);
 	outline-offset: 2px;
 }
 
-/* ============================================================
- * Standalone topbar (loaded state)
- * ============================================================ */
+/* Top bar, shown while a file is open */
 .sa-topbar {
 	box-sizing: border-box;
 	position: absolute;
@@ -334,64 +388,41 @@
 	gap: 14px;
 	height: 48px;
 	padding: 0 16px;
-	background: var(--vscode-editorWidget-background);
-	border-bottom: 1px solid var(--vscode-editorWidget-border);
+	background: var(--sa-elev);
+	border-bottom: 1px solid var(--sa-rule);
 }
-.sa-pill {
+.sa-topbar .sa-btn {
+	flex-shrink: 0;
+}
+.sa-file {
 	display: inline-flex;
 	align-items: baseline;
 	gap: 10px;
-	min-width: 0; /* allow the pill to shrink so the name can truncate */
-	padding: 4px 10px 4px 8px;
-	background: var(--vscode-editor-background);
-	border: 1px solid var(--vscode-editorWidget-border);
-	border-radius: 7px;
+	min-width: 0; /* lets the name truncate */
 }
-.sa-pill-dot {
-	flex-shrink: 0;
-	align-self: center;
-	width: 7px;
-	height: 7px;
-	background: var(--vscode-charts-green, var(--vscode-terminal-ansiGreen, #0dbc79));
-	border-radius: 50%;
-	box-shadow: 0 0 0 3px
-		color-mix(
-			in srgb,
-			var(--vscode-charts-green, var(--vscode-terminal-ansiGreen, #0dbc79)) 18%,
-			transparent
-		);
-}
-.sa-pill-name {
+.sa-file-name {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: var(--vscode-editor-font-family);
+	font-family: var(--sa-mono);
 	font-size: 12.5px;
 	font-weight: 600;
-	color: var(--vscode-editor-foreground);
+	color: var(--sa-ink);
 }
-.sa-pill-meta {
+.sa-file-size {
 	flex-shrink: 0;
 	white-space: nowrap;
-	font-family: var(--vscode-editor-font-family);
+	font-family: var(--sa-mono);
 	font-size: 11.5px;
-	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+	color: var(--sa-ink-2);
 }
 .sa-spacer {
 	flex: 1;
 }
-.sa-topbar .fdz-btn {
-	flex-shrink: 0;
-	white-space: nowrap;
-	padding: 6px 12px;
-	font-size: 12px;
-}
 
-/* ============================================================
- * URL fetch states (loading / error)
- * ============================================================ */
-.fdz-stage {
+/* ?uf2FileUrl= loading and error cards */
+.sa-stage {
 	box-sizing: border-box;
 	display: grid;
 	place-items: center;
@@ -406,17 +437,17 @@
 	align-items: center;
 	width: min(480px, 92vw);
 	padding: 40px 44px;
-	background: var(--vscode-editorWidget-background);
-	border: 1.5px solid var(--vscode-editorWidget-border);
-	border-radius: 18px;
-	color: var(--vscode-editor-foreground);
+	background: var(--sa-elev);
+	border: 1px solid var(--sa-rule);
+	border-radius: var(--sa-radius);
+	color: var(--sa-ink);
 	text-align: center;
 }
 .sa-url-spinner {
 	width: 36px;
 	height: 36px;
 	margin-bottom: 20px;
-	border: 3px solid var(--vscode-editorWidget-border);
+	border: 3px solid var(--sa-rule);
 	border-top-color: var(--vscode-focusBorder);
 	border-radius: 50%;
 	animation: sa-spin 0.7s linear infinite;
@@ -426,33 +457,44 @@
 		transform: rotate(360deg);
 	}
 }
+/* Still signals "working", without the spinning motion. */
+@media (prefers-reduced-motion: reduce) {
+	.sa-url-spinner {
+		animation: sa-pulse 1.2s ease-in-out infinite alternate;
+	}
+}
+@keyframes sa-pulse {
+	to {
+		opacity: 0.35;
+	}
+}
 .sa-url-title {
 	margin: 0 0 8px;
 	font-size: 20px;
 	font-weight: 600;
 }
 .sa-url-error-title {
-	color: var(--vscode-errorForeground, var(--vscode-notificationsErrorIcon-foreground, #f14c4c));
+	color: var(--vscode-errorForeground);
 }
 .sa-url-sub {
 	margin: 0 0 6px;
 	font-size: 13px;
 	line-height: 1.5;
-	color: var(--vscode-descriptionForeground, var(--vscode-editorLineNumber-foreground));
+	color: var(--sa-ink-2);
 }
 .sa-url-url {
 	max-width: 100%;
 	overflow-wrap: break-word;
 	word-break: break-all;
-	font-family: var(--vscode-editor-font-family);
+	font-family: var(--sa-mono);
 	font-size: 11.5px;
 }
+.sa-url-actions {
+	margin-top: 18px;
+}
 .sa-url-error-msg {
-	padding: 6px 10px;
-	background: var(--vscode-editor-background);
-	border: 1px solid var(--vscode-editorWidget-border);
-	border-radius: 6px;
-	font-family: var(--vscode-editor-font-family);
-	font-size: 12px;
-	color: var(--vscode-errorForeground, var(--vscode-notificationsErrorIcon-foreground, #f14c4c));
+	max-width: 38ch;
+	margin-top: 6px;
+	font-size: 14px;
+	color: var(--sa-ink);
 }

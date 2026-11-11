@@ -55,7 +55,7 @@ describe("Standalone data flow", () => {
 		await waitFor(() => expect(getByTestId("file-size").textContent).to.equal("4"));
 		await waitFor(() => expect(getByTestId("page-bytes").textContent).to.equal("17,34,51,68"));
 
-		fireEvent.click(getByRole("button", { name: /choose another file/i }));
+		fireEvent.click(getByRole("button", { name: /^back$/i }));
 		await waitFor(() => expect(queryByTestId("file-dropzone")).to.exist);
 
 		fireEvent.change(getByLabelText(/select file/i) as HTMLInputElement, {
@@ -67,5 +67,47 @@ describe("Standalone data flow", () => {
 		await waitFor(() =>
 			expect(getByTestId("page-bytes").textContent).to.equal("170,187,204,221,238"),
 		);
+	});
+
+	it("switches file straight from the viewer's Open file picker", async () => {
+		const fileA = createTestFile([0x11, 0x22, 0x33, 0x44], "a.uf2");
+		const fileB = createTestFile([0xaa, 0xbb, 0xcc, 0xdd, 0xee], "b.uf2");
+
+		const { getByLabelText, getByTestId, queryByTestId } = render(
+			<StandaloneApp renderViewer={renderViewer} />,
+		);
+
+		fireEvent.change(getByLabelText(/select file/i) as HTMLInputElement, {
+			target: { files: [fileA] },
+		});
+		await waitFor(() => expect(getByTestId("page-bytes").textContent).to.equal("17,34,51,68"));
+
+		fireEvent.change(getByLabelText(/open a different file/i) as HTMLInputElement, {
+			target: { files: [fileB] },
+		});
+
+		expect(queryByTestId("file-dropzone")).to.be.null;
+		await waitFor(() => expect(getByTestId("file-size").textContent).to.equal("5"));
+		await waitFor(() =>
+			expect(getByTestId("page-bytes").textContent).to.equal("170,187,204,221,238"),
+		);
+	});
+
+	it("keeps the file open when Escape is pressed", async () => {
+		const file = createTestFile([0x11, 0x22, 0x33, 0x44], "a.uf2");
+
+		const { getByLabelText, getByTestId, queryByTestId } = render(
+			<StandaloneApp renderViewer={renderViewer} />,
+		);
+
+		fireEvent.change(getByLabelText(/select file/i) as HTMLInputElement, {
+			target: { files: [file] },
+		});
+		await waitFor(() => expect(getByTestId("file-size").textContent).to.equal("4"));
+
+		fireEvent.keyDown(window, { key: "Escape" });
+
+		expect(queryByTestId("file-dropzone")).to.be.null;
+		expect(getByTestId("standalone-viewer")).to.exist;
 	});
 });

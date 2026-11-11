@@ -42,6 +42,16 @@ function copyChromeCss() {
 	fs.copyFileSync(src, dest);
 }
 
+// Bundled web fonts and their licence, served from /fonts.
+function copyFonts() {
+	const src = path.join(__dirname, "fonts");
+	const dest = path.join(distDir, "fonts");
+	fs.mkdirSync(dest, { recursive: true });
+	for (const file of fs.readdirSync(src)) {
+		fs.copyFileSync(path.join(src, file), path.join(dest, file));
+	}
+}
+
 // Copy assets/ (favicons) to the site root.
 function copyAssets() {
 	ensureDistDir();
@@ -60,6 +70,7 @@ const copyPlugin = {
 			}
 			copyIndexHtml();
 			copyChromeCss();
+			copyFonts();
 			copyAssets();
 			if (watch) {
 				console.log("Standalone build updated");

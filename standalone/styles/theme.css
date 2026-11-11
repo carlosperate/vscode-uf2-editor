@@ -3,8 +3,8 @@
 	/* Editor */
 	--vscode-editor-background: #1c1d20;
 	--vscode-editor-foreground: #d8d8d2;
-	--vscode-editor-font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono",
-		Menlo, Consolas, "Liberation Mono", monospace;
+	--vscode-editor-font-family: "Reddit Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+		"Liberation Mono", monospace;
 	--vscode-editor-font-size: 13px;
 	--vscode-editorCursor-foreground: #aeafad;
 	--vscode-editor-selectionBackground: #264f78;
@@ -31,19 +31,20 @@
 	--vscode-inputValidation-errorBackground: #5a1d1d;
 	--vscode-inputValidation-errorBorder: #be1100;
 	--vscode-inputValidation-errorForeground: #f48771;
+	--vscode-errorForeground: #f48771;
 
 	/* Buttons */
-	--vscode-button-background: #0e639c;
+	--vscode-button-background: #0f6b76;
 	--vscode-button-foreground: #ffffff;
 	--vscode-button-border: transparent;
-	--vscode-button-hoverBackground: #1177bb;
+	--vscode-button-hoverBackground: #127d8a;
 	--vscode-button-secondaryBackground: #3a3d41;
 	--vscode-button-secondaryForeground: #cccccc;
 
 	/* Misc */
-	--vscode-focusBorder: #007fd4;
+	--vscode-focusBorder: #2b9aa6;
 	--vscode-contrastBorder: transparent;
-	--vscode-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+	--vscode-font-family: "Reddit Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
 		sans-serif;
 	--vscode-descriptionForeground: #9b9c97;
 	--vscode-disabledForeground: #6e6f6b;
@@ -51,7 +52,7 @@
 	--vscode-toolbar-hoverBackground: rgba(90, 93, 94, 0.31);
 	--vscode-tab-unfocusedInactiveForeground: rgba(255, 255, 255, 0.5);
 	--vscode-minimapGutter-modifiedBackground: #1b81a8;
-	--vscode-progressBar-background: #0e70c0;
+	--vscode-progressBar-background: #2b9aa6;
 	--vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
 	--vscode-scrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.7);
 	--vscode-diffEditor-diagonalFill: rgba(128, 128, 128, 0.2);
@@ -78,8 +79,8 @@
 /* Light theme */
 @media (prefers-color-scheme: light) {
 	:root {
-		--vscode-editor-background: #fbfaf7;
-		--vscode-editor-foreground: #1c1f24;
+		--vscode-editor-background: #fcfefe;
+		--vscode-editor-foreground: #122427;
 		--vscode-editorCursor-foreground: #000000;
 		--vscode-editor-selectionBackground: #add6ff;
 		--vscode-editor-selectionForeground: #000000;
@@ -87,11 +88,11 @@
 		--vscode-editor-hoverHighlightBackground: rgba(173, 214, 255, 0.15);
 		--vscode-editorLineNumber-foreground: #237893;
 		--vscode-editorLineNumber-activeForeground: #0b216f;
-		--vscode-editorWidget-background: #fefdfb;
-		--vscode-editorWidget-foreground: #4a4d52;
-		--vscode-editorWidget-border: #e3e1d9;
-		--vscode-descriptionForeground: #6a6d72;
-		--vscode-disabledForeground: #9b9d99;
+		--vscode-editorWidget-background: #f0f7f9;
+		--vscode-editorWidget-foreground: #384b50;
+		--vscode-editorWidget-border: #d9e8ec;
+		--vscode-descriptionForeground: #4a5b60;
+		--vscode-disabledForeground: #8a9ca1;
 		--vscode-widget-shadow: rgba(0, 0, 0, 0.16);
 		--vscode-input-background: #ffffff;
 		--vscode-input-border: #cecece;
@@ -103,15 +104,16 @@
 		--vscode-inputValidation-errorBackground: #f2dede;
 		--vscode-inputValidation-errorBorder: #be1100;
 		--vscode-inputValidation-errorForeground: #a1260d;
-		--vscode-button-background: #007acc;
-		--vscode-button-hoverBackground: #0062a3;
+		--vscode-errorForeground: #a1260d;
+		--vscode-button-background: #0f7682;
+		--vscode-button-hoverBackground: #0c5f69;
 		--vscode-button-secondaryBackground: #5f6a79;
 		--vscode-button-secondaryForeground: #ffffff;
-		--vscode-focusBorder: #0078d4;
+		--vscode-focusBorder: #0f7682;
 		--vscode-icon-foreground: #424242;
 		--vscode-toolbar-hoverBackground: rgba(184, 184, 184, 0.31);
-		--vscode-tab-unfocusedInactiveForeground: rgba(51, 51, 51, 0.5);
-		--vscode-progressBar-background: #0078d4;
+		--vscode-tab-unfocusedInactiveForeground: rgba(51, 51, 51, 0.75);
+		--vscode-progressBar-background: #0f7682;
 		--vscode-scrollbarSlider-background: rgba(100, 100, 100, 0.4);
 		--vscode-diffEditor-diagonalFill: rgba(34, 34, 34, 0.2);
 
